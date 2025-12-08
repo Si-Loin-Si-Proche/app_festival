@@ -37,7 +37,7 @@ Ouvrez votre terminal et exécutez :
 
 ```bash
 git clone https://github.com/Si-Loin-Si-Proche/app_festival.git
-cd SiLoinSiProche
+cd app_festival
 ```
 
 2. Installer les dépendances
