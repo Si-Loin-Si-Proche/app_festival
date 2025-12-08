@@ -1,12 +1,14 @@
 const { execSync } = require('child_process');
 const readline = require('readline');
 
+// --- CONFIGURATION ---
+const REPO_SLUG = "Si-Loin-Si-Proche/app_festival/";
+
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-// --- COULEURS POUR FAIRE PRO ---
 const colors = {
     reset: "\x1b[0m",
     bright: "\x1b[1m",
@@ -14,17 +16,14 @@ const colors = {
     yellow: "\x1b[33m",
     red: "\x1b[31m",
     cyan: "\x1b[36m",
+    blue: "\x1b[34m",
 };
 
 const run = (command, ignoreError = false) => {
     try {
         return execSync(command, { stdio: 'pipe' }).toString().trim();
     } catch (e) {
-        if (!ignoreError) {
-            console.error(`${colors.red}❌ Erreur lors de : ${command}${colors.reset}`);
-            console.error(e.stderr.toString());
-            process.exit(1);
-        }
+        if (!ignoreError) return null;
         return null;
     }
 };
@@ -32,38 +31,56 @@ const run = (command, ignoreError = false) => {
 const runDirect = (command) => {
     try {
         execSync(command, { stdio: 'inherit' });
+        return true;
     } catch (e) {
-        // On ne quitte pas forcément ici pour laisser la suite se faire (ex: checkout main)
+        return false;
     }
 };
 
-console.log(`${colors.cyan}${colors.bright}--- 🚀 ASSISTANT GIT (MODE GITHUB FLOW) ---${colors.reset}\n`);
+// Fonction compatible Windows, Mac et Linux pour ouvrir une URL
+const openUrl = (url) => {
+    const start = (process.platform == 'darwin'? 'open': process.platform == 'win32'? 'start': 'xdg-open');
+    try {
+        execSync(`${start} "${url}"`);
+    } catch(e) {
+        console.log('Lien à ouvrir : ' + url);
+    }
+};
 
-// 1. VÉRIFICATION DE LA BRANCHE ACTUELLE
+const getRepoUrl = () => {
+    if (REPO_SLUG) return `https://github.com/${REPO_SLUG}`;
+    try {
+        let url = run('git config --get remote.origin.url');
+        if (!url) return null;
+        // Conversion SSH vers HTTPS pour que le lien marche dans le navigateur
+        return url.replace('git@github.com:', 'https://github.com/')
+            .replace('.git', '');
+    } catch (e) {
+        return null;
+    }
+};
+
+console.log(`${colors.cyan}${colors.bright}--- 🚀 ASSISTANT GIT + PR AUTO ---${colors.reset}\n`);
+
 const currentBranch = run('git rev-parse --abbrev-ref HEAD');
 console.log(`Branche actuelle : ${colors.yellow}${currentBranch}${colors.reset}`);
 
 const startProcess = () => {
-    // CAS 1 : L'étudiant est sur MAIN
+    // PROTECTION MAIN
     if (currentBranch === 'main' || currentBranch === 'master') {
-        console.log(`${colors.red}⚠️  ATTENTION : Tu es sur la branche principale !${colors.reset}`);
-        console.log(`Tu ne dois pas modifier ${currentBranch} directement.`);
+        console.log(`${colors.red}⚠️  Tu es sur main !${colors.reset}`);
 
-        rl.question(`\n${colors.green}✨ Quel est le nom de ta nouvelle fonctionnalité ? (ex: page-accueil) : ${colors.reset}`, (branchName) => {
+        rl.question(`\n${colors.green}✨ Nom de la nouvelle fonctionnalité ? (ex: header-fix) : ${colors.reset}`, (branchName) => {
             if (!branchName) { console.log('❌ Nom vide.'); process.exit(1); }
 
             const cleanName = branchName.toLowerCase().replace(/\s+/g, '-');
             const fullName = `feat/${cleanName}`;
 
-            console.log(`\n🌿 Création de la branche : ${colors.bright}${fullName}${colors.reset}`);
+            console.log(`\n🌿 Création : ${colors.bright}${fullName}${colors.reset}`);
             runDirect(`git checkout -b ${fullName}`);
-
-            // On lance le commit sur la nouvelle branche
             commitAndPush(fullName);
         });
-    }
-    // CAS 2 : Il est déjà sur une branche feat/ ou fix/
-    else {
+    } else {
         commitAndPush(currentBranch);
     }
 };
@@ -72,31 +89,46 @@ const commitAndPush = (branchName) => {
     rl.question(`\n📝 ${colors.bright}Message de commit : ${colors.reset}`, (message) => {
         if (!message) { console.log('❌ Message vide.'); process.exit(1); }
 
-        console.log(`\n📦 Ajout des fichiers...`);
+        console.log(`\n📦 Git Add & Commit...`);
         runDirect('git add .');
-
-        console.log(`📸 Commit...`);
         runDirect(`git commit -m "${message}"`);
 
-        console.log(`🚀 Envoi vers GitHub...`);
-        try {
-            execSync(`git push -u origin ${branchName}`, { stdio: 'inherit' });
-        } catch (e) {
-            console.log(`${colors.yellow}⚠️  Petit souci au push (conflit ?), essaie de faire un 'git pull' manuellement.${colors.reset}`);
+        console.log(`🚀 Push vers GitHub...`);
+        const pushSuccess = runDirect(`git push -u origin ${branchName}`);
+
+        if (pushSuccess) {
+            openPrPage(branchName, message);
+        } else {
+            console.log(`${colors.red}❌ Échec du push. Vérifie ta connexion ou fais un git pull.${colors.reset}`);
             process.exit(1);
         }
-
-        console.log(`\n${colors.green}✅ SUCCÈS ! Ton code est sur GitHub.${colors.reset}`);
-        console.log(`👉 Tu peux aller créer ta Pull Request (PR).`);
-
-        // --- LE RETOUR AUTOMATIQUE SUR MAIN ---
-        console.log(`\n🔙 ${colors.cyan}Retour automatique sur la branche main...${colors.reset}`);
-        runDirect('git checkout main');
-        runDirect('git pull origin main'); // Petit pull pour être sûr d'être à jour
-
-        console.log(`${colors.green}👋 Tu es de nouveau sur main. Prêt pour la prochaine tâche !${colors.reset}`);
-        rl.close();
     });
+};
+
+const openPrPage = (branchName, title) => {
+    console.log(`\n${colors.blue}🌐 Ouverture du navigateur pour valider la PR...${colors.reset}`);
+
+    const repoUrl = getRepoUrl();
+
+    if (repoUrl) {
+        // L'URL magique qui pré-remplit tout
+        const prUrl = `${repoUrl}/compare/main...${branchName}?expand=1&title=${encodeURIComponent(title)}&body=${encodeURIComponent("PR créée automatiquement via le script étudiant.")}`;
+
+        openUrl(prUrl);
+        console.log(`👉 Si la fenêtre ne s'ouvre pas, clique ici : \n${colors.blue}${prUrl}${colors.reset}`);
+    } else {
+        console.log(`${colors.red}❌ Impossible de trouver l'URL du repo. Ouvre GitHub manuellement.${colors.reset}`);
+    }
+
+    finish();
+};
+
+const finish = () => {
+    console.log(`\n🔙 ${colors.cyan}Retour sur main...${colors.reset}`);
+    runDirect('git checkout main');
+    runDirect('git pull origin main');
+    console.log(`${colors.green}👋 Terminé ! Prêt pour la suite.${colors.reset}`);
+    rl.close();
 };
 
 startProcess();
