@@ -8,12 +8,12 @@ Ce projet a pour vocation d'être une application : elle est conçue pour être 
 
 Le projet repose sur un écosystème moderne et robuste, privilégiant la maintenabilité et le typage strict.
 
-* **Framework :** [React Native](https://reactnative.dev/) (via [Expo SDK](https://expo.dev/))
-* **Langage :** [TypeScript](https://www.typescriptlang.org/) (Typage statique)
-* **Navigation :** [React Navigation](https://reactnavigation.org/) (Stack & Bottom Tabs)
-* **Données & API :** [Axios](https://axios-http.com/) (Requêtes HTTP)
-* **Stockage Local :** `AsyncStorage` (Gestion des favoris hors-ligne)
-* **Qualité de code :** ESLint + Prettier
+- **Framework :** [React Native](https://reactnative.dev/) (via [Expo SDK](https://expo.dev/))
+- **Langage :** [TypeScript](https://www.typescriptlang.org/) (Typage statique)
+- **Navigation :** [React Navigation](https://reactnavigation.org/) (Stack & Bottom Tabs)
+- **Données & API :** [Axios](https://axios-http.com/) (Requêtes HTTP)
+- **Stockage Local :** `AsyncStorage` (Gestion des favoris hors-ligne)
+- **Qualité de code :** ESLint + Prettier
 
 ---
 
@@ -32,6 +32,7 @@ Avant de commencer, assurez-vous d'avoir installé les outils suivants sur votre
 Suivez ces étapes pour récupérer le projet et installer les dépendances.
 
 ### 1. Cloner le projet
+
 Ouvrez votre terminal et exécutez :
 
 ```bash
@@ -40,6 +41,7 @@ cd SiLoinSiProche
 ```
 
 2. Installer les dépendances
+
 ```bash
 npm install
 ```
@@ -52,12 +54,15 @@ Copiez le fichier .env.example et renommez-le en .env.
 Remplissez les variables nécessaires (demander à l'équipe technique pour les clés API).
 
 ---
+
 ## ▶️ Lancement (Développement)
+
 Pour lancer le serveur de développement local :
 
 ```bash
 npx expo start
 ```
+
 Une fois la commande lancée, un QR Code s'affiche dans votre terminal.
 
 1. Ouvrez l'application Expo Go sur votre téléphone.
@@ -67,8 +72,11 @@ Une fois la commande lancée, un QR Code s'affiche dans votre terminal.
 3. L'application se charge instantanément sur votre mobile.
 
 ---
+
 ## 📂 Architecture du projet
+
 Le code source est organisé dans le dossier src/ pour garantir une séparation claire des responsabilités :
+
 ```
 src/
 ├── assets/        # Images et icônes locales
@@ -80,16 +88,21 @@ src/
 ├── types/         # Définitions des types TypeScript
 └── utils/         # Fonctions utilitaires
 ```
+
 ---
 
 ## 🎨 Personnalisation (Concept Réutilisable)
+
 L'identité visuelle de l'application est centralisée. Pour adapter l'application à un autre festival, modifiez simplement le fichier :
+
 ```
 src/constants/theme.ts
 ```
+
 Vous pouvez y changer les palettes de couleurs (COLORS), les polices (FONTS) et les dimensions globales.
 
 ## 👥 Auteurs
+
 **Projet réalisé par l'équipe IMAC :**
 
 - Januel Louise 
