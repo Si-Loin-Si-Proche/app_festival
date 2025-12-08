@@ -93,7 +93,7 @@ Vous pouvez y changer les palettes de couleurs (COLORS), les polices (FONTS) et 
 **Projet réalisé par l'équipe IMAC :**
 
 - Januel Louise 
-- Zafrane Louisa 
+- Zafane-Bunel Louiza 
 - Cuvillon Arthur
 
 *Dernière mise à jour : Décembre 2025*
