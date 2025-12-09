@@ -2,6 +2,7 @@
   "expo": {
     "name": "SiLoinSiProche",
     "slug": "SiLoinSiProche",
+    "scheme": "SiLoinSiProche",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
