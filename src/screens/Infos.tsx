@@ -1,12 +1,9 @@
-// src/screens/index.tsx
 import { Text, View } from 'react-native';
 
-const Home = () => {
+export default function InfosScreen() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Bienvenue! Ceci est la home page principale.</Text>
+      <Text>Ceci est la page infos pratiques.</Text>
     </View>
   );
 }
-
-export default Home;

@@ -1,11 +1,5 @@
-import { Text, View } from 'react-native';
+import ProgrammationScreen from '../src/screens/Programmation';
 
-const programmation = () => {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Ceci est la page programmation.</Text>
-    </View>
-  );
+export default function Page() {
+  return <ProgrammationScreen />;
 }
-
-export default programmation;
