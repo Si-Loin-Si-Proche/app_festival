@@ -1,0 +1,27 @@
+name: Quality Check 🛡️
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Récupération du code
+        uses: actions/checkout@v3
+
+      - name: 🟢 Installation Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: 📦 Installation des dépendances
+        run: npm ci
+
+      - name: 🧹 Vérification du Linting (Propreté)
+        run: npm run lint
+
+      - name: 🏗️ Vérification des Types (TypeScript)
+        run: npx tsc --noEmit
