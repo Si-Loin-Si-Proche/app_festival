@@ -1,9 +1,9 @@
 // src/types/api.types.ts
 
 export interface ApiResponse<T> {
-  data: T[];
+  data: T[] | T;
   included?: any[];
-  meta: {
+  meta?: {
     pagination?: {
       total: number;
       count: number;
@@ -36,6 +36,12 @@ export interface FestivalEvent {
     content_field: {
       data: { id: string; type: 'content_field' } | null;
     };
+    tags?: {
+      data: { id: string; type: 'tag' }[];
+    };
+    section_tags?: {
+      data: { id: string; type: 'section_tag' }[];
+    };
   };
 }
 
@@ -51,4 +57,11 @@ export interface CleanEvent {
     placeName: string;
   }[];
   price?: string; // HTML
+  tags: string[];
+}
+
+export interface FilterTag {
+  id: string;
+  label: string;
+  slug: string;
 }
