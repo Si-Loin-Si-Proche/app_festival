@@ -3,9 +3,9 @@ import { ApiResponse, FestivalEvent, CleanEvent } from '../types/api.types';
 
 const FESTIVAL_ID = process.env.EXPO_PUBLIC_FESTIVAL_ID;
 
-/**
- * Transforme le JSON complexe de l'API en objet simple pour l'app
- */
+const COMMON_INCLUDES =
+  'main_image,spacetimes,spacetimes.place,content_field,section_tags,tags';
+
 const mapToCleanEvent = (
   apiData: FestivalEvent,
   included: any[]
@@ -38,6 +38,16 @@ const mapToCleanEvent = (
     (inc) => inc.id === contentFieldId && inc.type === 'content_field'
   );
 
+  const tagIds =
+    apiData.relationships.tags?.data.map((t: { id: string }) => t.id) || [];
+
+  const tags = tagIds
+    .map((id: string) => {
+      const tObj = included.find((inc) => inc.id === id && inc.type === 'tag');
+      return tObj?.attributes?.title;
+    })
+    .filter((t: string): t is string => !!t);
+
   return {
     id: apiData.id,
     title: apiData.attributes.title,
@@ -45,34 +55,30 @@ const mapToCleanEvent = (
     description: apiData.attributes.body,
     imageUrl: imageObj?.attributes?.file_url,
     dates,
-    price: contentFieldObj?.attributes?.secondary_fields?.price, // HTML brut
+    price: contentFieldObj?.attributes?.secondary_fields?.price,
+    tags: tags,
   };
 };
 
-/**
- * Récupère tous les événements du festival
- */
+const paramsSerializer = {
+  encode: (param: string) => {
+    return encodeURIComponent(param).replace(/%5B/g, '[').replace(/%5D/g, ']');
+  },
+};
+
 export const getFestivalEvents = async (): Promise<CleanEvent[]> => {
   try {
     const config = {
       params: {
         'filter[tag_ids]': FESTIVAL_ID,
-        include: 'main_image,spacetimes,spacetimes.place,content_field',
+        include: COMMON_INCLUDES,
         per_page: 300,
       },
-      paramsSerializer: {
-        encode: (param: string) => {
-          return encodeURIComponent(param)
-            .replace(/%5B/g, '[')
-            .replace(/%5D/g, ']');
-        },
-      },
+      paramsSerializer,
     };
 
-    // ------------- DEBUG -------------
     const debugUrl = api.getUri({ url: '/contents', ...config });
-    console.log('🚀 URL APPELÉE :', debugUrl);
-    // ---------------------------------
+    console.log('🚀 URL LISTE :', debugUrl);
 
     const response = await api.get<ApiResponse<FestivalEvent>>(
       '/contents',
@@ -81,20 +87,123 @@ export const getFestivalEvents = async (): Promise<CleanEvent[]> => {
 
     const rawEvents = response.data.data;
     const included = response.data.included || [];
+    const eventsArray = Array.isArray(rawEvents) ? rawEvents : [rawEvents];
 
-    return rawEvents.map((event) => mapToCleanEvent(event, included));
+    return eventsArray.map((event) => mapToCleanEvent(event, included));
   } catch (error: any) {
-    console.error("ERREUR CRITIQUE DANS L'APPEL API !");
+    console.error('❌ ERREUR LISTE :');
+    if (error.response) console.log(error.response.status);
+    return [];
+  }
+};
 
-    if (error.response) {
-      console.log('Status:', error.response.status);
-      console.log('Data:', JSON.stringify(error.response.data, null, 2));
-    } else if (error.request) {
-      console.log('⚠️ Aucune réponse reçue');
-    } else {
-      console.log('Erreur message:', error.message);
-    }
+export const getEventById = async (id: string): Promise<CleanEvent | null> => {
+  try {
+    const config = {
+      params: {
+        'filter[id]': id,
+        include: `${COMMON_INCLUDES},videos,files`,
+      },
+      paramsSerializer,
+    };
 
+    const debugUrl = api.getUri({ url: '/contents', ...config });
+    console.log('🚀 URL DETAIL :', debugUrl);
+
+    const response = await api.get<ApiResponse<FestivalEvent>>(
+      '/contents',
+      config
+    );
+
+    const rawData = response.data.data;
+    const rawEvent = Array.isArray(rawData) ? rawData[0] : rawData;
+
+    if (!rawEvent) return null;
+
+    const included = response.data.included || [];
+    return mapToCleanEvent(rawEvent, included);
+  } catch (error: any) {
+    console.error('❌ ERREUR DETAIL :');
+    if (error.response) console.log(error.response.status);
+    return null;
+  }
+};
+
+export const searchEvents = async (query: string): Promise<CleanEvent[]> => {
+  if (!query || query.length < 2) return [];
+
+  try {
+    const config = {
+      params: {
+        'filter[tag_ids]': FESTIVAL_ID,
+        'filter[search]': query,
+        include: COMMON_INCLUDES,
+      },
+      paramsSerializer,
+    };
+
+    const debugUrl = api.getUri({ url: '/contents', ...config });
+    console.log('🚀 URL RECHERCHE :', debugUrl);
+
+    const response = await api.get<ApiResponse<FestivalEvent>>(
+      '/contents',
+      config
+    );
+
+    const rawEvents = response.data.data;
+    const included = response.data.included || [];
+    const eventsArray = Array.isArray(rawEvents) ? rawEvents : [rawEvents];
+
+    return eventsArray.map((event) => mapToCleanEvent(event, included));
+  } catch (error: any) {
+    console.error('❌ ERREUR RECHERCHE :');
+    return [];
+  }
+};
+
+export const getFestivalFilters = async () => {
+  try {
+    const response = await api.get('/tags', {
+      params: { per_page: 100 },
+    });
+
+    return response.data.data.map((t: any) => ({
+      id: t.id,
+      label: t.attributes.title,
+      slug: t.attributes.identifier,
+    }));
+  } catch (error) {
+    console.error('❌ ERREUR FILTRES');
+    return [];
+  }
+};
+
+export const getEventsByFilter = async (
+  filterTagId: string
+): Promise<CleanEvent[]> => {
+  try {
+    const config = {
+      params: {
+        'filter[tag_ids]': `${FESTIVAL_ID},${filterTagId}`,
+        include: COMMON_INCLUDES,
+      },
+      paramsSerializer,
+    };
+
+    const debugUrl = api.getUri({ url: '/contents', ...config });
+    console.log('🚀 URL FILTER :', debugUrl);
+
+    const response = await api.get<ApiResponse<FestivalEvent>>(
+      '/contents',
+      config
+    );
+    const rawEvents = response.data.data;
+    const included = response.data.included || [];
+    const eventsArray = Array.isArray(rawEvents) ? rawEvents : [rawEvents];
+
+    return eventsArray.map((event) => mapToCleanEvent(event, included));
+  } catch (error: any) {
+    console.error('❌ ERREUR FILTER :');
     return [];
   }
 };
