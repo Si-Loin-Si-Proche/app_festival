@@ -1,11 +1,9 @@
 import { Text, View } from 'react-native';
 
-const infos_pratiques = () => {
+export default function IndexScreen() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Ceci est la page infos pratiques.</Text>
+      <Text>Bienvenue! Ceci est la home page principale.</Text>
     </View>
   );
 }
-
-export default infos_pratiques;

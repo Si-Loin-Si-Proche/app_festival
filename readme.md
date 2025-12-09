@@ -78,11 +78,11 @@ Une fois la commande lancée, un QR Code s'affiche dans votre terminal.
 Le code source est organisé dans le dossier src/ pour garantir une séparation claire des responsabilités :
 
 ```
+app/               # Configuration du routing
 src/
 ├── assets/        # Images et icônes locales
 ├── components/    # Composants réutilisables (Boutons, Cards...)
 ├── constants/     # Configuration globale (Thème, Couleurs, API)
-├── navigation/    # Configuration du routing (Tabs, Stack)
 ├── screens/       # Écrans complets (Home, Map, Agenda...)
 ├── services/      # Logique de connexion à l'API
 ├── types/         # Définitions des types TypeScript
@@ -105,8 +105,8 @@ Vous pouvez y changer les palettes de couleurs (COLORS), les polices (FONTS) et 
 
 **Projet réalisé par l'équipe IMAC :**
 
-- Januel Louise 
-- Zafane-Bunel Louiza 
+- Januel Louise
+- Zafane-Bunel Louiza
 - Cuvillon Arthur
 
-*Dernière mise à jour : Décembre 2025*
+_Dernière mise à jour : Décembre 2025_
