@@ -1,12 +1,3 @@
-// const _layout = () => {
-//   return (
-//     <Tabs/> 
-//   )
-// }
-
-// export default _layout
-
-// src/screens/_layout.tsx
 import React, { useEffect } from 'react';
 import { Tabs } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -23,7 +14,7 @@ import {
 // Empêche l'écran de chargement de disparaître tant que les fonts ne sont pas prêtes
 SplashScreen.preventAutoHideAsync();
 
-const _layout = () => {
+const Layout = () => {
   // 2. Le Hook qui charge les polices en mémoire
   const [loaded, error] = useFonts({
     AtkinsonHyperlegible_400Regular,
@@ -53,4 +44,4 @@ const _layout = () => {
   );
 };
 
-export default _layout;
+export default Layout;
