@@ -2,6 +2,8 @@ import { View } from 'react-native';
 import Typography from '../components/atoms/Typography';
 import IconComponent from '../components/atoms/Icon';
 import Separator from '../components/atoms/Separator';
+import Tag from '../components/atoms/Tag';
+import { COLORS } from '../constants/theme';
 
 export default function IndexScreen() {
   return (
@@ -25,13 +27,15 @@ export default function IndexScreen() {
         tempor incididunt ut labore et dolore magna aliqua.
       </Typography>
 
-      <Separator color="#cfcc25ff" thickness={2} marginVertical={30} />
+      <Separator color="#25b0cfff" thickness={2} marginVertical={30} />
 
       <Typography variant="quote" style={{ textAlign: 'center' }}>
         du 05 au 10 février 2026
       </Typography>
 
       <Typography variant="caption">test caption</Typography>
+
+      <Tag label="théâtre" iconName="location" backgroundColor={COLORS.tag} />
     </View>
   );
 }
