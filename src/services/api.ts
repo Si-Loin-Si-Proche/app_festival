@@ -3,11 +3,13 @@ import axios from 'axios';
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 const PROJECT_ID = process.env.EXPO_PUBLIC_PROJECT_ID;
 const TOKEN = process.env.EXPO_PUBLIC_PROJECT_TOKEN;
-
-if (!BASE_URL || !PROJECT_ID || !TOKEN) {
-  console.error(
-    '🚨 ERREUR ENV : Il manque une variable (URL, ID ou TOKEN) dans le .env'
-  );
+if (__DEV__) {
+  if (!BASE_URL || !PROJECT_ID || !TOKEN) {
+    // eslint-disable-next-line no-console
+    console.error(
+      '🚨 ERREUR ENV : Il manque une variable (URL, ID ou TOKEN) dans le .env'
+    );
+  }
 }
 
 const FULL_URL = `${BASE_URL}/${PROJECT_ID}/v1`;
