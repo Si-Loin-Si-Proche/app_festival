@@ -18,6 +18,10 @@ import {
   Filter,
   Settings,
   User,
+  Lock,
+  Eye,
+  EyeOff,
+  Mail,
 } from 'lucide-react-native';
 
 export const ICONS = {
@@ -45,6 +49,12 @@ export const ICONS = {
   // --- Catégories ---
   categoryMusic: Music,
   categoryTheater: Drama,
+
+  // --- Ajouts pour le formulaire ---
+  lock: Lock,
+  eye: Eye,
+  eyeOff: EyeOff,
+  mail: Mail,
 } as const;
 
 export type IconName = keyof typeof ICONS;
