@@ -58,7 +58,6 @@ export default function Button({
       };
     }
 
-    // Gestion de la bordure optionnelle pour Primary
     const primaryBorder = withBorder
       ? {
           borderWidth: 2.5,
@@ -157,7 +156,7 @@ export default function Button({
             <IconComponent
               name={icon}
               size={20}
-              color={variantStyles.text.color}
+              color={variantStyles.text.color as string}
               style={{ marginRight: SPACING.s }}
             />
           )}
@@ -168,7 +167,7 @@ export default function Button({
             <IconComponent
               name={icon}
               size={20}
-              color={variantStyles.text.color}
+              color={variantStyles.text.color as string}
               style={{ marginLeft: SPACING.s }}
             />
           )}
