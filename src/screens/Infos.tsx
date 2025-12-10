@@ -11,6 +11,7 @@ import { COLORS, SIZES, SPACING, FONTS } from '../constants/theme';
 import Input from '../components/atoms/Input';
 import Icon from '../components/atoms/Icon';
 import RemoteImage from '../components/atoms/RemoteImage';
+import Button from '../components/atoms/Button';
 
 export default function InfosScreen() {
   const [showPassword, setShowPassword] = useState(false);
@@ -121,6 +122,40 @@ export default function InfosScreen() {
           >
             <Icon name="favorite" color={COLORS.primary} />
             <Icon name="calendar" color={COLORS.textLight} />
+          </View>
+        </View>
+
+        {/* 4. TEST BOUTONS */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>4. Boutons</Text>
+
+          <View style={{ gap: SPACING.m }}>
+            <Button
+              label="Action Principale"
+              icon="ticket"
+              iconPosition={'right'}
+              fullWidth
+              color={'blue'}
+              withBorder={false}
+            />
+
+            <View style={{ flexDirection: 'row', gap: SPACING.m }}>
+              <View style={{ flex: 1 }}>
+                <Button label="Secondaire" variant="outline" fullWidth />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Button label="Chargement" isLoading fullWidth />
+              </View>
+            </View>
+
+            <Button
+              label="Bouton simple (Ghost)"
+              variant="ghost"
+              icon="next"
+              iconPosition="right"
+            />
+
+            <Button label="Désactivé" disabled fullWidth />
           </View>
         </View>
       </ScrollView>
