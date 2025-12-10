@@ -20,6 +20,7 @@ export const COLORS = {
   success: '#4CAF50', // Messages de succès
   tabBarActive: '#E63946',
   tabBarInactive: '#8D99AE',
+  tag: '#F5F294',
 };
 
 // Tailles de police (pour la cohérence)
