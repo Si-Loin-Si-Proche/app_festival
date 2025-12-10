@@ -14,7 +14,7 @@ export const COLORS = {
   secondary: '#1D3557', // Couleur secondaire (Headers, navigation)
   background: '#F1FAEE', // Fond des écrans
   card: '#FFFFFF', // Fond des cartes (events)
-  text: '#1D3557', // Texte principal
+  text: '#000000', // Texte principal
   textLight: '#A8DADC', // Texte secondaire (dates, sous-titres)
   error: '#FF0000', // Messages d'erreur
   success: '#4CAF50', // Messages de succès
@@ -38,6 +38,13 @@ export const SPACING = {
   m: 16, // Marge standard
   l: 24,
   xl: 32,
+};
+
+export const FONTS = {
+  regular: 'AtkinsonHyperlegible_400Regular',
+  bold: 'AtkinsonHyperlegible_700Bold',
+  italic: 'AtkinsonHyperlegible_400Regular_Italic',
+  boldItalic: 'AtkinsonHyperlegible_700Bold_Italic',
 };
 
 // Configuration des ombres (Shadows) pour iOS et Android
@@ -64,6 +71,6 @@ export const SHADOWS = {
   },
 };
 
-const theme = { COLORS, SIZES, SPACING, SHADOWS };
+const theme = { COLORS, SIZES, SPACING, FONTS, SHADOWS };
 
 export default theme;
