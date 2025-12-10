@@ -22,6 +22,7 @@ import {
   Eye,
   EyeOff,
   Mail,
+  Image as ImageIcon,
 } from 'lucide-react-native';
 
 export const ICONS = {
@@ -37,6 +38,7 @@ export const ICONS = {
   share: Share2,
   favorite: Heart,
   filter: Filter,
+  image: ImageIcon,
 
   // --- Objets Métier ---
   calendar: Calendar,
