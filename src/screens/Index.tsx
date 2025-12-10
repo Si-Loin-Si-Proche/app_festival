@@ -4,6 +4,7 @@ import IconComponent from '../components/atoms/Icon';
 import Separator from '../components/atoms/Separator';
 import Tag from '../components/atoms/Tag';
 import { COLORS } from '../constants/theme';
+import Loader from '../components/atoms/Loader';
 
 export default function IndexScreen() {
   return (
@@ -36,6 +37,8 @@ export default function IndexScreen() {
       <Typography variant="caption">test caption</Typography>
 
       <Tag label="théâtre" iconName="location" backgroundColor={COLORS.tag} />
+
+      <Loader />
     </View>
   );
 }
