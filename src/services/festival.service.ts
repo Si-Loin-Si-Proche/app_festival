@@ -76,10 +76,11 @@ export const getFestivalEvents = async (): Promise<CleanEvent[]> => {
       },
       paramsSerializer,
     };
-
-    const debugUrl = api.getUri({ url: '/contents', ...config });
-    console.log('🚀 URL LISTE :', debugUrl);
-
+    if (__DEV__) {
+      const debugUrl = api.getUri({ url: '/contents', ...config });
+      // eslint-disable-next-line no-console
+      console.log('🚀 URL LISTE :', debugUrl);
+    }
     const response = await api.get<ApiResponse<FestivalEvent>>(
       '/contents',
       config
@@ -91,8 +92,12 @@ export const getFestivalEvents = async (): Promise<CleanEvent[]> => {
 
     return eventsArray.map((event) => mapToCleanEvent(event, included));
   } catch (error: any) {
-    console.error('❌ ERREUR LISTE :');
-    if (error.response) console.log(error.response.status);
+    if (__DEV__) {
+      // eslint-disable-next-line no-console
+      console.error('❌ ERREUR LISTE :');
+      // eslint-disable-next-line no-console
+      if (error.response) console.log(error.response.status);
+    }
     return [];
   }
 };
@@ -106,10 +111,11 @@ export const getEventById = async (id: string): Promise<CleanEvent | null> => {
       },
       paramsSerializer,
     };
-
-    const debugUrl = api.getUri({ url: '/contents', ...config });
-    console.log('🚀 URL DETAIL :', debugUrl);
-
+    if (__DEV__) {
+      const debugUrl = api.getUri({ url: '/contents', ...config });
+      // eslint-disable-next-line no-console
+      console.log('🚀 URL DETAIL :', debugUrl);
+    }
     const response = await api.get<ApiResponse<FestivalEvent>>(
       '/contents',
       config
@@ -123,8 +129,12 @@ export const getEventById = async (id: string): Promise<CleanEvent | null> => {
     const included = response.data.included || [];
     return mapToCleanEvent(rawEvent, included);
   } catch (error: any) {
-    console.error('❌ ERREUR DETAIL :');
-    if (error.response) console.log(error.response.status);
+    if (__DEV__) {
+      // eslint-disable-next-line no-console
+      console.error('❌ ERREUR DETAIL :');
+      // eslint-disable-next-line no-console
+      if (error.response) console.log(error.response.status);
+    }
     return null;
   }
 };
@@ -141,10 +151,11 @@ export const searchEvents = async (query: string): Promise<CleanEvent[]> => {
       },
       paramsSerializer,
     };
-
-    const debugUrl = api.getUri({ url: '/contents', ...config });
-    console.log('🚀 URL RECHERCHE :', debugUrl);
-
+    if (__DEV__) {
+      const debugUrl = api.getUri({ url: '/contents', ...config });
+      // eslint-disable-next-line no-console
+      console.log('🚀 URL RECHERCHE :', debugUrl);
+    }
     const response = await api.get<ApiResponse<FestivalEvent>>(
       '/contents',
       config
@@ -156,7 +167,10 @@ export const searchEvents = async (query: string): Promise<CleanEvent[]> => {
 
     return eventsArray.map((event) => mapToCleanEvent(event, included));
   } catch (error: any) {
-    console.error('❌ ERREUR RECHERCHE :');
+    if (__DEV__) {
+      // eslint-disable-next-line no-console
+      console.error('❌ ERREUR RECHERCHE :', error);
+    }
     return [];
   }
 };
@@ -172,8 +186,11 @@ export const getFestivalFilters = async () => {
       label: t.attributes.title,
       slug: t.attributes.identifier,
     }));
-  } catch (error) {
-    console.error('❌ ERREUR FILTRES');
+  } catch (error: any) {
+    if (__DEV__) {
+      // eslint-disable-next-line no-console
+      console.error('❌ ERREUR FILTRES', error);
+    }
     return [];
   }
 };
@@ -189,9 +206,11 @@ export const getEventsByFilter = async (
       },
       paramsSerializer,
     };
-
-    const debugUrl = api.getUri({ url: '/contents', ...config });
-    console.log('🚀 URL FILTER :', debugUrl);
+    if (__DEV__) {
+      const debugUrl = api.getUri({ url: '/contents', ...config });
+      // eslint-disable-next-line no-console
+      console.log('🚀 URL FILTER :', debugUrl);
+    }
 
     const response = await api.get<ApiResponse<FestivalEvent>>(
       '/contents',
@@ -203,7 +222,10 @@ export const getEventsByFilter = async (
 
     return eventsArray.map((event) => mapToCleanEvent(event, included));
   } catch (error: any) {
-    console.error('❌ ERREUR FILTER :');
+    if (__DEV__) {
+      // eslint-disable-next-line no-console
+      console.error('❌ ERREUR FILTER :', error);
+    }
     return [];
   }
 };

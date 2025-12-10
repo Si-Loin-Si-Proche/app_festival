@@ -16,11 +16,13 @@ export default function Icon({
   ...props
 }: IconProps) {
   const IconComponent = ICONS[name];
-
   if (!IconComponent) {
-    console.warn(
-      `⚠️ Icône introuvable : "${name}". Vérifie src/constants/icons.ts`
-    );
+    if (__DEV__) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `⚠️ Icône introuvable : "${name}". Vérifie src/constants/icons.ts`
+      );
+    }
     return null;
   }
 
