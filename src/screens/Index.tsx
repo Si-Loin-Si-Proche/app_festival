@@ -1,10 +1,13 @@
-
 import { View } from 'react-native';
 import Typography from '../components/atoms/Typography';
+import IconComponent from '../components/atoms/Icon';
 
 export default function IndexScreen() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20, gap: 15 }}>
+      
+      
+      <IconComponent name={'search'} />
       
       <Typography variant="h1">
         Festival 2025
