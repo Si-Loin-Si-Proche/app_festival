@@ -1,13 +1,19 @@
 import React from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
+import {
+  TouchableOpacity,
+  StyleSheet,
+  ViewStyle,
+  TouchableOpacityProps,
+} from 'react-native';
 import Typography from './Typography';
 import Icon from './Icon';
 import { COLORS, FONTS } from '../../constants/theme';
 import { IconName } from '../../constants/icons';
 
-interface TagProps {
+interface TagProps extends TouchableOpacityProps {
   label: string;
   iconName?: IconName;
+  isSelected?: boolean;
   backgroundColor?: string;
   style?: ViewStyle;
 }
@@ -15,14 +21,38 @@ interface TagProps {
 export default function Tag({
   label,
   iconName,
-  backgroundColor = COLORS.background,
+  isSelected = false,
+  backgroundColor,
   style,
+  onPress,
+  ...props
 }: TagProps) {
+  // LOGIQUE DE STYLE INTELLIGENTE
+  // 1. Si "isSelected" est vrai, on force le BLEU CIEL (Filtre actif)
+  // 2. Sinon, si une "backgroundColor" est fournie, on l'utilise (Catégorie)
+  // 3. Sinon, c'est transparent (Filtre inactif)
+  const currentBackgroundColor = isSelected
+    ? COLORS.filtreSelected
+    : backgroundColor || 'transparent';
+
+  const currentBorderWidth = isSelected ? 2.5 : 1.5;
+
   return (
-    <View
-      style={[styles.container, { backgroundColor: backgroundColor }, style]}
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.7}
+      // On désactive le clic si on n'a pas passé de fonction onPress
+      disabled={!onPress}
+      style={[
+        styles.container,
+        {
+          backgroundColor: currentBackgroundColor,
+          borderWidth: currentBorderWidth,
+        },
+        style,
+      ]}
+      {...props}
     >
-      {/* Icône */}
       {iconName && (
         <Icon
           name={iconName}
@@ -32,11 +62,10 @@ export default function Tag({
         />
       )}
 
-      {/* Texte */}
       <Typography variant="caption" style={styles.text}>
         {label.toUpperCase()}
       </Typography>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -45,14 +74,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
-
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     borderRadius: 50,
-    borderWidth: 1.5,
     borderColor: COLORS.text,
-
     gap: 6,
   },
   text: {
@@ -61,7 +86,5 @@ const styles = StyleSheet.create({
     color: COLORS.text,
     lineHeight: undefined,
   },
-  icon: {
-    // Ajustements si nécessaire
-  },
+  icon: {},
 });

@@ -21,6 +21,7 @@ import {
   Lock,
   Eye,
   EyeOff,
+  ArrowRight,
   Mail,
   Image as ImageIcon,
 } from 'lucide-react-native';
@@ -32,6 +33,7 @@ export const ICONS = {
   menu: Menu,
   close: X,
   settings: Settings,
+  arrowRight: ArrowRight,
 
   // --- Actions ---
   search: Search,

@@ -5,40 +5,47 @@ import Separator from '../components/atoms/Separator';
 import Tag from '../components/atoms/Tag';
 import { COLORS } from '../constants/theme';
 import Loader from '../components/atoms/Loader';
+import SectionHeader from '../components/molecule/SectionHeader';
+
+const logoImg = require('../assets/logo_ferme_du_buisson.png');
 
 export default function IndexScreen() {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-        gap: 15,
-      }}
-    >
-      <IconComponent name={'search'} />
+    <View style={{ flex: 1 }}>
+      <SectionHeader title="Réglages" logoSource={logoImg} />
 
-      <Typography variant="h1">Festival 2025</Typography>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingTop: 20,
+          gap: 15,
+        }}
+      >
+        <IconComponent name={'search'} />
 
-      <Typography variant="h2">Programmation</Typography>
+        <Typography variant="h1">Festival 2026</Typography>
 
-      <Typography variant="body" style={{ textAlign: 'center' }}>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua.
-      </Typography>
+        <Typography variant="h2">Programmation</Typography>
 
-      <Separator color="#25b0cfff" thickness={2} marginVertical={30} />
+        <Typography variant="body" style={{ textAlign: 'center' }}>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </Typography>
 
-      <Typography variant="quote" style={{ textAlign: 'center' }}>
-        du 05 au 10 février 2026
-      </Typography>
+        <Separator color="#25b0cfff" thickness={2} marginVertical={30} />
 
-      <Typography variant="caption">test caption</Typography>
+        <Typography variant="quote" style={{ textAlign: 'center' }}>
+          du 05 au 10 février 2026
+        </Typography>
 
-      <Tag label="théâtre" iconName="location" backgroundColor={COLORS.tag} />
+        <Typography variant="caption">test caption</Typography>
 
-      <Loader />
+        <Tag label="théâtre" iconName="location" backgroundColor={COLORS.tag} />
+
+        <Loader />
+      </View>
     </View>
   );
 }

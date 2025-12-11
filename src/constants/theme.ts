@@ -11,7 +11,7 @@ export const COLORS = {
       /!\  Variables randoms a modifier
      */
   primary: '#E63946', // Couleur principale (Boutons, titres actifs)
-  secondary: '#1D3557', // Couleur secondaire (Headers, navigation)
+  secondary: '#FFCCBC', // Couleur secondaire (Headers, navigation)
   background: '#F1FAEE', // Fond des écrans
   card: '#FFFFFF', // Fond des cartes (events)
   text: '#000000', // Texte principal
@@ -21,6 +21,7 @@ export const COLORS = {
   tabBarActive: '#E63946',
   tabBarInactive: '#8D99AE',
   tag: '#F5F294',
+  filtreSelected: '#B3E5FC',
 };
 
 // Tailles de police (pour la cohérence)
