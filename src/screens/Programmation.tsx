@@ -1,9 +1,15 @@
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import Typography from '../components/atoms/Typography';
+import PageHeader from '../components/molecule/PageHeader';
 
 export default function ProgrammationScreen() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Ceci est la page programmation.</Text>
+    <View style={{ flex: 1 }}>
+      <PageHeader title="Likes" iconName="favorite" />
+
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Typography>Ceci est la page programmation.</Typography>
+      </View>
     </View>
   );
 }

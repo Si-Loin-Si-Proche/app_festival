@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { useRouter } from 'expo-router';
 import Icon from './Icon';
-import { COLORS, SHADOWS } from '../../constants/theme';
+import { COLORS } from '../../constants/theme';
 
 const BUTTON_SIZES = {
   small: { size: 32, icon: 16 }, // Pour le Header
@@ -66,7 +66,6 @@ export default function FavoriteButton({
           borderRadius: buttonSize / 2,
           backgroundColor: backgroundColor,
         },
-        SHADOWS.medium,
         style,
       ]}
     >
