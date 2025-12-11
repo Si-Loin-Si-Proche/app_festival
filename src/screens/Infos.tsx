@@ -12,6 +12,7 @@ import Input from '../components/atoms/Input';
 import Icon from '../components/atoms/Icon';
 import RemoteImage from '../components/atoms/RemoteImage';
 import Button from '../components/atoms/Button';
+import FavoriteButton from '../components/atoms/LikeButton';
 
 export default function InfosScreen() {
   const [showPassword, setShowPassword] = useState(false);
@@ -158,6 +159,39 @@ export default function InfosScreen() {
             <Button label="Désactivé" disabled fullWidth />
           </View>
         </View>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>5. Boutons Favoris (Circle)</Text>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+              alignItems: 'center',
+            }}
+          >
+            {/* Petit (Header) - Pas d'ID = Navigation */}
+            <View style={{ alignItems: 'center' }}>
+              <FavoriteButton size="small" />
+              <Text style={styles.caption}>Nav (S)</Text>
+            </View>
+
+            {/* Moyen (Card) - ID = Like */}
+            <View style={{ alignItems: 'center' }}>
+              <FavoriteButton size="medium" eventId="123" isLiked={false} />
+              <Text style={styles.caption}>Like (M)</Text>
+            </View>
+
+            <View style={{ alignItems: 'center' }}>
+              <FavoriteButton
+                size="large"
+                eventId="456"
+                isLiked={true}
+                activeColor="#FF0000"
+              />
+              <Text style={styles.caption}>Liké (L)</Text>
+            </View>
+          </View>
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -224,5 +258,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 80,
     borderRadius: 8,
+  },
+  caption: {
+    marginTop: SPACING.s,
+    fontFamily: FONTS.italic,
+    fontSize: SIZES.small,
+    color: COLORS.textLight,
+    textAlign: 'center',
   },
 });
