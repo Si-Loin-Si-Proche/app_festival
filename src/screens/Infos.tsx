@@ -259,4 +259,11 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 8,
   },
+  caption: {
+    marginTop: SPACING.s,
+    fontFamily: FONTS.italic,
+    fontSize: SIZES.small,
+    color: COLORS.textLight,
+    textAlign: 'center',
+  },
 });
