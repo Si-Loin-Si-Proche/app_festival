@@ -9,7 +9,10 @@ export default function ReglageScreen() {
   const [hasResults, setHasResults] = useState(true);
 
   const handleSearch = (query: string) => {
-    console.log('Recherche pour :', query);
+    if (__DEV__) {
+      // eslint-disable-next-line no-console
+      console.log('Recherche pour :', query);
+    }
 
     if (query.trim().toLowerCase() === 'rien') {
       setHasResults(false);

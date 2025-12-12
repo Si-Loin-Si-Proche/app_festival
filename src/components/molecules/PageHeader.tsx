@@ -31,7 +31,10 @@ export default function PageHeader({
       if (router.canGoBack()) {
         router.back();
       } else {
-        console.log("Retour impossible (pas d'historique)");
+        if (__DEV__) {
+          // eslint-disable-next-line no-console
+          console.log("Retour impossible (pas d'historique)");
+        }
       }
     }
   };
