@@ -30,7 +30,6 @@ export default function SectionHeader({
           size="large"
           backgroundColor={COLORS.secondary}
           activeColor={COLORS.text}
-          isLiked={true}
         />
       </View>
 
