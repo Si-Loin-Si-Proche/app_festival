@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 import Typography from '../components/atoms/Typography';
-import PageHeader from '../components/molecule/PageHeader';
+import PageHeader from '../components/molecules/PageHeader';
 
 export default function ProgrammationScreen() {
   return (

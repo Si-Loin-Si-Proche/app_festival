@@ -5,7 +5,7 @@ import Separator from '../components/atoms/Separator';
 import Tag from '../components/atoms/Tag';
 import { COLORS } from '../constants/theme';
 import Loader from '../components/atoms/Loader';
-import SectionHeader from '../components/molecule/SectionHeader';
+import SectionHeader from '../components/molecules/SectionHeader';
 
 const logoImg = require('../assets/logo_ferme_du_buisson.png');
 

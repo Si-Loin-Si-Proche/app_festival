@@ -1,199 +1,78 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
-import { COLORS, SIZES, SPACING, FONTS } from '../constants/theme';
-import Input from '../components/atoms/Input';
-import Icon from '../components/atoms/Icon';
-import RemoteImage from '../components/atoms/RemoteImage';
-import Button from '../components/atoms/Button';
-import FavoriteButton from '../components/atoms/LikeButton';
+import React from 'react';
+import { View, ScrollView, StyleSheet, Alert } from 'react-native';
+import { COLORS, SPACING } from '../constants/theme';
+import Typography from '../components/atoms/Typography';
+import EventCard from '../components/molecules/EventCard';
+import { CleanEvent } from '../types/api.types';
+
+// --- DONNÉES DE TEST ---
+
+const EVENT_FULL: CleanEvent = {
+  id: '1',
+  title: 'Concert Nocturne',
+  subtitle: 'Orchestre National de Jazz',
+  description: '<p>Une soirée inoubliable sous les étoiles.</p>',
+  imageUrl:
+    'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+  tags: ['Musique', 'Jazz'],
+  dates: [
+    {
+      start: '2026-06-24T20:30:00',
+      end: '2026-06-24T22:00:00',
+      placeName: 'La Ferme du Buisson',
+    },
+  ],
+  price: 'Gratuit',
+};
+
+const EVENT_MINIMAL: CleanEvent = {
+  id: '2',
+  title: 'Atelier Cuisine',
+  description: '<p>Apprenez à cuisiner.</p>',
+  imageUrl: undefined, // Pas d'image (test du placeholder)
+  tags: [],
+  dates: [
+    {
+      start: '2026-06-25T14:00:00',
+      end: '2026-06-25T16:00:00',
+      placeName: 'Caravane',
+    },
+  ],
+};
 
 export default function InfosScreen() {
-  const [showPassword, setShowPassword] = useState(false);
-
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1 }}
-    >
-      <ScrollView
-        contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="handled"
-      >
-        {/* HEADER */}
-        <View style={styles.header}>
-          <Icon name="settings" size={32} color={COLORS.primary} />
-          <Text style={styles.title}>UI Kit & Tests</Text>
-        </View>
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.header}>
+        <Typography variant="h1" color={COLORS.secondary}>
+          Test Molécules
+        </Typography>
+      </View>
 
-        {/* 1. TEST REMOTE IMAGE */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>1. Images Distantes</Text>
+      {/* TEST 1 : CARTE COMPLÈTE */}
+      <View style={styles.section}>
+        <Typography variant="h2" style={styles.sectionTitle}>
+          1. EventCard (Complet)
+        </Typography>
 
-          <Text style={styles.label}>Image Valide (Unsplash) :</Text>
-          <RemoteImage
-            url="https://plus.unsplash.com/premium_photo-1693227521269-d90b70e3ee06?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            style={styles.bigImage}
-          />
+        <EventCard
+          event={EVENT_FULL}
+          onPress={() => Alert.alert('Click', 'Ouverture du concert')}
+        />
+      </View>
 
-          <View style={styles.row}>
-            <View style={{ flex: 1, marginRight: SPACING.s }}>
-              <Text style={styles.label}>URL Cassée :</Text>
-              <RemoteImage
-                url="https://site-qui-nexiste-pas.com/image.jpg"
-                style={styles.smallImage}
-              />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.label}>URL Null :</Text>
-              <RemoteImage url={null} style={styles.smallImage} />
-            </View>
-          </View>
-        </View>
+      {/* TEST 2 : CARTE MINIMALISTE */}
+      <View style={styles.section}>
+        <Typography variant="h2" style={styles.sectionTitle}>
+          2. EventCard (Minimal)
+        </Typography>
 
-        {/* 2. TEST INPUTS */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>2. Inputs</Text>
-
-          <Input
-            label="Recherche"
-            placeholder="Chercher un artiste..."
-            leftIcon="search"
-          />
-
-          <Input
-            label="Mot de passe"
-            placeholder="••••••••••"
-            leftIcon="lock"
-            rightIcon={showPassword ? 'eyeOff' : 'eye'}
-            secureTextEntry={!showPassword}
-            onRightIconPress={() => setShowPassword(!showPassword)}
-          />
-
-          <Input
-            label="Erreur Test"
-            value="Mauvaise valeur"
-            leftIcon="info"
-            error="Ce champ est invalide"
-          />
-        </View>
-
-        {/* 3. TEST TYPO & ICONS */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>3. Typographie</Text>
-          <Text
-            style={{
-              fontFamily: FONTS.bold,
-              fontSize: SIZES.h1,
-              color: COLORS.text,
-            }}
-          >
-            Titre H1
-          </Text>
-          <Text
-            style={{
-              fontFamily: FONTS.bold,
-              fontSize: SIZES.h2,
-              color: COLORS.text,
-            }}
-          >
-            Titre H2
-          </Text>
-          <Text
-            style={{
-              fontFamily: FONTS.regular,
-              fontSize: SIZES.body,
-              color: COLORS.text,
-            }}
-          >
-            Paragraphe standard avec la police du thème.
-          </Text>
-          <View
-            style={{
-              flexDirection: 'row',
-              marginTop: SPACING.m,
-              gap: SPACING.m,
-            }}
-          >
-            <Icon name="favorite" color={COLORS.primary} />
-            <Icon name="calendar" color={COLORS.textLight} />
-          </View>
-        </View>
-
-        {/* 4. TEST BOUTONS */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>4. Boutons</Text>
-
-          <View style={{ gap: SPACING.m }}>
-            <Button
-              label="Action Principale"
-              icon="ticket"
-              iconPosition={'right'}
-              fullWidth
-              color={'blue'}
-              withBorder={false}
-            />
-
-            <View style={{ flexDirection: 'row', gap: SPACING.m }}>
-              <View style={{ flex: 1 }}>
-                <Button label="Secondaire" variant="outline" fullWidth />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Button label="Chargement" isLoading fullWidth />
-              </View>
-            </View>
-
-            <Button
-              label="Bouton simple (Ghost)"
-              variant="ghost"
-              icon="next"
-              iconPosition="right"
-            />
-
-            <Button label="Désactivé" disabled fullWidth />
-          </View>
-        </View>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>5. Boutons Favoris (Circle)</Text>
-
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-around',
-              alignItems: 'center',
-            }}
-          >
-            {/* Petit (Header) - Pas d'ID = Navigation */}
-            <View style={{ alignItems: 'center' }}>
-              <FavoriteButton size="small" />
-              <Text style={styles.caption}>Nav (S)</Text>
-            </View>
-
-            {/* Moyen (Card) - ID = Like */}
-            <View style={{ alignItems: 'center' }}>
-              <FavoriteButton size="medium" eventId="123" isLiked={false} />
-              <Text style={styles.caption}>Like (M)</Text>
-            </View>
-
-            <View style={{ alignItems: 'center' }}>
-              <FavoriteButton
-                size="large"
-                eventId="456"
-                isLiked={true}
-                activeColor="#FF0000"
-              />
-              <Text style={styles.caption}>Liké (L)</Text>
-            </View>
-          </View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        <EventCard
+          event={EVENT_MINIMAL}
+          onPress={() => Alert.alert('Click', "Ouverture de l'atelier")}
+        />
+      </View>
+    </ScrollView>
   );
 }
 
@@ -205,65 +84,15 @@ const styles = StyleSheet.create({
     paddingTop: 60,
   },
   header: {
-    flexDirection: 'row',
+    marginBottom: SPACING.xl,
     alignItems: 'center',
-    marginBottom: SPACING.l,
-    justifyContent: 'center',
-  },
-  title: {
-    fontFamily: FONTS.bold,
-    fontSize: SIZES.h1,
-    color: COLORS.secondary,
-    marginLeft: SPACING.s,
   },
   section: {
     marginBottom: SPACING.xl,
-    backgroundColor: COLORS.card,
-    padding: SPACING.m,
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
   },
   sectionTitle: {
-    fontFamily: FONTS.bold,
-    fontSize: 14,
-    color: COLORS.textLight,
     marginBottom: SPACING.m,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    borderBottomWidth: 1,
-    borderBottomColor: '#EEE',
-    paddingBottom: SPACING.xs,
-  },
-  label: {
-    fontFamily: FONTS.regular,
-    fontSize: SIZES.small,
-    marginBottom: SPACING.xs,
+    fontSize: 18,
     color: COLORS.text,
-  },
-  bigImage: {
-    width: '100%',
-    height: 150,
-    borderRadius: 12,
-    marginBottom: SPACING.m,
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  smallImage: {
-    width: '100%',
-    height: 80,
-    borderRadius: 8,
-  },
-  caption: {
-    marginTop: SPACING.s,
-    fontFamily: FONTS.italic,
-    fontSize: SIZES.small,
-    color: COLORS.textLight,
-    textAlign: 'center',
   },
 });
