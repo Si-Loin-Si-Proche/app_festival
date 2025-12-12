@@ -10,7 +10,8 @@ import Icon from '../atoms/Icon';
 import { COLORS, SIZES, SPACING, FONTS } from '../../constants/theme';
 
 interface SearchBarProps {
-  onSearch: (query: string) => void;
+  onSearch?: (query: string) => void;
+  onChangeText?: (text: string) => void;
   placeholder?: string;
   backgroundColor?: string;
   style?: ViewStyle;
@@ -18,14 +19,24 @@ interface SearchBarProps {
 
 export default function SearchBar({
   onSearch,
+  onChangeText,
   placeholder = 'Recherche...',
   backgroundColor = COLORS.secondary,
   style,
 }: SearchBarProps) {
   const [query, setQuery] = useState('');
 
+  const handleTextChange = (text: string) => {
+    setQuery(text);
+    if (onChangeText) {
+      onChangeText(text);
+    }
+  };
+
   const handleSubmit = () => {
-    onSearch(query);
+    if (onSearch) {
+      onSearch(query);
+    }
   };
 
   return (
@@ -33,7 +44,7 @@ export default function SearchBar({
       <View
         style={[styles.inputContainer, { backgroundColor: backgroundColor }]}
       >
-        {/* 1. Icône Loupe (Gauche) */}
+        {/* 1. Icône Loupe */}
         <View style={styles.leftIcon}>
           <Icon name="search" size={24} color={COLORS.text} />
         </View>
@@ -45,13 +56,13 @@ export default function SearchBar({
           placeholderTextColor={COLORS.text}
           cursorColor={COLORS.text}
           value={query}
-          onChangeText={setQuery}
+          onChangeText={handleTextChange}
           onSubmitEditing={handleSubmit}
           returnKeyType="search"
           autoCapitalize="none"
         />
 
-        {/* 3. Bouton Flèche (Droite) */}
+        {/* 3. Bouton Flèche */}
         <TouchableOpacity
           onPress={handleSubmit}
           style={styles.rightIcon}
@@ -72,12 +83,10 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-
     height: 54,
-    borderRadius: 50, // Forme pilule
-    borderWidth: 2, // Bordure épaisse
-    borderColor: COLORS.text, // Toujours noire pour la searchbar
-
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: COLORS.text,
     paddingHorizontal: SPACING.m,
   },
   input: {
