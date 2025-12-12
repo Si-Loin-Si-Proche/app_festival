@@ -23,6 +23,7 @@ import {
   EyeOff,
   ArrowRight,
   Mail,
+  House,
   Image as ImageIcon,
 } from 'lucide-react-native';
 
@@ -48,6 +49,7 @@ export const ICONS = {
   location: MapPin,
   ticket: Ticket,
   info: Info,
+  house: House,
   user: User,
 
   // --- Catégories ---

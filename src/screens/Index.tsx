@@ -1,4 +1,3 @@
-import { View } from 'react-native';
 import Typography from '../components/atoms/Typography';
 import IconComponent from '../components/atoms/Icon';
 import Separator from '../components/atoms/Separator';
@@ -6,15 +5,16 @@ import Tag from '../components/atoms/Tag';
 import { COLORS } from '../constants/theme';
 import Loader from '../components/atoms/Loader';
 import SectionHeader from '../components/molecules/SectionHeader';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const logoImg = require('../assets/logo_ferme_du_buisson.png');
 
 export default function IndexScreen() {
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <SectionHeader title="Réglages" logoSource={logoImg} />
 
-      <View
+      <SafeAreaView
         style={{
           flex: 1,
           justifyContent: 'center',
@@ -45,7 +45,7 @@ export default function IndexScreen() {
         <Tag label="théâtre" iconName="location" backgroundColor={COLORS.tag} />
 
         <Loader />
-      </View>
-    </View>
+      </SafeAreaView>
+    </SafeAreaView>
   );
 }
