@@ -15,6 +15,11 @@ interface EventCardProps {
 
 export default function EventCard({ event, onPress, style }: EventCardProps) {
   const firstDate = event.dates[0];
+
+  // 1. On récupère le lieu (C'est ça que tu veux afficher !)
+  const placeName = firstDate?.placeName || 'Lieu à définir';
+
+  // 2. On formate la date
   let dateString = 'Date à venir';
   if (firstDate?.start) {
     const startDate = new Date(firstDate.start);
@@ -71,15 +76,12 @@ export default function EventCard({ event, onPress, style }: EventCardProps) {
           </Typography>
         )}
 
-        {/* Tag avec espacement ajusté */}
-        {event.tags && event.tags.length > 0 && (
-          <Tag
-            label={event.tags[0]}
-            iconName={'location'}
-            backgroundColor={COLORS.tag}
-            style={styles.tag}
-          />
-        )}
+        <Tag
+          label={placeName}
+          iconName="location"
+          backgroundColor={COLORS.tag}
+          style={styles.tag}
+        />
       </View>
 
       {/* SECTION DROITE (Favori) */}
@@ -105,7 +107,7 @@ const styles = StyleSheet.create({
     padding: SPACING.s,
     marginBottom: SPACING.m,
     alignItems: 'stretch',
-    height: 120,
+    height: 140,
   },
   imageContainer: {
     width: 90,
