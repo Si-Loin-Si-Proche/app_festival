@@ -41,6 +41,12 @@ const Layout = () => {
       <Tabs.Screen name="infos" options={{ title: 'Infos' }} />
       <Tabs.Screen name="programmation" options={{ title: 'Programmation' }} />
       <Tabs.Screen name="reglages" options={{ title: 'Réglages' }} />
+      <Tabs.Screen
+        name="likes"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 };

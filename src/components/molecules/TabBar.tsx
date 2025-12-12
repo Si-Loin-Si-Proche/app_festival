@@ -20,6 +20,12 @@ export default function TabBar({
   return (
     <View style={styles.container}>
       {state.routes.map((route, index) => {
+        if (
+          ['_sitemap', '+not-found'].includes(route.name) ||
+          !icons[route.name]
+        ) {
+          return null;
+        }
         const { options } = descriptors[route.key];
 
         if (['_sitemap', '+not-found'].includes(route.name)) return null;
