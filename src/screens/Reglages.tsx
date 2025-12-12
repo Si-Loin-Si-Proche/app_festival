@@ -1,8 +1,8 @@
 import { View } from 'react-native';
 import Typography from '../components/atoms/Typography';
-import SearchBar from '../components/molecule/SearchBar';
-import FilterList from '../components/molecule/FilterList';
-import EmptyState from '../components/molecule/EmptyState';
+import SearchBar from '../components/molecules/SearchBar';
+import FilterList from '../components/molecules/FilterList';
+import EmptyState from '../components/molecules/EmptyState';
 import { useState } from 'react';
 
 export default function ReglageScreen() {
