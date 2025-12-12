@@ -3,16 +3,17 @@ import { TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { useRouter } from 'expo-router';
 import Icon from './Icon';
 import { COLORS } from '../../constants/theme';
+import { CleanEvent } from '../../types/api.types';
+import { LikeService } from '../../services/like.service';
 
 const BUTTON_SIZES = {
-  small: { size: 32, icon: 16 }, // Pour le Header
-  medium: { size: 44, icon: 20 }, // Pour les cartes
-  large: { size: 56, icon: 28 }, // Pour les pages détails
+  small: { size: 32, icon: 16 },
+  medium: { size: 44, icon: 20 },
+  large: { size: 56, icon: 28 },
 };
 
 interface FavoriteButtonProps {
-  eventId?: string;
-  isLiked?: boolean;
+  event?: CleanEvent;
   size?: 'small' | 'medium' | 'large';
   backgroundColor?: string;
   activeColor?: string;
@@ -21,8 +22,7 @@ interface FavoriteButtonProps {
 }
 
 export default function FavoriteButton({
-  eventId,
-  isLiked = false,
+  event,
   size = 'medium',
   backgroundColor = COLORS.primary,
   activeColor = COLORS.text,
@@ -30,26 +30,41 @@ export default function FavoriteButton({
   onToggle,
 }: FavoriteButtonProps) {
   const router = useRouter();
-  const [liked, setLiked] = useState(isLiked);
+  const [liked, setLiked] = useState(false);
 
   useEffect(() => {
-    setLiked(isLiked);
-  }, [isLiked]);
+    let isMounted = true;
 
-  const handlePress = () => {
-    if (!eventId) {
-      router.push('/favoris' as any);
+    const checkStatus = async () => {
+      if (event?.id) {
+        const isAlreadyLiked = await LikeService.isLiked(event.id);
+        if (isMounted) setLiked(isAlreadyLiked);
+      }
+    };
+
+    checkStatus();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [event?.id]);
+
+  const handlePress = async () => {
+    if (!event) {
+      router.push('/likes' as any);
       return;
     }
 
+    const previousState = liked;
     const newState = !liked;
     setLiked(newState);
 
-    if (onToggle) {
-      onToggle(newState);
+    try {
+      await LikeService.toggleFavorite(event);
+      if (onToggle) onToggle(newState);
+    } catch (error) {
+      setLiked(previousState);
     }
-
-    // Brancher le stockage des likes ici
   };
 
   const { size: buttonSize, icon: iconSize } = BUTTON_SIZES[size];

@@ -88,7 +88,7 @@ export default function EventCard({ event, onPress, style }: EventCardProps) {
       <View style={styles.rightSection}>
         <FavoriteButton
           size="medium"
-          eventId={event.id}
+          event={event}
           backgroundColor={COLORS.secondary}
           activeColor={COLORS.text}
         />
