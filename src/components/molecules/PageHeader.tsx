@@ -27,15 +27,12 @@ export default function PageHeader({
   const handleBack = () => {
     if (onBack) {
       onBack();
+      return;
+    }
+    if (router.canGoBack()) {
+      router.back();
     } else {
-      if (router.canGoBack()) {
-        router.back();
-      } else {
-        if (__DEV__) {
-          // eslint-disable-next-line no-console
-          console.log("Retour impossible (pas d'historique)");
-        }
-      }
+      router.replace('/');
     }
   };
 
@@ -46,9 +43,15 @@ export default function PageHeader({
         <TouchableOpacity
           onPress={handleBack}
           style={styles.backButton}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} // Agrandit la zone de clic
+          hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+          activeOpacity={0.6}
         >
-          <Icon name="back" size={32} color={COLORS.text} />
+          <Icon
+            name="arrowRight"
+            size={32}
+            color={COLORS.text}
+            style={{ transform: [{ rotate: '180deg' }] }}
+          />
         </TouchableOpacity>
 
         {/* 2. Groupe Titre + Icône */}
@@ -77,25 +80,30 @@ export default function PageHeader({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
+    zIndex: 10,
   },
   content: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center', // Centre le titre
     paddingHorizontal: SPACING.m,
-    paddingVertical: 29,
+    paddingVertical: 20,
+    position: 'relative',
   },
   backButton: {
     position: 'absolute',
-    left: SPACING.m, // Collé à gauche
-    zIndex: 10, // Passe au-dessus du reste si besoin
+    left: SPACING.m,
+    zIndex: 20,
+    padding: 5,
   },
   titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    maxWidth: '80%',
   },
   title: {
     marginBottom: 0,
+    textAlign: 'center',
   },
 });
