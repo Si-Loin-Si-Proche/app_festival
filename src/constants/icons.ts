@@ -24,7 +24,10 @@ import {
   ArrowRight,
   Mail,
   House,
+  Landmark,
   Image as ImageIcon,
+  Toilet,
+  Utensils,
 } from 'lucide-react-native';
 
 export const ICONS = {
@@ -61,6 +64,11 @@ export const ICONS = {
   eye: Eye,
   eyeOff: EyeOff,
   mail: Mail,
+
+  // --- Icons pour la map
+  wc: Toilet,
+  food: Utensils,
+  scene: Landmark,
 } as const;
 
 export type IconName = keyof typeof ICONS;

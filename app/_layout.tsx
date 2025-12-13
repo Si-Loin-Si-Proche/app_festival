@@ -4,7 +4,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import TabBar from '../src/components/molecules/TabBar';
 
-// Imports fonts
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 import {
   AtkinsonHyperlegible_400Regular,
   AtkinsonHyperlegible_700Bold,
@@ -33,21 +34,29 @@ const Layout = () => {
   }
 
   return (
-    <Tabs
-      screenOptions={{ headerShown: false }}
-      tabBar={(props) => <TabBar {...props} />}
-    >
-      <Tabs.Screen name="index" options={{ title: 'Home' }} />
-      <Tabs.Screen name="infos" options={{ title: 'Infos' }} />
-      <Tabs.Screen name="programmation" options={{ title: 'Programmation' }} />
-      <Tabs.Screen name="reglages" options={{ title: 'Réglages' }} />
-      <Tabs.Screen
-        name="likes"
-        options={{
-          href: null,
-        }}
-      />
-    </Tabs>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Tabs
+        screenOptions={{ headerShown: false }}
+        tabBar={(props) => <TabBar {...props} />}
+      >
+        <Tabs.Screen name="index" options={{ title: 'Home' }} />
+        <Tabs.Screen name="infos" options={{ title: 'Infos' }} />
+        <Tabs.Screen
+          name="programmation"
+          options={{ title: 'Programmation' }}
+        />
+        <Tabs.Screen name="reglages" options={{ title: 'Réglages' }} />
+
+        {/* Routes cachées */}
+        <Tabs.Screen
+          name="likes"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen name="map" options={{ title: 'Map' }} />
+      </Tabs>
+    </GestureHandlerRootView>
   );
 };
 
