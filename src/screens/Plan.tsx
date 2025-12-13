@@ -10,7 +10,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ReactNativeZoomableView } from '@dudigital/react-native-zoomable-view';
 
-import { COLORS, SPACING, SIZES } from '../constants/theme';
+import { COLORS, SPACING } from '../constants/theme';
+import { IconName } from '../constants/icons';
 import { MAP_POINTS, MapPoint, MAP_IMAGE_SOURCE } from '../constants/mapData';
 import PageHeader from '../components/molecules/PageHeader';
 import MapMarker from '../components/atoms/MapMarker';
@@ -113,7 +114,11 @@ export default function PlanScreen() {
                   activeOpacity={0.8}
                 >
                   {filter.id !== 'all' && (
-                    <Icon name={filter.id} size={16} color={COLORS.text} />
+                    <Icon
+                      name={filter.id as any}
+                      size={16}
+                      color={COLORS.text}
+                    />
                   )}
 
                   <Typography
