@@ -31,6 +31,7 @@ export const SIZES = {
   h3: 16, // Titres de cartes
   body: 14, // Texte courant
   small: 12, // Légendes, dates
+  xsmall: 8, // Légendes, dates
 };
 
 // Espacements (Marges et Paddings)

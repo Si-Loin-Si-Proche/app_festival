@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
 
-    backgroundColor: '#B3E5FC',
+    backgroundColor: COLORS.filtreSelected,
     borderRadius: 50,
     borderWidth: 2,
     borderColor: '#333',
