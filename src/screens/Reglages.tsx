@@ -1,67 +1,30 @@
-import { View } from 'react-native';
+import { ScrollView } from 'react-native';
 import Typography from '../components/atoms/Typography';
-import SearchBar from '../components/molecules/SearchBar';
-import FilterList from '../components/molecules/FilterList';
-import EmptyState from '../components/molecules/EmptyState';
-import { useState } from 'react';
 
-export default function ReglageScreen() {
-  const [hasResults, setHasResults] = useState(true);
-
-  const handleSearch = (query: string) => {
-    if (__DEV__) {
-      // eslint-disable-next-line no-console
-      console.log('Recherche pour :', query);
-    }
-
-    if (query.trim().toLowerCase() === 'rien') {
-      setHasResults(false);
-    } else {
-      setHasResults(true);
-    }
-  };
-
+export default function IndexScreen() {
   return (
-    <View
-      style={{
-        flex: 1,
-        paddingTop: 80,
-        paddingHorizontal: 20,
+    <ScrollView
+      contentContainerStyle={{
+        flexGrow: 1,
         alignItems: 'center',
+        paddingTop: 150,
         gap: 15,
       }}
     >
       <Typography variant="h1">Festival 2026</Typography>
 
-      <SearchBar onSearch={handleSearch} />
+      <Typography variant="h2">Programmation</Typography>
 
-      <View style={{ height: 50, width: '100%' }}>
-        <FilterList
-          options={[
-            'Tous',
-            '05.02.25',
-            '06.02.25',
-            '07.02.25',
-            '08.02.25',
-            '09.02.25',
-          ]}
-          onSelect={(selected) => console.log('Filtre:', selected)}
-        />
-      </View>
+      <Typography variant="body" style={{ textAlign: 'center' }}>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua.
+      </Typography>
 
-      {/* LOGIQUE D'AFFICHAGE */}
-      {hasResults ? (
-        <View style={{ width: '100%', marginTop: 20 }}>
-          <Typography variant="h2">Résultats :</Typography>
-        </View>
-      ) : (
-        <View style={{ flex: 1, justifyContent: 'center', width: '100%' }}>
-          <EmptyState
-            message="Oups, nous n'avons rien trouvé."
-            iconName="search"
-          />
-        </View>
-      )}
-    </View>
+      <Typography variant="quote" style={{ textAlign: 'center' }}>
+        du 05 au 10 février 2026
+      </Typography>
+
+      <Typography variant="caption">test caption</Typography>
+    </ScrollView>
   );
 }
