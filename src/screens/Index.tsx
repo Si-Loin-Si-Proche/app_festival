@@ -6,18 +6,20 @@ import { COLORS } from '../constants/theme';
 import Loader from '../components/atoms/Loader';
 import SectionHeader from '../components/molecules/SectionHeader';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import SectionFooter from '../components/molecules/SectionFooter';
+import { ScrollView } from 'react-native';
 
 const logoImg = require('../assets/logo_ferme_du_buisson.png');
 
 export default function IndexScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      {/* Le Header reste FIXE en haut (hors du scroll) */}
       <SectionHeader title="Réglages" logoSource={logoImg} />
 
-      <SafeAreaView
-        style={{
-          flex: 1,
-          justifyContent: 'center',
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
           alignItems: 'center',
           paddingTop: 20,
           gap: 15,
@@ -45,7 +47,24 @@ export default function IndexScreen() {
         <Tag label="théâtre" iconName="location" backgroundColor={COLORS.tag} />
 
         <Loader />
-      </SafeAreaView>
+
+        <Typography variant="h1">Festival 2026</Typography>
+
+        <Typography variant="h2">Programmation</Typography>
+
+        <Typography variant="body" style={{ textAlign: 'center' }}>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </Typography>
+
+        <Typography variant="quote" style={{ textAlign: 'center' }}>
+          du 05 au 10 février 2026
+        </Typography>
+
+        <Typography variant="caption">test caption</Typography>
+
+        <SectionFooter />
+      </ScrollView>
     </SafeAreaView>
   );
 }

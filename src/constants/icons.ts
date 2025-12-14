@@ -1,5 +1,3 @@
-// src/constants/icons.ts
-
 import {
   Calendar,
   MapPin,
@@ -24,6 +22,8 @@ import {
   ArrowRight,
   Mail,
   House,
+  Instagram,
+  Facebook,
   Landmark,
   Image as ImageIcon,
   Toilet,
@@ -64,6 +64,10 @@ export const ICONS = {
   eye: Eye,
   eyeOff: EyeOff,
   mail: Mail,
+
+  // --- Réseaux Sociaux ---
+  instagram: Instagram,
+  facebook: Facebook,
 
   // --- Icons pour la map
   wc: Toilet,
