@@ -22,6 +22,8 @@ export const COLORS = {
   tabBarInactive: '#8D99AE',
   tag: '#F5F294',
   filtreSelected: '#B3E5FC',
+  off: '#E57373',
+  on: '#8BC34A',
 };
 
 // Tailles de police (pour la cohérence)

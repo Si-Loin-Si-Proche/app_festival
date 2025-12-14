@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center', // Centre le titre
     paddingHorizontal: SPACING.m,
-    paddingVertical: 20,
+    paddingVertical: SPACING.l,
     position: 'relative',
   },
   backButton: {
