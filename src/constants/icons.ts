@@ -20,6 +20,8 @@ import {
   Eye,
   EyeOff,
   ArrowRight,
+  ArrowDown,
+  Check,
   Mail,
   House,
   Instagram,
@@ -38,6 +40,8 @@ export const ICONS = {
   close: X,
   settings: Settings,
   arrowRight: ArrowRight,
+  arrowDown: ArrowDown,
+  check: Check,
 
   // --- Actions ---
   search: Search,

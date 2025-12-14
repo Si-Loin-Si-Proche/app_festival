@@ -8,32 +8,39 @@ import { SPACING, COLORS } from '../../constants/theme';
 interface SectionHeaderProps {
   title: string;
   logoSource: ImageSourcePropType;
+  showFavorite?: boolean;
 }
 
 export default function SectionHeader({
   title,
   logoSource,
+  showFavorite = true,
 }: SectionHeaderProps) {
   return (
     <View style={styles.container}>
-      {/* PARTIE HAUTE : CONTENU (Logo, Titre, Bouton) */}
       <View style={styles.contentRow}>
+        {/* LOGO*/}
         <Image source={logoSource} style={styles.logo} resizeMode="contain" />
 
+        {/* TITRE*/}
         <View style={styles.titleContainer}>
           <Typography variant="h2" style={styles.title}>
             {title}
           </Typography>
         </View>
 
-        <FavoriteButton
-          size="large"
-          backgroundColor={COLORS.secondary}
-          activeColor={COLORS.text}
-        />
+        {/* BOUTON*/}
+        {showFavorite && (
+          <View style={styles.rightAction}>
+            <FavoriteButton
+              size="large"
+              backgroundColor={COLORS.secondary}
+              activeColor={COLORS.text}
+            />
+          </View>
+        )}
       </View>
 
-      {/* PARTIE BASSE : LE SÉPARATEUR */}
       <Separator thickness={2} marginVertical={0} />
     </View>
   );
@@ -47,21 +54,32 @@ const styles = StyleSheet.create({
   contentRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     paddingHorizontal: SPACING.m,
-    paddingVertical: SPACING.m,
+    paddingVertical: SPACING.l,
+    position: 'relative',
+    minHeight: 60,
   },
   logo: {
     width: 70,
     height: 40,
+    position: 'absolute',
+    left: SPACING.m,
+    zIndex: 1,
   },
   titleContainer: {
-    flex: 1,
     alignItems: 'center',
     paddingHorizontal: 10,
+    maxWidth: '60%',
   },
   title: {
     textAlign: 'center',
     marginBottom: 0,
+  },
+
+  rightAction: {
+    position: 'absolute',
+    right: SPACING.m,
+    zIndex: 1,
   },
 });
