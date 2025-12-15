@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "SiLoinSiProche",
+    "name": "Si Loin Si Proche",
     "slug": "SiLoinSiProche",
     "scheme": "SiLoinSiProche",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logoFDB.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -22,10 +22,16 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.arthur_cuvillon.SiLoinSiProche"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "8f033af5-3d42-48ae-9c8b-1a247cb1d939"
+      }
     }
   }
 }
