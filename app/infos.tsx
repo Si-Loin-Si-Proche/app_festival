@@ -1,5 +1,5 @@
-import PlanScreen from '../src/screens/Plan';
+import InfosScreen from '../src/screens/Infos';
 
 export default function Page() {
-  return <PlanScreen />;
+  return <InfosScreen />;
 }

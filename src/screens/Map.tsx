@@ -28,7 +28,7 @@ const FILTERS = [
   { id: 'wc', label: 'WC' },
 ];
 
-export default function PlanScreen() {
+export default function MapScreen() {
   const [selectedPoint, setSelectedPoint] = useState<MapPoint | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>('all');
 

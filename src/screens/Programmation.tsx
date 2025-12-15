@@ -153,6 +153,8 @@ const styles = StyleSheet.create({
   },
   filtersContainer: {
     marginTop: SPACING.m,
+    marginLeft: SPACING.m,
+    marginRight: SPACING.m,
   },
   content: {
     flex: 1,

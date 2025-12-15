@@ -13,8 +13,7 @@ const logoImg = require('../assets/logo_ferme_du_buisson.png');
 
 export default function IndexScreen() {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      {/* Le Header reste FIXE en haut (hors du scroll) */}
+    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
       <SectionHeader title="Réglages" logoSource={logoImg} />
 
       <ScrollView

@@ -40,22 +40,35 @@ const Layout = () => {
         backBehavior="history"
         tabBar={(props) => <TabBar {...props} />}
       >
+        {/* 1. HOME */}
         <Tabs.Screen name="index" options={{ title: 'Home' }} />
+
+        {/* 2. INFOS (Contient le MapBlock) */}
         <Tabs.Screen name="infos" options={{ title: 'Infos' }} />
+
+        {/* 3. PROGRAMMATION */}
         <Tabs.Screen
           name="programmation"
           options={{ title: 'Programmation' }}
         />
+
+        {/* 4. REGLAGES */}
         <Tabs.Screen name="reglages" options={{ title: 'Réglages' }} />
 
-        {/* Routes cachées */}
+        {/* --- ROUTES CACHÉES (Pas dans la TabBar) --- */}
+
+        {/* Likes */}
+        <Tabs.Screen name="likes" options={{ href: null }} />
+
+        {/* MAP (Cachée ici, accessible via MapBlock) */}
         <Tabs.Screen
-          name="likes"
+          name="map"
           options={{
+            title: 'Map',
             href: null,
+            tabBarStyle: { display: 'none' },
           }}
         />
-        <Tabs.Screen name="map" options={{ title: 'Map' }} />
       </Tabs>
     </GestureHandlerRootView>
   );

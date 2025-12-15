@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: SPACING.l,
     paddingTop: 60,
-    paddingBottom: 90,
+    paddingBottom: 110,
   },
   row: {
     flexDirection: 'row',
