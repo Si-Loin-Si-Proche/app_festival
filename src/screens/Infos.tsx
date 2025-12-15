@@ -1,24 +1,38 @@
+import React from 'react';
+import { ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { View } from 'react-native';
-import Typography from '../components/atoms/Typography';
-import PageHeader from '../components/molecules/PageHeader';
-import { COLORS } from '../constants/theme';
+import SectionHeader from '../components/molecules/SectionHeader';
+import MapBlock from '../components/organism/MapBlock';
+import { COLORS, SPACING } from '../constants/theme';
 
-export default function ProgrammationScreen() {
+// Importe ton logo ou utilise un require
+const logoImg = require('../assets/logo_ferme_du_buisson.png');
+
+export default function InfosScreen() {
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.secondary }}>
-      <PageHeader title="Likes" iconName="favorite" />
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <SectionHeader title="Infos Pratiques" logoSource={logoImg} />
 
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: COLORS.background,
-        }}
-      >
-        <Typography>Ceci est la page programmation.</Typography>
-      </View>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* --- LE BLOC CARTE --- */}
+        <MapBlock />
+      </ScrollView>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  scrollContent: {
+    paddingBottom: 100,
+    paddingTop: SPACING.m,
+  },
+  introText: {
+    paddingHorizontal: SPACING.m,
+    marginBottom: SPACING.l,
+    textAlign: 'center',
+  },
+});

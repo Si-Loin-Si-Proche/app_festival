@@ -1,7 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet, View } from 'react-native';
 import Icon from './Icon';
-import Typography from './Typography';
 import { MapPoint } from '../../constants/mapData';
 import { COLORS, SHADOWS, SIZES } from '../../constants/theme';
 
