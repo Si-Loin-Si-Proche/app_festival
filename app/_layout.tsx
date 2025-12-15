@@ -37,6 +37,7 @@ const Layout = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Tabs
         screenOptions={{ headerShown: false }}
+        backBehavior="history"
         tabBar={(props) => <TabBar {...props} />}
       >
         <Tabs.Screen name="index" options={{ title: 'Home' }} />
