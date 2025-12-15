@@ -11,65 +11,122 @@ interface EventCardProps {
   event: CleanEvent;
   onPress: () => void;
   style?: ViewStyle;
+  variant?: 'horizontal' | 'vertical';
+  backgroundColor?: string;
 }
 
-export default function EventCard({ event, onPress, style }: EventCardProps) {
+export default function EventCard({
+  event,
+  onPress,
+  style,
+  variant = 'horizontal',
+  backgroundColor,
+}: EventCardProps) {
   const firstDate = event.dates[0];
-
-  // 1. On récupère le lieu (C'est ça que tu veux afficher !)
   const placeName = firstDate?.placeName || 'Lieu à définir';
 
-  // 2. On formate la date
+  // --- LOGIQUE DE DATE ---
   let dateString = 'Date à venir';
+  let timeString = '';
+
   if (firstDate?.start) {
     const startDate = new Date(firstDate.start);
-    dateString =
-      startDate.toLocaleDateString('fr-FR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: '2-digit',
-      }) +
-      ' à ' +
-      startDate
-        .toLocaleTimeString('fr-FR', {
-          hour: '2-digit',
-          minute: '2-digit',
-        })
-        .replace(':', 'h');
+    dateString = startDate.toLocaleDateString('fr-FR', {
+      weekday: variant === 'vertical' ? 'long' : undefined,
+      day: '2-digit',
+      month: variant === 'vertical' ? 'long' : '2-digit',
+      year: variant === 'vertical' ? undefined : '2-digit',
+    });
+
+    timeString = startDate
+      .toLocaleTimeString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+      .replace(':', 'h');
   }
 
+  // ============================================================
+  // VARIANTE VERTICALE (HOME PAGE)
+  // ============================================================
+  if (variant === 'vertical') {
+    return (
+      <TouchableOpacity
+        activeOpacity={0.9}
+        onPress={onPress}
+        style={[styles.vContainer, style]}
+      >
+        {/* IMAGE EN FOND */}
+        <RemoteImage
+          url={event.imageUrl}
+          style={styles.vImage}
+          resizeMode="cover"
+        />
+
+        {/* CARTEL (Le bloc texte flottant en bas) */}
+        {/* J'ai fusionné ton doublon ici : une seule View avec la couleur ET le contenu */}
+        <View
+          style={[
+            styles.vInfoBox,
+            { backgroundColor: backgroundColor || COLORS.card },
+          ]}
+        >
+          {/* COLONNE GAUCHE : Titre & Sous-titre */}
+          {/* flex: 1 est crucial ici pour empêcher le texte de dépasser sur la date */}
+          <View style={{ flex: 1, marginRight: 10 }}>
+            <Typography variant="h2" style={styles.vTitle} numberOfLines={1}>
+              {event.title}
+            </Typography>
+            {event.subtitle && (
+              <Typography variant="caption" numberOfLines={1}>
+                {event.subtitle}
+              </Typography>
+            )}
+          </View>
+
+          {/* COLONNE DROITE : Date & Heure */}
+          {/* flexShrink: 0 assure que la date ne soit jamais écrasée */}
+          <View style={{ alignItems: 'flex-end', flexShrink: 0 }}>
+            <Typography variant="caption" style={{ fontFamily: FONTS.bold }}>
+              {dateString}
+            </Typography>
+            <Typography variant="caption">{timeString}</Typography>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  }
+
+  // ============================================================
+  // VARIANTE HORIZONTALE (LISTE CLASSIQUE)
+  // ============================================================
   return (
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={onPress}
-      style={[styles.container, style]}
+      style={[styles.hContainer, style]}
     >
-      {/* IMAGE */}
-      <View style={styles.imageContainer}>
+      <View style={styles.hImageContainer}>
         <RemoteImage
           url={event.imageUrl}
-          style={styles.image}
+          style={styles.hImage}
           resizeMode="cover"
         />
       </View>
 
-      {/* CONTENU CENTRAL */}
-      <View style={styles.content}>
-        {/* Date et Heure */}
-        <Typography variant="caption" style={styles.dateText}>
-          {dateString}
+      <View style={styles.hContent}>
+        <Typography variant="caption" style={styles.hDateText}>
+          {dateString} à {timeString}
         </Typography>
 
-        {/* Titre */}
-        <Typography variant="body" style={styles.title} numberOfLines={2}>
+        <Typography variant="body" style={styles.hTitle} numberOfLines={2}>
           {event.title}
         </Typography>
 
-        {/* Sous-titre */}
         {event.subtitle && (
           <Typography
             variant="caption"
-            style={styles.subtitle}
+            style={styles.hSubtitle}
             numberOfLines={1}
           >
             {event.subtitle}
@@ -80,12 +137,11 @@ export default function EventCard({ event, onPress, style }: EventCardProps) {
           label={placeName}
           iconName="location"
           backgroundColor={COLORS.tag}
-          style={styles.tag}
+          style={styles.hTag}
         />
       </View>
 
-      {/* SECTION DROITE (Favori) */}
-      <View style={styles.rightSection}>
+      <View style={styles.hRightSection}>
         <FavoriteButton
           size="medium"
           event={event}
@@ -98,7 +154,52 @@ export default function EventCard({ event, onPress, style }: EventCardProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  // --- STYLES VERTICAL (HOME) ---
+  vContainer: {
+    width: '100%', // <--- CHANGEMENT : Prend toute la largeur disponible
+    height: 250, // <--- CHANGEMENT : Un peu plus haut pour être joli
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: COLORS.text,
+    overflow: 'hidden',
+    backgroundColor: COLORS.card,
+    marginBottom: SPACING.m, // Marge en bas au lieu de droite
+    position: 'relative',
+  },
+  vImage: {
+    width: '100%',
+    height: '100%',
+  },
+  vInfoBox: {
+    position: 'absolute',
+    bottom: 15,
+    left: 15,
+    right: 15,
+    // La couleur de fond est gérée dynamiquement via le style inline
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: COLORS.text,
+    paddingHorizontal: SPACING.m,
+    paddingVertical: SPACING.s,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+
+    // Ombre
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 3, // Pour Android
+  },
+  vTitle: {
+    marginBottom: 2,
+    fontSize: 16,
+    lineHeight: 20,
+  },
+
+  // --- STYLES HORIZONTAL ---
+  hContainer: {
     flexDirection: 'row',
     backgroundColor: COLORS.card,
     borderRadius: 24,
@@ -109,46 +210,46 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     height: 140,
   },
-  imageContainer: {
+  hImageContainer: {
     width: 90,
     height: '100%',
     borderRadius: 20,
     overflow: 'hidden',
     marginRight: SPACING.m,
   },
-  image: {
+  hImage: {
     width: '100%',
     height: '100%',
   },
-  content: {
+  hContent: {
     flex: 1,
     justifyContent: 'center',
     paddingVertical: SPACING.xs,
   },
-  dateText: {
+  hDateText: {
     fontFamily: FONTS.bold,
     fontSize: 11,
     color: COLORS.text,
     marginBottom: 2,
   },
-  title: {
+  hTitle: {
     fontFamily: FONTS.bold,
     fontSize: SIZES.h3,
     color: COLORS.text,
     marginBottom: 2,
     lineHeight: 20,
   },
-  subtitle: {
+  hSubtitle: {
     fontFamily: FONTS.italic,
     fontSize: 12,
     color: COLORS.text,
   },
-  rightSection: {
+  hRightSection: {
     justifyContent: 'center',
     alignItems: 'flex-end',
     paddingLeft: SPACING.s,
   },
-  tag: {
+  hTag: {
     marginTop: SPACING.s,
     alignSelf: 'flex-start',
   },
