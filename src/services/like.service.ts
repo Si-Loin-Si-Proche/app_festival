@@ -2,7 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CleanEvent } from '../types/api.types';
 import { NotificationService } from './notifications.service';
 
-const FAVORITES_KEY = 'festival_favorites';
 const STORAGE_KEY = 'user_favorites';
 
 export const LikeService = {
@@ -11,7 +10,7 @@ export const LikeService = {
    */
   getFavorites: async (): Promise<CleanEvent[]> => {
     try {
-      const jsonValue = await AsyncStorage.getItem(FAVORITES_KEY);
+      const jsonValue = await AsyncStorage.getItem(STORAGE_KEY);
       return jsonValue != null ? JSON.parse(jsonValue) : [];
     } catch (e) {
       console.error('Erreur lecture favoris', e);
@@ -29,7 +28,6 @@ export const LikeService = {
 
   /**
    * Ajoute ou retire un favori (Toggle)
-   * Retourne true si ajouté, false si retiré
    */
   toggleFavorite: async (event: CleanEvent) => {
     try {
