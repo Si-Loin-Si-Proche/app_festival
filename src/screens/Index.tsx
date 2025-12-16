@@ -68,7 +68,11 @@ export default function IndexScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
       {/* Le Header reste fixe en haut */}
-      <SectionHeader title="" logoSource={logoImg} />
+      <SectionHeader
+        logoSource={require('../assets/logo_ferme_du_buisson.png')}
+        useImageTitle={true}
+        showFavorite={true}
+      />
 
       <ScrollView
         showsVerticalScrollIndicator={false}

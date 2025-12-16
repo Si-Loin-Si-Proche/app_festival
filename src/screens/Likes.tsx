@@ -9,9 +9,9 @@ import { CleanEvent } from '../types/api.types';
 import { LikeService } from '../services/like.service';
 
 // --- COMPOSANTS ---
-import PageHeader from '../components/molecules/PageHeader';
 import EventList from '../components/organism/EventList';
 import EmptyState from '../components/molecules/EmptyState';
+import SectionHeader from '../components/molecules/SectionHeader';
 
 export default function LikesScreen() {
   const [favorites, setFavorites] = useState<CleanEvent[]>([]);
@@ -37,7 +37,11 @@ export default function LikesScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <PageHeader title="Mes Favoris" iconName="favorite" />
+      <SectionHeader
+        logoSource={require('../assets/logo_ferme_du_buisson.png')}
+        useImageTitle={true}
+        showFavorite={true}
+      />
 
       <View style={styles.content}>
         {!isLoading && favorites.length === 0 ? (
