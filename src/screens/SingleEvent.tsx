@@ -22,9 +22,9 @@ import { LikeService } from '../services/like.service';
 // --- COMPOSANTS ---
 import Typography from '../../src/components/atoms/Typography';
 import Icon from '../../src/components/atoms/Icon';
-import PageHeader from '../../src/components/molecules/PageHeader';
 import Tag from '../../src/components/atoms/Tag';
 import RemoteImage from '../components/atoms/RemoteImage';
+import SectionHeader from '../components/molecules/SectionHeader';
 
 const formatDateRange = (dates: any[]) => {
   if (!dates || dates.length === 0) return '';
@@ -105,10 +105,10 @@ export default function EventDetailScreen() {
       <Stack.Screen options={{ headerShown: false }} />
 
       <SafeAreaView style={styles.headerSafeArea} edges={['top']}>
-        <PageHeader
-          title="Évènement"
-          iconName="calendar"
-          style={styles.headerCustom}
+        <SectionHeader
+          title="Événement"
+          showBackButton={true}
+          showFavorite={false}
         />
       </SafeAreaView>
 

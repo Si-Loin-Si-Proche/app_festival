@@ -13,10 +13,10 @@ import { ReactNativeZoomableView } from '@dudigital/react-native-zoomable-view';
 import { COLORS, SPACING } from '../constants/theme';
 import { IconName } from '../constants/icons';
 import { MAP_POINTS, MapPoint, MAP_IMAGE_SOURCE } from '../constants/mapData';
-import PageHeader from '../components/molecules/PageHeader';
 import MapMarker from '../components/atoms/MapMarker';
 import Typography from '../components/atoms/Typography';
 import Icon from '../components/atoms/Icon';
+import SectionHeader from '../components/molecules/SectionHeader';
 
 const screen = Dimensions.get('window');
 const IMAGE_RATIO = 6500 / 6200;
@@ -47,10 +47,10 @@ export default function MapScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <PageHeader
+      <SectionHeader
         title="Plan du Festival"
-        iconName="location"
-        style={styles.header}
+        showBackButton={true}
+        showFavorite={false}
       />
       <View style={styles.contentContainer}>
         <View style={styles.mapContainer}>

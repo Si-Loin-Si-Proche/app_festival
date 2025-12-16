@@ -104,7 +104,11 @@ export default function ProgrammationScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <SectionHeader logoSource={logoImg} title="Programmation" />
+      <SectionHeader
+        logoSource={require('../assets/logo_ferme_du_buisson.png')}
+        useImageTitle={true}
+        showFavorite={true}
+      />
 
       {/* ZONE DE RECHERCHE & FILTRES */}
       <View style={styles.filtersContainer}>

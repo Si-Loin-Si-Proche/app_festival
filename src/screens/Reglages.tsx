@@ -41,8 +41,8 @@ export default function ReglagesScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.background }}>
       {/* 1. HEADER FIXE */}
       <SectionHeader
-        title="Réglages"
-        logoSource={logoImg}
+        logoSource={require('../assets/logo_ferme_du_buisson.png')}
+        useImageTitle={true}
         showFavorite={false}
       />
 
