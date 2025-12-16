@@ -1,7 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CleanEvent } from '../types/api.types';
+import { NotificationService } from './notifications.service';
 
 const FAVORITES_KEY = 'festival_favorites';
+const STORAGE_KEY = 'user_favorites';
 
 export const LikeService = {
   /**
@@ -29,25 +31,26 @@ export const LikeService = {
    * Ajoute ou retire un favori (Toggle)
    * Retourne true si ajouté, false si retiré
    */
-  toggleFavorite: async (event: CleanEvent): Promise<boolean> => {
+  toggleFavorite: async (event: CleanEvent) => {
     try {
-      const favorites = await LikeService.getFavorites();
-      const existingIndex = favorites.findIndex((e) => e.id === event.id);
-      let isNowLiked = false;
+      const savedLikes = await AsyncStorage.getItem(STORAGE_KEY);
+      let currentLikes: CleanEvent[] = savedLikes ? JSON.parse(savedLikes) : [];
 
-      if (existingIndex >= 0) {
-        favorites.splice(existingIndex, 1);
-        isNowLiked = false;
+      const existingIndex = currentLikes.findIndex((e) => e.id === event.id);
+
+      if (existingIndex !== -1) {
+        currentLikes.splice(existingIndex, 1);
+        await NotificationService.cancelEventNotification(event.id);
       } else {
-        favorites.push(event);
-        isNowLiked = true;
+        currentLikes.push(event);
+        await NotificationService.scheduleEventNotification(event, 30);
       }
 
-      await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-      return isNowLiked;
-    } catch (e) {
-      console.error('Erreur écriture favoris', e);
-      return false;
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(currentLikes));
+      return currentLikes;
+    } catch (error) {
+      console.error('Erreur toggle like', error);
+      return [];
     }
   },
 };
