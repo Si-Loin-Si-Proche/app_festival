@@ -221,6 +221,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: SPACING.m,
     gap: SPACING.s,
+  },
   container: {
     flex: 1,
     backgroundColor: 'white',
