@@ -222,10 +222,6 @@ const styles = StyleSheet.create({
     marginVertical: SPACING.m,
     gap: SPACING.s,
   },
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
   btnStack: { gap: SPACING.m, marginTop: SPACING.m },
   capsule: { width: '100%', height: 54, borderRadius: 27 },
   sectionGap: { gap: SPACING.xs },
