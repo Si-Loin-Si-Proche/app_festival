@@ -1,86 +1,94 @@
-import React, { useState } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+
+// --- IMPORTS ---
 import Typography from '../components/atoms/Typography';
 import SectionHeader from '../components/molecules/SectionHeader';
 import EventCard from '../components/molecules/EventCard';
-import { COLORS, FONTS } from '../constants/theme';
 import SectionFooter from '../components/molecules/SectionFooter';
+import { COLORS, FONTS } from '../constants/theme';
+
+// --- SERVICES & TYPES ---
+import { getFestivalEvents } from '../services/festival.service';
+import { CleanEvent } from '../types/api.types';
+import { useFavorites } from '../hooks/useFavorites';
 
 const logoImg = require('../assets/logo_ferme_du_buisson.png');
 
-// --- DONNÉES MOCK ---
-const LIVE_EVENTS = [
-  {
-    id: 'live1',
-    title: 'Ateliers de découverte',
-    dates: [
-      {
-        start: '2026-02-06T14:30:00',
-        end: '2026-02-06T16:30:00',
-        placeName: 'Cinéma',
-      },
-    ],
-  },
-  {
-    id: 'live2',
-    title: 'Cambodge, vue sur courts',
-    dates: [
-      {
-        start: '2026-02-06T17:00:00',
-        end: '2026-02-06T19:10:00',
-        placeName: 'Théâtre',
-      },
-    ],
-  },
-];
-
-const UPCOMING_EVENTS = [
-  {
-    id: '1',
-    title: 'En famille, vue sur court',
-    subtitle: "Courts-métrages d'animation",
-    imageUrl:
-      'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=2525&auto=format&fit=crop',
-    description: 'Une sélection de courts métrages...',
-    dates: [
-      {
-        start: '2026-02-06T11:00:00',
-        end: '2026-02-06T12:30:00',
-        placeName: 'Cinéma',
-      },
-    ],
-    tags: [],
-    color: COLORS.secondary,
-  },
-  {
-    id: '2',
-    title: 'Dans la cuisine des Nguyen',
-    subtitle: 'Stéphane Ly-Cuong',
-    imageUrl:
-      'https://images.unsplash.com/photo-1551218808-94e220e084d2?q=80&w=2670&auto=format&fit=crop',
-    description: "Une plongée dans l'histoire...",
-    dates: [
-      {
-        start: '2026-02-06T17:00:00',
-        end: '2026-02-06T19:10:00',
-        placeName: 'Théâtre',
-      },
-    ],
-    tags: [],
-    color: COLORS.secondary,
-  },
-];
-
 export default function IndexScreen() {
+  const router = useRouter();
   const [topSectionHeight, setTopSectionHeight] = useState(350);
+
+  // 1. STATE & HOOKS
+  const { isLiked, toggleFavorite } = useFavorites();
+  const [loading, setLoading] = useState(true);
+
+  const [liveEvents, setLiveEvents] = useState<CleanEvent[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<CleanEvent[]>([]);
+
+  // 2. LOGIQUE TEMPORELLE ⏳
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const allEvents = await getFestivalEvents();
+        const now = new Date(); // L'heure actuelle
+
+        // --- FILTRE : EN COURS (LIVE) ---
+        // Un event est "En cours" si Maintenant est entre le Début et la Fin
+        const live = allEvents.filter((event) => {
+          if (!event.dates || event.dates.length === 0) return false;
+          // On vérifie la première date (ou tu peux boucler sur toutes les dates si c'est multi-dates)
+          const start = new Date(event.dates[0].start);
+          const end = new Date(event.dates[0].end);
+          return now >= start && now <= end;
+        });
+
+        // --- FILTRE : À VENIR ---
+        // Un event est "À venir" si son Début est dans le futur
+        const upcoming = allEvents.filter((event) => {
+          if (!event.dates || event.dates.length === 0) return false;
+          const start = new Date(event.dates[0].start);
+          return start > now;
+        });
+
+        // TRI : Du plus proche au plus lointain
+        upcoming.sort((a, b) => {
+          const dateA = new Date(a.dates[0].start);
+          const dateB = new Date(b.dates[0].start);
+          return dateA.getTime() - dateB.getTime();
+        });
+
+        setLiveEvents(live);
+        setUpcomingEvents(upcoming);
+      } catch (error) {
+        console.error('Erreur home', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handlePress = (id: string) => {
+    router.push(`/event/${id}` as any);
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.center, { backgroundColor: COLORS.secondary }]}>
+        <ActivityIndicator size="large" color={COLORS.text} />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: COLORS.background }}
       edges={['top']}
     >
-      {/* 1. HEADER */}
       <SectionHeader
         logoSource={logoImg}
         useImageTitle={true}
@@ -89,7 +97,7 @@ export default function IndexScreen() {
       />
 
       <View style={{ flex: 1, position: 'relative' }}>
-        {/* 2. ARRIÈRE PLAN FIXE (Fond Rose) */}
+        {/* --- ZONE DU HAUT (ROSE - EN CE MOMENT) --- */}
         <View style={styles.fixedBackgroundLayer}>
           <View
             style={styles.contentMeasurer}
@@ -105,18 +113,30 @@ export default function IndexScreen() {
               En ce moment...
             </Typography>
 
-            {LIVE_EVENTS.map((event) => (
-              <EventCard
-                key={event.id}
-                event={event as any}
-                variant="compact"
-                onPress={() => console.log('Clic event en cours')}
-              />
-            ))}
+            {/* LOGIQUE D'AFFICHAGE LIVE */}
+            {liveEvents.length > 0 ? (
+              liveEvents.map((event) => (
+                <EventCard
+                  key={event.id}
+                  event={event}
+                  variant="compact"
+                  onPress={() => handlePress(event.id)}
+                  isFavorite={isLiked(event.id)}
+                  onToggle={() => toggleFavorite(event)}
+                />
+              ))
+            ) : (
+              // 👈 TEXTE SI VIDE
+              <View style={styles.emptyStateBox}>
+                <Typography variant="body" style={{ fontStyle: 'italic' }}>
+                  Pas d'événement en cours actuellement.
+                </Typography>
+              </View>
+            )}
           </View>
         </View>
 
-        {/* 3. SCROLLVIEW */}
+        {/* --- SCROLLVIEW (BLANC - À VENIR) --- */}
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ flexGrow: 1 }}
@@ -128,30 +148,40 @@ export default function IndexScreen() {
             style={{ height: topSectionHeight, backgroundColor: 'transparent' }}
           />
 
-          {/* LA FEUILLE BLANCHE */}
+          {/* --- FEUILLE BLANCHE --- */}
           <View style={styles.bottomSheet}>
             <Typography variant="h2" style={{ marginTop: 0, marginBottom: 20 }}>
               Événements à venir
             </Typography>
 
-            {UPCOMING_EVENTS.map((event) => (
-              <EventCard
-                key={event.id}
-                variant="vertical"
-                event={event as any}
-                backgroundColor={event.color}
-                onPress={() => console.log('Clic sur', event.title)}
-              />
-            ))}
+            {/* LOGIQUE D'AFFICHAGE À VENIR */}
+            {upcomingEvents.length > 0 ? (
+              upcomingEvents.map((event, index) => (
+                <EventCard
+                  key={event.id}
+                  variant="vertical"
+                  event={event}
+                  backgroundColor={
+                    index % 2 === 0 ? COLORS.secondary : COLORS.card
+                  }
+                  onPress={() => handlePress(event.id)}
+                  isFavorite={isLiked(event.id)}
+                  onToggle={() => toggleFavorite(event)}
+                />
+              ))
+            ) : (
+              // 👈 TEXTE SI VIDE
+              <View style={styles.emptyStateBox}>
+                <Typography
+                  variant="body"
+                  style={{ textAlign: 'center', marginTop: 20 }}
+                >
+                  Les événements sont tous passés, à l'année prochaine ;)
+                </Typography>
+              </View>
+            )}
 
-            <View
-              style={{
-                marginHorizontal: -22, // -20 pour le padding + -2 pour la bordure parent
-                marginBottom: -20, // Pour coller tout en bas malgré le paddingBottom du parent
-                marginTop: 20, // Un peu d'espace avant le footer
-                zIndex: 1, // S'assure qu'il est au dessus si besoin
-              }}
-            >
+            <View style={styles.footerContainer}>
               <SectionFooter />
             </View>
           </View>
@@ -162,6 +192,11 @@ export default function IndexScreen() {
 }
 
 const styles = StyleSheet.create({
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   fixedBackgroundLayer: {
     position: 'absolute',
     top: 0,
@@ -182,25 +217,27 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bold,
   },
   bottomSheet: {
-    backgroundColor: COLORS.background, // Blanc
+    backgroundColor: COLORS.background,
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
-
-    // Bordure
     borderWidth: 2,
     borderColor: COLORS.text,
-    borderBottomWidth: 0, // Pas de bordure en bas pour laisser le footer couler
-
-    // Le padding qui nous embêtait pour le footer, mais qui est utile pour le reste
+    borderBottomWidth: 0,
     paddingHorizontal: 20,
     paddingTop: 30,
-    paddingBottom: 20, // Padding bas
-
+    paddingBottom: 20,
     minHeight: 500,
     marginTop: -20,
-
-    // Important : si tu mets overflow hidden, le footer sera coupé s'il dépasse trop
-    // Ici on laisse visible ou on gère bien les marges
     overflow: 'hidden',
+  },
+  footerContainer: {
+    marginHorizontal: -22,
+    marginBottom: -20,
+    marginTop: 20,
+    zIndex: 1,
+  },
+  emptyStateBox: {
+    padding: 10,
+    opacity: 0.7,
   },
 });
