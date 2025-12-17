@@ -1,12 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react'; // Plus besoin de useState, useCallback, useFocusEffect ici !
 import { View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter, useFocusEffect } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 // --- IMPORTS ---
 import { COLORS, SPACING } from '../constants/theme';
-import { CleanEvent } from '../types/api.types';
-import { LikeService } from '../services/like.service';
+import { useFavorites } from '../hooks/useFavorites';
 
 // --- COMPOSANTS ---
 import EventList from '../components/organism/EventList';
@@ -14,22 +13,9 @@ import EmptyState from '../components/molecules/EmptyState';
 import SectionHeader from '../components/molecules/SectionHeader';
 
 export default function LikesScreen() {
-  const [favorites, setFavorites] = useState<CleanEvent[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  useFocusEffect(
-    useCallback(() => {
-      const loadFavorites = async () => {
-        setIsLoading(true);
-        const data = await LikeService.getFavorites();
-        setFavorites(data);
-        setIsLoading(false);
-      };
-
-      loadFavorites();
-    }, [])
-  );
+  const { favorites, loading, isLiked, toggleFavorite } = useFavorites();
 
   const handleEventPress = (id: string) => {
     router.push(`/event/${id}` as any);
@@ -44,7 +30,7 @@ export default function LikesScreen() {
       />
 
       <View style={styles.content}>
-        {!isLoading && favorites.length === 0 ? (
+        {!loading && favorites.length === 0 ? (
           <View style={styles.emptyContainer}>
             <EmptyState
               message="Vous n'avez pas encore ajouté de favoris."
@@ -54,8 +40,10 @@ export default function LikesScreen() {
         ) : (
           <EventList
             events={favorites}
-            isLoading={isLoading}
+            isLoading={loading}
             onEventPress={handleEventPress}
+            isLiked={isLiked}
+            onToggleFavorite={toggleFavorite}
           />
         )}
       </View>

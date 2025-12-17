@@ -23,14 +23,18 @@ interface EventCardProps {
   style?: ViewStyle;
   variant?: 'horizontal' | 'vertical' | 'compact';
   backgroundColor?: string;
+  isFavorite: boolean;
+  onToggle: () => void;
 }
 
-export default function EventCard({
+function EventCard({
   event,
   onPress,
   style,
   variant = 'horizontal',
   backgroundColor,
+  isFavorite,
+  onToggle,
 }: EventCardProps) {
   const firstDate = event.dates[0];
   const placeName = firstDate?.placeName || 'Lieu à définir';
@@ -225,6 +229,8 @@ export default function EventCard({
           event={event}
           backgroundColor={COLORS.secondary}
           activeColor={COLORS.text}
+          isLiked={isFavorite}
+          onPress={onToggle}
         />
       </View>
     </TouchableOpacity>
@@ -392,3 +398,15 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
 });
+
+const arePropsEqual = (
+  prevProps: EventCardProps,
+  nextProps: EventCardProps
+) => {
+  const isSelectedChanged = prevProps.isFavorite !== nextProps.isFavorite;
+  const isEventChanged = prevProps.event.id !== nextProps.event.id;
+
+  return !isSelectedChanged && !isEventChanged;
+};
+
+export default React.memo(EventCard, arePropsEqual);
