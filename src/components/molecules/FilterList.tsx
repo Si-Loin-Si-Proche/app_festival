@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FlatList, View, StyleSheet } from 'react-native';
+import { FlatList, View, StyleSheet, ViewStyle, StyleProp } from 'react-native';
 import Tag from '../atoms/Tag';
 import { SPACING } from '../../constants/theme';
 
@@ -7,7 +7,9 @@ interface FilterListProps {
   // Liste des options
   options: string[];
   // Fonction appelée quand l'utilisateur change de filtre
-  onSelect: (selected: string) => void;
+  selected: string;
+  onSelect: (value: string) => void;
+  style?: StyleProp<ViewStyle>;
 }
 
 export default function FilterList({ options, onSelect }: FilterListProps) {
