@@ -10,10 +10,10 @@ export default function MapBlock() {
 
   return (
     <View style={styles.container}>
-      {/* Titre avec le style "- plan du site" */}
+      {/* Titre avec le style "- plan du site"
       <Typography variant="h2" style={styles.title}>
         — plan du site
-      </Typography>
+      </Typography> */}
 
       <TouchableOpacity
         activeOpacity={0.9}
