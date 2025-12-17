@@ -1,10 +1,17 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { View, StyleSheet } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Switch,
+  Text,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
 // --- IMPORTS ---
-import { COLORS, SPACING } from '../constants/theme';
+import { COLORS, SPACING, FONTS, SIZES } from '../constants/theme';
 import { CleanEvent } from '../types/api.types';
 import { getFestivalEvents } from '../services/festival.service';
 import { useFavorites } from '../hooks/useFavorites';
@@ -15,10 +22,8 @@ import SectionHeader from '../components/molecules/SectionHeader';
 import SearchBar from '../components/molecules/SearchBar';
 import FilterList from '../components/molecules/FilterList';
 import EmptyState from '../components/molecules/EmptyState';
+import Typography from '../components/atoms/Typography';
 
-const logoImg = require('../assets/logo_ferme_du_buisson.png');
-
-// Helper pour formater la date au format filtre (ex: 05.02.25)
 const formatDateForFilter = (isoString: string) => {
   const date = new Date(isoString);
   return date.toLocaleDateString('fr-FR', {
@@ -28,57 +33,93 @@ const formatDateForFilter = (isoString: string) => {
   });
 };
 
+const getEventLocation = (event: CleanEvent): string => {
+  return event.dates?.[0]?.placeName || event.placeName || 'Lieu à définir';
+};
+
+const getEventPriceCategory = (
+  event: CleanEvent
+): 'Gratuit' | 'Payant' | 'Sur réservation' => {
+  const keywords = (event.tags || [])
+    .concat(event.description || '')
+    .join(' ')
+    .toLowerCase();
+  if (keywords.includes('gratuit')) return 'Gratuit';
+  if (keywords.includes('réservation') || keywords.includes('reservation'))
+    return 'Sur réservation';
+  return 'Payant';
+};
+
+const isEventToutPublic = (event: CleanEvent): boolean => {
+  const keywords = (event.tags || []).join(' ').toLowerCase();
+  if (keywords.includes('adulte') || keywords.includes('interdit'))
+    return false;
+  return true;
+};
+
 export default function ProgrammationScreen() {
-  // 1. STATE
-  const [allEvents, setAllEvents] = useState<CleanEvent[]>([]); // Source de vérité
-  const [filteredEvents, setFilteredEvents] = useState<CleanEvent[]>([]); // Liste affichée
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  const { isLiked, toggleFavorite } = useFavorites();
+
+  // --- STATE ---
+  const [allEvents, setAllEvents] = useState<CleanEvent[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<CleanEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Filtres
   const [searchQuery, setSearchQuery] = useState('');
   const [activeDateFilter, setActiveDateFilter] = useState('Tous');
+  const [activeLocationFilter, setActiveLocationFilter] = useState('Tous');
+  const [activePriceFilter, setActivePriceFilter] = useState('Tous');
+  const [onlyToutPublic, setOnlyToutPublic] = useState(false);
 
-  const router = useRouter();
+  const [showFilters, setShowFilters] = useState(true);
 
-  const { isLiked, toggleFavorite } = useFavorites();
-  // 2. CHARGEMENT DES DONNÉES
+  // --- 1. CHARGEMENT INITIAL ---
   useEffect(() => {
     const loadEvents = async () => {
       setIsLoading(true);
       try {
         const data = await getFestivalEvents();
         setAllEvents(data);
-        setFilteredEvents(data); // Au début, on affiche tout
+        setFilteredEvents(data);
+        if (params.location) {
+          const locationParam = Array.isArray(params.location)
+            ? params.location[0]
+            : params.location;
+          setActiveLocationFilter(locationParam);
+        }
       } finally {
         setIsLoading(false);
       }
     };
     loadEvents();
-  }, []);
+  }, [params.location]);
 
-  // 3. GÉNÉRATION DYNAMIQUE DES DATES DE FILTRE
-  const filterOptions = useMemo(() => {
+  const dateOptions = useMemo(() => {
     if (allEvents.length === 0) return ['Tous'];
-
-    // On extrait toutes les dates de début
     const dates = allEvents
       .map((e) =>
         e.dates[0]?.start ? formatDateForFilter(e.dates[0].start) : null
       )
-      .filter((d): d is string => !!d); // On enlève les nulls
-
-    // On dédoublonne avec Set et on trie
-    const uniqueDates = Array.from(new Set(dates)).sort();
-
-    return ['Tous', ...uniqueDates];
+      .filter((d): d is string => !!d);
+    return ['Tous', ...Array.from(new Set(dates)).sort()];
   }, [allEvents]);
 
-  // 4. MOTEUR DE RECHERCHE & FILTRAGE
+  const locationOptions = useMemo(() => {
+    if (allEvents.length === 0) return ['Tous'];
+    const locations = allEvents.map(getEventLocation);
+    return ['Tous', ...Array.from(new Set(locations)).sort()];
+  }, [allEvents]);
+
+  const priceOptions = ['Tous', 'Payant', 'Gratuit', 'Sur réservation'];
+
+  // --- 3. MOTEUR DE FILTRAGE ---
   useEffect(() => {
-    // Pas besoin de vérifier allEvents.length ici, le filter gérera le tableau vide
     let result = allEvents;
 
-    // A. Filtrage par Recherche
+    // A. Recherche Texte
     if (searchQuery.trim().length > 0) {
       const lowerQuery = searchQuery.toLowerCase();
       result = result.filter(
@@ -88,7 +129,7 @@ export default function ProgrammationScreen() {
       );
     }
 
-    // B. Filtrage par Date
+    // B. Filtre Date
     if (activeDateFilter !== 'Tous') {
       result = result.filter((e) => {
         if (!e.dates[0]?.start) return false;
@@ -96,10 +137,36 @@ export default function ProgrammationScreen() {
       });
     }
 
-    setFilteredEvents(result);
-  }, [searchQuery, activeDateFilter, allEvents]);
+    // C. Filtre Lieu (Scène)
+    if (activeLocationFilter !== 'Tous') {
+      result = result.filter(
+        (e) => getEventLocation(e) === activeLocationFilter
+      );
+    }
 
-  // 5. HANDLERS
+    // D. Filtre Tarif
+    if (activePriceFilter !== 'Tous') {
+      result = result.filter(
+        (e) => getEventPriceCategory(e) === activePriceFilter
+      );
+    }
+
+    // E. Filtre Tout Public (Checkbox)
+    if (onlyToutPublic) {
+      result = result.filter((e) => isEventToutPublic(e));
+    }
+
+    setFilteredEvents(result);
+  }, [
+    searchQuery,
+    activeDateFilter,
+    activeLocationFilter,
+    activePriceFilter,
+    onlyToutPublic,
+    allEvents,
+  ]);
+
+  // --- HANDLERS ---
   const handleEventPress = (id: string) => {
     router.push(`/event/${id}` as any);
   };
@@ -112,35 +179,97 @@ export default function ProgrammationScreen() {
         showFavorite={true}
       />
 
-      {/* ZONE DE RECHERCHE & FILTRES */}
-      <View style={styles.filtersContainer}>
+      <View style={styles.headerContainer}>
+        {/* BARRE DE RECHERCHE */}
         <SearchBar
-          onChangeText={(text) => setSearchQuery(text)}
-          onSearch={(text) => setSearchQuery(text)}
+          onChangeText={setSearchQuery}
+          onSearch={setSearchQuery}
           placeholder="Rechercher un spectacle..."
         />
 
-        <FilterList
-          options={filterOptions}
-          onSelect={(selected) => setActiveDateFilter(selected)}
-        />
+        <TouchableOpacity
+          onPress={() => setShowFilters(!showFilters)}
+          style={styles.toggleFiltersBtn}
+        >
+          <Typography variant="body" style={{ fontWeight: 'bold' }}>
+            {showFilters ? 'Masquer les filtres ▲' : 'Afficher les filtres ▼'}
+          </Typography>
+        </TouchableOpacity>
+
+        {showFilters && (
+          <View>
+            {/* 1. Dates */}
+            <FilterList
+              options={dateOptions}
+              selected={activeDateFilter}
+              onSelect={setActiveDateFilter}
+              style={{ marginBottom: SPACING.s }}
+            />
+
+            <FilterList
+              options={locationOptions}
+              selected={activeLocationFilter}
+              onSelect={setActiveLocationFilter}
+              style={{ marginBottom: SPACING.s }}
+            />
+
+            <FilterList
+              options={priceOptions}
+              selected={activePriceFilter}
+              onSelect={setActivePriceFilter}
+              style={{ marginBottom: SPACING.s }}
+            />
+
+            <View style={styles.switchRow}>
+              <Typography variant="body" style={{ flex: 1 }}>
+                Spectacles tout public uniquement
+              </Typography>
+              <Switch
+                value={onlyToutPublic}
+                onValueChange={setOnlyToutPublic}
+                trackColor={{ false: '#767577', true: COLORS.primary }}
+                thumbColor={onlyToutPublic ? '#fff' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+              />
+            </View>
+          </View>
+        )}
       </View>
 
       <View style={styles.content}>
-        {/* CAS LISTE VIDE APRES RECHERCHE */}
         {!isLoading && filteredEvents.length === 0 ? (
           <View style={styles.emptyContainer}>
             <EmptyState
               message={
                 searchQuery
                   ? `Aucun résultat pour "${searchQuery}"`
-                  : 'Aucun événement pour cette date.'
+                  : 'Aucun événement ne correspond à vos filtres.'
               }
               iconName="search"
             />
+            {/* Bouton Reset si aucun résultat */}
+            <TouchableOpacity
+              onPress={() => {
+                setSearchQuery('');
+                setActiveDateFilter('Tous');
+                setActiveLocationFilter('Tous');
+                setActivePriceFilter('Tous');
+                setOnlyToutPublic(false);
+              }}
+              style={{ marginTop: 20, padding: 10 }}
+            >
+              <Typography
+                variant="body"
+                style={{
+                  color: COLORS.primary,
+                  textDecorationLine: 'underline',
+                }}
+              >
+                Réinitialiser les filtres
+              </Typography>
+            </TouchableOpacity>
           </View>
         ) : (
-          /* LISTE DES ÉVÉNEMENTS */
           <EventList
             events={filteredEvents}
             isLoading={isLoading}
@@ -159,10 +288,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  filtersContainer: {
-    marginTop: SPACING.m,
-    marginLeft: SPACING.m,
-    marginRight: SPACING.m,
+  headerContainer: {
+    paddingHorizontal: SPACING.m,
+    paddingTop: SPACING.m,
+    paddingBottom: SPACING.s,
+    backgroundColor: COLORS.background,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    zIndex: 10,
+  },
+  toggleFiltersBtn: {
+    alignItems: 'flex-end',
   },
   content: {
     flex: 1,
@@ -172,5 +308,44 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: SPACING.xl,
+    marginTop: 50,
+  },
+
+  lastRowFilters: {
+    alignItems: 'center',
+    paddingVertical: 5,
+  },
+  smallFilterBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: COLORS.background,
+    marginRight: 8,
+    backgroundColor: COLORS.background,
+  },
+  smallFilterBadgeActive: {
+    backgroundColor: COLORS.text,
+    borderColor: COLORS.text,
+  },
+  separator: {
+    width: 1,
+    height: 20,
+    backgroundColor: '#ccc',
+    marginHorizontal: 10,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 5,
+  },
+  switchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: SPACING.s,
+    marginTop: SPACING.xs,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
   },
 });

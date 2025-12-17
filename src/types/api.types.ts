@@ -56,6 +56,7 @@ export interface CleanEvent {
     end: string;
     placeName: string;
   }[];
+  placeName?: string;
   price?: string; // HTML
   tags: string[];
 }
