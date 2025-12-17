@@ -48,7 +48,7 @@ export default function SectionFooter() {
                 Mentions légales
               </Typography>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigateTo('/confidentialite')}>
+            <TouchableOpacity onPress={() => navigateTo('/politiques_conf')}>
               <Typography variant="caption" style={styles.linkText}>
                 Politique de confidentialité
               </Typography>
