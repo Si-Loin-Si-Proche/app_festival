@@ -30,6 +30,8 @@ import {
   Image as ImageIcon,
   Toilet,
   Utensils,
+  EarOff,
+  Phone,
 } from 'lucide-react-native';
 
 export const ICONS = {
@@ -58,6 +60,7 @@ export const ICONS = {
   info: Info,
   house: House,
   user: User,
+  phone: Phone,
 
   // --- Catégories ---
   categoryMusic: Music,
@@ -67,6 +70,7 @@ export const ICONS = {
   lock: Lock,
   eye: Eye,
   eyeOff: EyeOff,
+  earOff: EarOff,
   mail: Mail,
 
   // --- Réseaux Sociaux ---

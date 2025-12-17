@@ -1,12 +1,18 @@
 import React from 'react';
-import { Text, StyleSheet, TextStyle, TextProps } from 'react-native';
+import {
+  Text,
+  StyleSheet,
+  TextStyle,
+  TextProps,
+  StyleProp,
+} from 'react-native';
 import { FONTS, COLORS } from '../../constants/theme';
 
 interface TypographyProps extends TextProps {
   children: React.ReactNode;
   variant?: 'h1' | 'h2' | 'h3' | 'body' | 'caption' | 'quote';
   color?: string;
-  style?: TextStyle;
+  style?: StyleProp<TextStyle>;
 }
 
 export default function Typography({
@@ -22,6 +28,7 @@ export default function Typography({
         styles.base,
         styles[variant],
         color ? { color } : undefined,
+        // 3. React Native gère maintenant l'aplatissement du tableau automatiquement
         style,
       ]}
       {...restProps}
@@ -36,40 +43,10 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.regular,
     color: COLORS.text,
   },
-
-  h1: {
-    fontFamily: FONTS.bold,
-    fontSize: 32,
-    marginBottom: 8,
-  },
-
-  h2: {
-    fontFamily: FONTS.bold,
-    fontSize: 24,
-    marginBottom: 6,
-  },
-
-  h3: {
-    fontFamily: FONTS.bold,
-    fontSize: 20,
-    marginBottom: 4,
-    lineHeight: 24,
-  },
-
-  body: {
-    fontFamily: FONTS.regular,
-    fontSize: 16,
-    lineHeight: 24,
-  },
-
-  caption: {
-    fontFamily: FONTS.regular,
-    fontSize: 12,
-  },
-
-  quote: {
-    fontFamily: FONTS.italic,
-    fontSize: 16,
-    fontStyle: 'italic',
-  },
+  h1: { fontSize: 32, fontFamily: FONTS.bold, marginBottom: 8 },
+  h2: { fontSize: 24, fontFamily: FONTS.bold, marginBottom: 6 },
+  h3: { fontSize: 20, fontFamily: FONTS.bold, marginBottom: 4 },
+  body: { fontSize: 16, lineHeight: 24 },
+  caption: { fontSize: 12 },
+  quote: { fontSize: 16, fontStyle: 'italic' },
 });
