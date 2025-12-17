@@ -122,8 +122,8 @@ export default function EventDetailScreen() {
 
       <SafeAreaView style={styles.headerSafeArea} edges={['top']}>
         <SectionHeader
-          title="Événement"
           showBackButton={true}
+          useImageTitle={true}
           showFavorite={false}
         />
       </SafeAreaView>
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   headerSafeArea: {
-    backgroundColor: COLORS.secondary,
+    backgroundColor: 'white',
   },
   headerCustom: {
     marginBottom: 0,

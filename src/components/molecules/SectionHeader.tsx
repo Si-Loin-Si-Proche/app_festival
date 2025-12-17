@@ -14,20 +14,15 @@ import Separator from '../atoms/Separator';
 import Icon from '../atoms/Icon';
 import { SPACING, COLORS } from '../../constants/theme';
 
-// Import du SVG pour le titre (Assure-toi que ton config supporte les SVG)
 import TitleLogo from '../../assets/logo_si_loin_si_proche.svg';
 
 interface SectionHeaderProps {
-  title?: string; // Texte du titre (optionnel si useImageTitle est true)
-  logoSource?: ImageSourcePropType; // Logo de gauche (Ferme du Buisson)
-
-  // --- OPTIONS D'AFFICHAGE ---
-  useImageTitle?: boolean; // Si true, remplace le texte par le SVG "Si loin si proche"
-  showBackButton?: boolean; // Si true, remplace le logo par une flèche retour
-  showFavorite?: boolean; // Afficher le cœur à droite ?
-
-  // --- ACTIONS ---
-  onBack?: () => void; // Action personnalisée pour le retour
+  title?: string;
+  logoSource?: ImageSourcePropType;
+  useImageTitle?: boolean;
+  showBackButton?: boolean;
+  showFavorite?: boolean;
+  onBack?: () => void;
   style?: ViewStyle;
 }
 
@@ -96,10 +91,8 @@ export default function SectionHeader({
         {/* === CENTRE : TITRE TEXTE ou IMAGE SVG === */}
         <View style={styles.centerContainer}>
           {useImageTitle ? (
-            // Affiche le SVG "Si loin si proche"
             <TitleLogo width={160} height={50} />
           ) : (
-            // Affiche le texte standard
             <Typography variant="h2" style={styles.title}>
               {title || ''}
             </Typography>
@@ -111,8 +104,12 @@ export default function SectionHeader({
           <View style={styles.rightAction}>
             <FavoriteButton
               size="large"
+              // 1. Fond pêche
               backgroundColor={COLORS.secondary}
+              // 2. Cœur noir
               activeColor={COLORS.text}
+              // 3. L'ASTUCE : On force "isLiked" pour que le cœur soit rempli (fill) et utilise activeColor
+              isLiked={true}
             />
           </View>
         )}
@@ -124,7 +121,7 @@ export default function SectionHeader({
 }
 
 const styles = StyleSheet.create({
-  container: { width: '100%', backgroundColor: 'transparent', zIndex: 10 },
+  container: { width: '100%', backgroundColor: 'white', zIndex: 10 },
   contentRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -134,7 +131,6 @@ const styles = StyleSheet.create({
     position: 'relative',
     minHeight: 80,
   },
-
   leftAction: {
     position: 'absolute',
     left: SPACING.m,
@@ -146,15 +142,11 @@ const styles = StyleSheet.create({
     width: 70,
     height: 40,
   },
-
-  // Conteneur Central
   centerContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    maxWidth: '60%', // Empêche le chevauchement
+    maxWidth: '60%',
   },
   title: { textAlign: 'center', marginBottom: 0 },
-
-  // Élément Droite (Cœur) en absolu
   rightAction: { position: 'absolute', right: SPACING.m, zIndex: 10 },
 });

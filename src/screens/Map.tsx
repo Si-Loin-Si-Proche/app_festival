@@ -48,8 +48,8 @@ export default function MapScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <SectionHeader
-        title="Plan du Festival"
         showBackButton={true}
+        useImageTitle={true}
         showFavorite={false}
       />
       <View style={styles.contentContainer}>
@@ -183,7 +183,7 @@ export default function MapScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: 'white',
   },
   header: {
     zIndex: 9999,

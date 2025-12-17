@@ -24,9 +24,9 @@ export default function LikesScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <SectionHeader
-        logoSource={require('../assets/logo_ferme_du_buisson.png')}
+        showBackButton={true}
         useImageTitle={true}
-        showFavorite={true}
+        showFavorite={false}
       />
 
       <View style={styles.content}>
@@ -54,7 +54,7 @@ export default function LikesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: 'white',
   },
   content: {
     flex: 1,

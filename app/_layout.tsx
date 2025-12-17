@@ -69,6 +69,8 @@ const Layout = () => {
             tabBarStyle: { display: 'none' },
           }}
         />
+
+        <Tabs.Screen name="mentions_legales" options={{ href: null }} />
       </Tabs>
     </GestureHandlerRootView>
   );
