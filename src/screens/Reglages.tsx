@@ -38,7 +38,7 @@ export default function ReglagesScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       {/* 1. HEADER FIXE */}
       <SectionHeader
         logoSource={require('../assets/logo_ferme_du_buisson.png')}
@@ -88,7 +88,7 @@ export default function ReglagesScreen() {
         <MenuItem
           label="Mentions légales"
           type="link"
-          onPress={() => router.push('/mentions' as any)}
+          onPress={() => router.push('/mentions_legales' as any)}
         />
         <Separator marginVertical={5} thickness={2} />
 

@@ -43,12 +43,12 @@ export default function SectionFooter() {
         <View style={styles.row}>
           {/* COLONNE GAUCHE */}
           <View style={styles.leftColumn}>
-            <TouchableOpacity onPress={() => navigateTo('/mentions')}>
+            <TouchableOpacity onPress={() => navigateTo('/mentions_legales')}>
               <Typography variant="caption" style={styles.linkText}>
                 Mentions légales
               </Typography>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigateTo('/confidentialite')}>
+            <TouchableOpacity onPress={() => navigateTo('/politiques_conf')}>
               <Typography variant="caption" style={styles.linkText}>
                 Politique de confidentialité
               </Typography>

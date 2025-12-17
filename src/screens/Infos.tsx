@@ -28,8 +28,8 @@ export default function InfosScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       <SectionHeader
         logoSource={require('../assets/logo_ferme_du_buisson.png')}
-        useImageTitle
-        showFavorite
+        useImageTitle={true}
+        showFavorite={true}
       />
 
       <ScrollView
@@ -184,7 +184,7 @@ export default function InfosScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
+  container: { flex: 1, backgroundColor: 'white' },
   scrollBody: { backgroundColor: COLORS.secondary, flexGrow: 1 },
   planSection: { padding: SPACING.m, paddingBottom: SPACING.xl },
   bottomSheet: {
@@ -221,6 +221,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: SPACING.m,
     gap: SPACING.s,
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
   },
   btnStack: { gap: SPACING.m, marginTop: SPACING.m },
   capsule: { width: '100%', height: 54, borderRadius: 27 },

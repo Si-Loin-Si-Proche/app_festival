@@ -69,6 +69,14 @@ const Layout = () => {
             tabBarStyle: { display: 'none' },
           }}
         />
+
+        <Tabs.Screen name="mentions_legales" options={{ href: null }} />
+
+        <Tabs.Screen name="politiques_conf" options={{ href: null }} />
+
+        <Tabs.Screen name="cgu" options={{ href: null }} />
+
+        <Tabs.Screen name="partenaires" options={{ href: null }} />
       </Tabs>
     </GestureHandlerRootView>
   );
