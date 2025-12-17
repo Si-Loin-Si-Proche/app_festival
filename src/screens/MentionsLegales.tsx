@@ -113,67 +113,7 @@ export default function MentionsLegalesScreen() {
           </Typography>
         </View>
 
-        {/* --- SECTION 3 : PROPRIÉTÉ INTELLECTUELLE --- */}
-        <View style={styles.section}>
-          <Typography variant="h2">Propriété intellectuelle</Typography>
-          <Typography variant="body" style={styles.paragraph}>
-            Toute reproduction, toute représentation totale ou partielle, toute
-            utilisation, toute adaptation, toute mise à disposition ou
-            modification de ces éléments par quelque procédé que ce soit, par
-            quelque personne que ce soit et par quelque moyen que ce soit
-            (notamment la vente, la commercialisation, la location, etc.) sans
-            l’autorisation expresse de la Ferme du Buisson, des éventuels
-            auteurs ou de leurs ayant droits est strictement interdite et
-            constitue un délit de contrefaçon au sens du code de la propriété
-            intellectuelle.
-          </Typography>
-        </View>
-
-        {/* --- SECTION 4 : CONFIDENTIALITÉ --- */}
-        <View style={styles.section}>
-          <Typography variant="h2">
-            Protection de la vie privée et confidentialité
-          </Typography>
-          <Typography variant="body" style={styles.paragraph}>
-            En application des articles 27 et 34 de la loi dite "Informatique et
-            libertés" n° 78-17 du 6 janvier 1978, vous disposez d’un droit de
-            modification ou de suppression des données qui vous concernent. Si
-            vous souhaitez exercer ce droit, vous pouvez, à tout moment,
-            supprimer votre inscription à notre lettre d’information
-            électronique via le lien de désinscription, ou nous écrire. Les
-            informations collectées et intrégrées à nos bases de données font
-            l’objet d'une utilisation uniquement à des fins d'informations pour
-            la Ferme du Buisson, ou sont exceptionnellement cédées à nos
-            partenaires culturels lorsque vous en avez donné l'autorisation.
-          </Typography>
-        </View>
-
-        {/* --- SECTION 5 : RESPONSABILITÉ --- */}
-        <View style={styles.section}>
-          <Typography variant="h2">Responsabilité</Typography>
-          <Typography variant="body" style={styles.paragraph}>
-            Les liens hypertextes mis en place dans le cadre du présent site
-            Internet en direction d’autres ressources présentes sur le réseau
-            Internet ne sauraient engager la responsabilité de la Ferme du
-            Buisson.
-          </Typography>
-          <Typography variant="body" style={styles.paragraph}>
-            Nous ne garantissons pas que ce site soit exempt de défaut, d'erreur
-            ou d’omission et qu'il corresponde exactement à l'usage auquel
-            l'utilisateur le destine. Nous ne pouvons en aucun cas être tenus
-            responsables des éventuels défauts, erreurs ou omissions existant
-            sur ce site.
-          </Typography>
-          <Typography variant="body" style={styles.paragraph}>
-            Chaque utilisateur est seul responsable de l'usage qu’il fait des
-            informations fournies par le site Internet de la Ferme du Buisson,
-            qui ne pourra en aucun cas être tenue responsable de tous dommages
-            directs ou indirects découlant de l'utilisation de ces informations
-            par l'utilisateur.
-          </Typography>
-        </View>
-
-        {/* --- SECTION 6 : LIENS HYPERTEXTES --- */}
+        {/* --- SECTION 5 : LIENS HYPERTEXTES --- */}
         <View style={styles.section}>
           <Typography variant="h2">Liens hypertextes</Typography>
           <Typography variant="body" style={styles.paragraph}>
