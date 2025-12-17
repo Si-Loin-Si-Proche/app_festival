@@ -28,7 +28,7 @@ export default function InfosScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: 'white',
   },
   scrollContent: {
     paddingBottom: 100,
