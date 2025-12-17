@@ -57,9 +57,6 @@ export default function SectionHeader({
 
   // Gestion du clic sur le logo (Retour Home)
   const handleLogoPress = () => {
-    // router.replace est la méthode la plus sûre ici.
-    // Elle remplace l'écran actuel par la racine ('/'), ce qui a pour effet
-    // de nous ramener sur l'onglet Home sans erreur de stack.
     router.replace('/');
   };
 
@@ -135,10 +132,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.m,
     paddingVertical: SPACING.l,
     position: 'relative',
-    minHeight: 80, // Un peu plus haut pour accueillir le SVG
+    minHeight: 80,
   },
 
-  // Élément Gauche (Logo ou Flèche) en absolu
   leftAction: {
     position: 'absolute',
     left: SPACING.m,
