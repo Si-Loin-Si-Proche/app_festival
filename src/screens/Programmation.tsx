@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router';
 import { COLORS, SPACING } from '../constants/theme';
 import { CleanEvent } from '../types/api.types';
 import { getFestivalEvents } from '../services/festival.service';
+import { useFavorites } from '../hooks/useFavorites';
 
 // --- COMPOSANTS ---
 import EventList from '../components/organism/EventList';
@@ -39,6 +40,7 @@ export default function ProgrammationScreen() {
 
   const router = useRouter();
 
+  const { isLiked, toggleFavorite } = useFavorites();
   // 2. CHARGEMENT DES DONNÉES
   useEffect(() => {
     const loadEvents = async () => {
@@ -143,6 +145,8 @@ export default function ProgrammationScreen() {
             events={filteredEvents}
             isLoading={isLoading}
             onEventPress={handleEventPress}
+            isLiked={isLiked}
+            onToggleFavorite={toggleFavorite}
           />
         )}
       </View>

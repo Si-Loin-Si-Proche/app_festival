@@ -10,6 +10,8 @@ interface EventListProps {
   events: CleanEvent[];
   isLoading?: boolean;
   onEventPress: (eventId: string) => void;
+  isLiked: (id: string) => boolean;
+  onToggleFavorite: (event: CleanEvent) => void;
   ListHeaderComponent?: React.ReactElement;
 }
 
@@ -17,6 +19,8 @@ export default function EventList({
   events,
   isLoading,
   onEventPress,
+  isLiked,
+  onToggleFavorite,
   ListHeaderComponent,
 }: EventListProps) {
   // Logique de regroupement par date
@@ -78,6 +82,10 @@ export default function EventList({
       stickySectionHeadersEnabled={false}
       // HEADER
       ListHeaderComponent={ListHeaderComponent}
+      initialNumToRender={6}
+      windowSize={5}
+      maxToRenderPerBatch={5}
+      removeClippedSubviews={true}
       // SECTION HEADER
       renderSectionHeader={({ section: { title } }) => (
         <View style={styles.sectionHeader}>
@@ -88,7 +96,12 @@ export default function EventList({
       )}
       // ITEM
       renderItem={({ item }) => (
-        <EventCard event={item} onPress={() => onEventPress(item.id)} />
+        <EventCard
+          event={item}
+          onPress={() => onEventPress(item.id)}
+          isFavorite={isLiked(item.id)}
+          onToggle={() => onToggleFavorite(item)}
+        />
       )}
       SectionSeparatorComponent={() => <View style={{ height: SPACING.s }} />}
     />

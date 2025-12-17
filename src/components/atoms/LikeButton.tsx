@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { useRouter } from 'expo-router';
 import Icon from './Icon';
 import { COLORS } from '../../constants/theme';
 import { CleanEvent } from '../../types/api.types';
-import { LikeService } from '../../services/like.service';
 
 const BUTTON_SIZES = {
   small: { size: 32, icon: 16 },
@@ -13,57 +12,34 @@ const BUTTON_SIZES = {
 };
 
 interface FavoriteButtonProps {
+  isLiked?: boolean;
+  onPress?: () => void;
   event?: CleanEvent;
   size?: 'small' | 'medium' | 'large';
   backgroundColor?: string;
   activeColor?: string;
   style?: ViewStyle;
-  onToggle?: (newState: boolean) => void;
 }
 
 export default function FavoriteButton({
+  isLiked = false,
+  onPress,
   event,
   size = 'medium',
   backgroundColor = COLORS.primary,
   activeColor = COLORS.text,
   style,
-  onToggle,
 }: FavoriteButtonProps) {
   const router = useRouter();
-  const [liked, setLiked] = useState(false);
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const checkStatus = async () => {
-      if (event?.id) {
-        const isAlreadyLiked = await LikeService.isLiked(event.id);
-        if (isMounted) setLiked(isAlreadyLiked);
-      }
-    };
-
-    checkStatus();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [event?.id]);
-
-  const handlePress = async () => {
+  const handlePress = () => {
     if (!event) {
       router.push('/likes' as any);
       return;
     }
 
-    const previousState = liked;
-    const newState = !liked;
-    setLiked(newState);
-
-    try {
-      await LikeService.toggleFavorite(event);
-      if (onToggle) onToggle(newState);
-    } catch (error) {
-      setLiked(previousState);
+    if (onPress) {
+      onPress();
     }
   };
 
@@ -87,9 +63,9 @@ export default function FavoriteButton({
       <Icon
         name="favorite"
         size={iconSize}
-        color={liked ? activeColor : COLORS.tabBarInactive}
-        fill={liked ? activeColor : 'transparent'}
-        strokeWidth={liked ? 0 : 2}
+        color={isLiked ? activeColor : COLORS.tabBarInactive}
+        fill={isLiked ? activeColor : 'transparent'}
+        strokeWidth={isLiked ? 0 : 2}
       />
     </TouchableOpacity>
   );

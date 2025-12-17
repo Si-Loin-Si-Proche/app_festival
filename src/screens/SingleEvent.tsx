@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -17,7 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS, SPACING, FONTS, SIZES } from '../constants/theme';
 import { CleanEvent } from '../types/api.types';
 import { getFestivalEvents } from '../services/festival.service';
-import { LikeService } from '../services/like.service';
+import { useFavorites } from '../hooks/useFavorites';
 
 // --- COMPOSANTS ---
 import Typography from '../../src/components/atoms/Typography';
@@ -25,6 +25,21 @@ import Icon from '../../src/components/atoms/Icon';
 import Tag from '../../src/components/atoms/Tag';
 import RemoteImage from '../components/atoms/RemoteImage';
 import SectionHeader from '../components/molecules/SectionHeader';
+
+const SYSTEM_FONTS = [FONTS.regular, FONTS.bold];
+
+const TAGS_STYLES = {
+  body: {
+    color: COLORS.text,
+    fontFamily: FONTS.regular,
+    fontSize: SIZES.body,
+    lineHeight: 22,
+  },
+  ul: { paddingLeft: 0, margin: 0 },
+  li: { marginBottom: 5 },
+  p: { marginBottom: 10 },
+  strong: { fontFamily: FONTS.bold },
+};
 
 const formatDateRange = (dates: any[]) => {
   if (!dates || dates.length === 0) return '';
@@ -47,9 +62,14 @@ export default function EventDetailScreen() {
   const router = useRouter();
   const { width } = useWindowDimensions();
 
+  const { isLiked, toggleFavorite } = useFavorites();
+
   const [event, setEvent] = useState<CleanEvent | null>(null);
-  const [isLiked, setIsLiked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  const htmlSource = useMemo(() => {
+    return { html: event?.description || '' };
+  }, [event?.description]);
 
   // Chargement Event
   useEffect(() => {
@@ -58,21 +78,17 @@ export default function EventDetailScreen() {
       const found = allEvents.find((e) => e.id === id);
       setEvent(found || null);
 
-      if (found) {
-        const liked = await LikeService.isLiked(found.id);
-        setIsLiked(liked);
-      }
       setIsLoading(false);
     };
     if (id) fetchEvent();
   }, [id]);
 
-  // Gestion du Like
-  const toggleLike = async () => {
-    if (!event) return;
-    const newState = !isLiked;
-    setIsLiked(newState);
-    await LikeService.toggleFavorite(event);
+  const isEventLiked = event ? isLiked(event.id) : false;
+
+  const handleToggle = () => {
+    if (event) {
+      toggleFavorite(event);
+    }
   };
 
   if (isLoading || !event) {
@@ -163,7 +179,7 @@ export default function EventDetailScreen() {
 
           <TouchableOpacity
             style={[styles.actionBtn, styles.btnFilled]}
-            onPress={toggleLike}
+            onPress={handleToggle}
             activeOpacity={0.7}
           >
             <Typography variant="body">Favori</Typography>
@@ -172,7 +188,7 @@ export default function EventDetailScreen() {
                 name="favorite"
                 size={20}
                 color={COLORS.text}
-                fill={isLiked ? COLORS.text : 'transparent'}
+                fill={isEventLiked ? COLORS.text : 'transparent'}
                 strokeWidth={2}
               />
             </View>
@@ -187,9 +203,9 @@ export default function EventDetailScreen() {
           {event.description ? (
             <RenderHtml
               contentWidth={width - SPACING.m * 2}
-              source={{ html: event.description }}
-              tagsStyles={tagsStyles}
-              systemFonts={[FONTS.regular, FONTS.bold]}
+              source={htmlSource}
+              tagsStyles={TAGS_STYLES}
+              systemFonts={SYSTEM_FONTS}
             />
           ) : (
             <Typography variant="body">
@@ -213,24 +229,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: COLORS.background,
   },
-
-  // --- HEADER CUSTOM ---
   headerSafeArea: {
     backgroundColor: COLORS.secondary,
   },
   headerCustom: {
     marginBottom: 0,
   },
-
-  // --- SCROLL CONTENT ---
   scrollContent: {
     padding: SPACING.m,
     paddingBottom: 100,
     flexGrow: 1,
     backgroundColor: COLORS.background,
   },
-
-  // --- TOP SECTION ---
   topSection: {
     marginBottom: SPACING.m,
   },
@@ -246,14 +256,12 @@ const styles = StyleSheet.create({
     color: COLORS.text,
     fontSize: 22,
   },
-
   locationTag: {
     borderWidth: 1.5,
     borderColor: COLORS.text,
     paddingVertical: 4,
     paddingHorizontal: 12,
   },
-
   dateText: {
     color: COLORS.tabBarInactive,
     marginBottom: SPACING.m,
@@ -262,8 +270,6 @@ const styles = StyleSheet.create({
     color: '#444',
     lineHeight: 20,
   },
-
-  // --- IMAGE ---
   mainImage: {
     width: '100%',
     height: 200,
@@ -273,8 +279,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: COLORS.text,
   },
-
-  // --- ACTIONS ---
   actionsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -297,8 +301,6 @@ const styles = StyleSheet.create({
   btnFilled: {
     backgroundColor: COLORS.secondary,
   },
-
-  // --- DETAILS ---
   detailsSection: {
     marginTop: SPACING.s,
   },
