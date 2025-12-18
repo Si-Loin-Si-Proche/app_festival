@@ -28,11 +28,17 @@ export const useFavorites = () => {
     return favorites.some((f) => f.id === eventId);
   };
 
+  const resetFavorites = async () => {
+    const emptyList = await LikeService.resetAllFavorites();
+    setFavorites(emptyList);
+  };
+
   return {
     favorites,
     loading,
     toggleFavorite,
     isLiked,
     refresh: loadFavorites,
+    resetFavorites,
   };
 };
