@@ -51,4 +51,18 @@ export const LikeService = {
       return [];
     }
   },
+
+  resetAllFavorites: async () => {
+    try {
+      const currentLikes = await LikeService.getFavorites();
+      for (const event of currentLikes) {
+        await NotificationService.cancelEventNotification(event.id);
+      }
+      await AsyncStorage.removeItem(STORAGE_KEY);
+      return [];
+    } catch (e) {
+      console.error('Erreur reset favorites', e);
+      return [];
+    }
+  },
 };

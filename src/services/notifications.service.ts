@@ -1,5 +1,8 @@
 import * as Notifications from 'expo-notifications';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CleanEvent } from '../types/api.types';
+
+const NOTIF_PREF_KEY = 'user_notifications_enabled';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -13,8 +16,33 @@ Notifications.setNotificationHandler({
 
 export const NotificationService = {
   /**
-   * Demande la permission
+   * Vérifie si l'utilisateur a activé les notifications dans l'app
+   * Par défaut : TRUE
    */
+  areNotificationsEnabled: async (): Promise<boolean> => {
+    try {
+      const value = await AsyncStorage.getItem(NOTIF_PREF_KEY);
+      return value !== null ? JSON.parse(value) : true;
+    } catch (e) {
+      return true;
+    }
+  },
+
+  /**
+   * Change le réglage global (activé/désactivé)
+   */
+  setNotificationsEnabled: async (enabled: boolean) => {
+    try {
+      await AsyncStorage.setItem(NOTIF_PREF_KEY, JSON.stringify(enabled));
+      if (!enabled) {
+        await Notifications.cancelAllScheduledNotificationsAsync();
+        console.log('Notifications désactivées : Tout a été annulé.');
+      }
+    } catch (e) {
+      console.error('Erreur sauvegarde pref notif', e);
+    }
+  },
+
   requestPermissions: async () => {
     const { status: existingStatus } =
       await Notifications.getPermissionsAsync();
@@ -39,6 +67,12 @@ export const NotificationService = {
     event: CleanEvent,
     minutesBefore: number = 15
   ) => {
+    const isAppEnabled = await NotificationService.areNotificationsEnabled();
+    if (!isAppEnabled) {
+      console.log('Notif bloquée par le réglage utilisateur (OFF)');
+      return;
+    }
+
     const hasPermission = await NotificationService.requestPermissions();
     if (!hasPermission) return;
     if (!event.dates || event.dates.length === 0) return;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,6 +9,7 @@ import Separator from '../components/atoms/Separator';
 import Typography from '../components/atoms/Typography';
 import ConfirmationModal from '../components/molecules/ConfirmationModal';
 import { COLORS } from '../constants/theme';
+import { NotificationService } from '../services/notifications.service';
 
 const logoImg = require('../assets/logo_ferme_du_buisson.png');
 
@@ -37,6 +38,18 @@ export default function ReglagesScreen() {
     console.log('Reset effectué !');
   };
 
+  useEffect(() => {
+    const loadSettings = async () => {
+      const isEnabled = await NotificationService.areNotificationsEnabled();
+      setNotifEnabled(isEnabled);
+    };
+    loadSettings();
+  }, []);
+
+  const toggleNotifications = async (newValue: boolean) => {
+    setNotifEnabled(newValue);
+    await NotificationService.setNotificationsEnabled(newValue);
+  };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       {/* 1. HEADER FIXE */}
@@ -59,7 +72,7 @@ export default function ReglagesScreen() {
           label="Notifications"
           type="switch"
           value={notifEnabled}
-          onValueChange={setNotifEnabled}
+          onValueChange={toggleNotifications}
         />
         <Separator marginVertical={5} thickness={2} />
 
