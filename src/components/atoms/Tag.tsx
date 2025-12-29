@@ -4,6 +4,7 @@ import {
   StyleSheet,
   ViewStyle,
   TouchableOpacityProps,
+  StyleProp,
 } from 'react-native';
 import Typography from './Typography';
 import Icon from './Icon';
@@ -16,7 +17,7 @@ interface TagProps extends TouchableOpacityProps {
   iconName?: IconName;
   isSelected?: boolean;
   backgroundColor?: string;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export default function Tag({
