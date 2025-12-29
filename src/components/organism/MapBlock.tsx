@@ -5,16 +5,20 @@ import Typography from '../atoms/Typography';
 import { SPACING, SHADOWS } from '../../constants/theme';
 import { useTheme } from '../../context/ThemeContext';
 import { MAP_IMAGE_SOURCE } from '../../constants/mapData';
+import { useAppHaptics } from '../../hooks/useAppHaptics';
 
 export default function MapBlock() {
   const router = useRouter();
   const { colors } = useTheme();
-
+  const { medium } = useAppHaptics();
   return (
     <View style={styles.container}>
       <TouchableOpacity
         activeOpacity={0.9}
-        onPress={() => router.push('/map')}
+        onPress={() => {
+          medium();
+          router.push('/map');
+        }}
         style={[
           styles.cardContainer,
           {

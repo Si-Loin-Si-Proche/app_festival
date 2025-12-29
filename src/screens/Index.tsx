@@ -56,7 +56,6 @@ export default function IndexScreen() {
     const fetchData = async () => {
       try {
         const data = await getFestivalEvents((newData) => {
-          console.log("⚡️ Mise à jour de l'accueil via le réseau");
           processData(newData);
         });
         processData(data);

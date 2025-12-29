@@ -59,7 +59,7 @@ export default function MenuItem({
                 isExpanded && { backgroundColor: colors.background },
               ]}
             >
-              <Typography variant="h2" style={styles.dropdownText}>
+              <Typography variant="h3" style={styles.dropdownText}>
                 {selectedValue}
               </Typography>
               <View
