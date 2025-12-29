@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ReactNativeZoomableView } from '@dudigital/react-native-zoomable-view';
+import { useRouter } from 'expo-router';
 
 import { SPACING } from '../constants/theme';
 import { IconName } from '../constants/icons';
@@ -30,6 +31,7 @@ const FILTERS = [
 ];
 
 export default function MapScreen() {
+  const router = useRouter();
   const { colors } = useTheme();
   const [selectedPoint, setSelectedPoint] = useState<MapPoint | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>('all');
@@ -162,7 +164,7 @@ export default function MapScreen() {
                   { backgroundColor: selectedPoint.color },
                 ]}
               >
-                <Icon name={selectedPoint.icon} size={20} color={colors.card} />
+                <Icon name={selectedPoint.icon} size={20} color="#FFFFFF" />
               </View>
               <Typography
                 variant="h2"
@@ -179,6 +181,30 @@ export default function MapScreen() {
               >
                 {selectedPoint.description}
               </Typography>
+            )}
+            {selectedPoint.category === 'scene' && (
+              <TouchableOpacity
+                style={{ marginTop: 12 }}
+                activeOpacity={0.7}
+                onPress={() => {
+                  setSelectedPoint(null);
+                  router.push({
+                    pathname: '/programmation',
+                    params: { location: selectedPoint.label },
+                  });
+                }}
+              >
+                <Typography
+                  variant="body"
+                  style={{
+                    color: colors.primary,
+                    fontWeight: 'bold',
+                    textDecorationLine: 'underline',
+                  }}
+                >
+                  Voir les spectacles de cette scène →
+                </Typography>
+              </TouchableOpacity>
             )}
           </View>
 

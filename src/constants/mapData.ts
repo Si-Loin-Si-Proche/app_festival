@@ -43,4 +43,14 @@ export const MAP_POINTS: MapPoint[] = [
     description: 'Burgers bio et locaux',
     color: COLORS.primary,
   },
+  {
+    id: 'abreuvoir',
+    x: 360,
+    y: 50,
+    label: 'Abreuvoir',
+    icon: 'scene',
+    category: 'scene',
+    description: "C'est l'abreuvoir il est super top",
+    color: COLORS.primary,
+  },
 ];
