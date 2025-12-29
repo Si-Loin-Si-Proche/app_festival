@@ -23,11 +23,11 @@ export default function MapMarker({ point, onPress }: MapMarkerProps) {
           left: point.x,
           top: point.y,
           backgroundColor: point.color,
-          borderColor: colors.card,
+          borderColor: '#FFFFFF',
         },
       ]}
     >
-      <Icon name={point.icon} size={sizes.small} color={colors.card} />
+      <Icon name={point.icon} size={sizes.small} color="#FFFFFF" />
     </TouchableOpacity>
   );
 }
