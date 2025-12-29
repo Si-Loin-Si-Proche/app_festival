@@ -26,6 +26,7 @@ import Icon from '../../src/components/atoms/Icon';
 import Tag from '../../src/components/atoms/Tag';
 import RemoteImage from '../components/atoms/RemoteImage';
 import SectionHeader from '../components/molecules/SectionHeader';
+import EventCard from '../components/molecules/EventCard'; // <--- 1. Import d'EventCard
 
 const SYSTEM_FONTS = [FONTS.regular, FONTS.bold];
 
@@ -47,12 +48,14 @@ const formatDateRange = (dates: any[]) => {
 
 export default function EventDetailScreen() {
   const { id } = useLocalSearchParams();
+  const router = useRouter(); // Utilisation de router pour la navigation
   const { width } = useWindowDimensions();
   const { colors } = useTheme();
 
   const { isLiked, toggleFavorite } = useFavorites();
 
   const [event, setEvent] = useState<CleanEvent | null>(null);
+  const [relatedEvents, setRelatedEvents] = useState<CleanEvent[]>([]); // <--- 2. State pour les suggestions
   const [isLoading, setIsLoading] = useState(true);
 
   // Styles dynamiques pour le rendu HTML
@@ -77,12 +80,26 @@ export default function EventDetailScreen() {
     return { html: event?.description || '' };
   }, [event?.description]);
 
-  // Chargement Event
   useEffect(() => {
     const fetchEvent = async () => {
+      setIsLoading(true);
       const allEvents = await getFestivalEvents();
       const found = allEvents.find((e) => e.id === id);
       setEvent(found || null);
+
+      if (found) {
+        const currentPlace = found.dates[0]?.placeName;
+
+        if (currentPlace) {
+          const suggestions = allEvents.filter((e) => {
+            const isNotSelf = e.id !== found.id;
+            const isSamePlace = e.dates[0]?.placeName === currentPlace;
+
+            return isNotSelf && isSamePlace;
+          });
+          setRelatedEvents(suggestions.slice(0, 3));
+        }
+      }
 
       setIsLoading(false);
     };
@@ -95,6 +112,10 @@ export default function EventDetailScreen() {
     if (event) {
       toggleFavorite(event);
     }
+  };
+
+  const handleRelatedPress = (eventId: string) => {
+    router.push(`/event/${eventId}` as any);
   };
 
   if (isLoading || !event) {
@@ -139,21 +160,12 @@ export default function EventDetailScreen() {
         bounces={false}
       >
         <View style={styles.topSection}>
-          <View style={styles.titleRow}>
-            <Typography
-              variant="h1"
-              style={[styles.title, { color: colors.text }]}
-            >
-              {event.title}
-            </Typography>
-
-            <Tag
-              label={placeName}
-              iconName="location"
-              backgroundColor={colors.tag}
-              style={[styles.locationTag, { borderColor: colors.text }]}
-            />
-          </View>
+          <Typography
+            variant="h1"
+            style={[styles.title, { color: colors.text }]}
+          >
+            {event.title}
+          </Typography>
 
           <Typography
             variant="caption"
@@ -161,6 +173,16 @@ export default function EventDetailScreen() {
           >
             {formatDateRange(event.dates)}
           </Typography>
+
+          <Tag
+            label={placeName}
+            iconName="location"
+            backgroundColor={colors.tag}
+            style={StyleSheet.flatten([
+              styles.locationTag,
+              { borderColor: colors.text },
+            ])}
+          />
 
           {event.subtitle && (
             <Typography
@@ -194,7 +216,10 @@ export default function EventDetailScreen() {
             }}
             activeOpacity={0.7}
           >
-            <Typography variant="body" style={{ fontFamily: FONTS.bold }}>
+            <Typography
+              variant="body"
+              style={{ fontFamily: FONTS.bold, color: colors.text }}
+            >
               Réserver
             </Typography>
           </TouchableOpacity>
@@ -210,7 +235,10 @@ export default function EventDetailScreen() {
             onPress={handleToggle}
             activeOpacity={0.7}
           >
-            <Typography variant="body" style={{ fontFamily: FONTS.bold }}>
+            <Typography
+              variant="body"
+              style={{ fontFamily: FONTS.bold, color: colors.text }}
+            >
               Favori
             </Typography>
             <View style={{ marginLeft: 8 }}>
@@ -226,13 +254,6 @@ export default function EventDetailScreen() {
         </View>
 
         <View style={styles.detailsSection}>
-          <Typography
-            variant="h2"
-            style={{ marginBottom: SPACING.s, color: colors.text }}
-          >
-            Détail de l’évenement :
-          </Typography>
-
           {event.description ? (
             <RenderHtml
               contentWidth={width - SPACING.m * 2}
@@ -246,6 +267,36 @@ export default function EventDetailScreen() {
             </Typography>
           )}
         </View>
+
+        {relatedEvents.length > 0 && (
+          <View style={styles.relatedSection}>
+            <View style={styles.separator} />
+            <Typography
+              variant="h2"
+              style={{ color: colors.text, marginBottom: SPACING.m }}
+            >
+              Dans le même lieu
+            </Typography>
+
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: SPACING.m }}
+            >
+              {relatedEvents.map((item) => (
+                <View key={item.id} style={{ width: 220 }}>
+                  <EventCard
+                    event={item}
+                    variant="vertical"
+                    onPress={() => handleRelatedPress(item.id)}
+                    isFavorite={isLiked(item.id)}
+                    onToggle={() => toggleFavorite(item)}
+                  />
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        )}
       </ScrollView>
     </View>
   );
@@ -271,24 +322,18 @@ const styles = StyleSheet.create({
   topSection: {
     marginBottom: SPACING.m,
   },
-  titleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: SPACING.xs,
-    gap: SPACING.s,
-  },
   title: {
     flex: 1,
-    fontSize: 22,
+    fontSize: SIZES.h1,
   },
   locationTag: {
     borderWidth: 1.5,
     paddingVertical: 4,
+    marginBottom: SPACING.s,
     paddingHorizontal: 12,
   },
   dateText: {
-    marginBottom: SPACING.m,
+    marginBottom: SPACING.s,
   },
   introText: {
     lineHeight: 20,
@@ -319,5 +364,15 @@ const styles = StyleSheet.create({
   },
   detailsSection: {
     marginTop: SPACING.s,
+  },
+  relatedSection: {
+    marginTop: SPACING.xl,
+    paddingBottom: SPACING.l,
+  },
+  separator: {
+    backgroundColor: '#ccc',
+    opacity: 0.5,
+    marginBottom: SPACING.m,
+    width: '100%',
   },
 });
