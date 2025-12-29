@@ -162,9 +162,7 @@ export default function InfosScreen() {
           </View>
         </View>
 
-        <View style={styles.footerContainer}>
-          <SectionFooter />
-        </View>
+        <SectionFooter />
       </ScrollView>
     </SafeAreaView>
   );
@@ -208,9 +206,5 @@ const styles = StyleSheet.create({
   email: {
     marginTop: SPACING.xs,
     textDecorationLine: 'underline',
-  },
-  footerContainer: {
-    marginHorizontal: -SPACING.m,
-    marginBottom: -SPACING.m,
   },
 });

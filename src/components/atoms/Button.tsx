@@ -97,7 +97,7 @@ export default function Button({
               backgroundColor: color,
               ...primaryBorder,
             },
-            text: { color: colors.card },
+            text: { color: colors.text },
             indicator: colors.card,
           };
       }
