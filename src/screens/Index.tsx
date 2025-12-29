@@ -232,7 +232,6 @@ const styles = StyleSheet.create({
   },
   footerContainer: {
     marginHorizontal: -22,
-    marginBottom: -20,
     marginTop: 20,
     zIndex: 1,
   },
