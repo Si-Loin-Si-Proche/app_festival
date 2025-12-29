@@ -15,6 +15,7 @@ import MapBlock from '../components/organism/MapBlock';
 import { SPACING } from '../constants/theme';
 import { ICONS } from '../constants/icons';
 import { useTheme } from '../context/ThemeContext';
+import { useAppHaptics } from '../hooks/useAppHaptics';
 
 const logoImg = require('../assets/logo_ferme_du_buisson.png');
 
@@ -25,7 +26,7 @@ export default function InfosScreen() {
     Linking.openURL(url).catch((err) =>
       console.error('An error occurred', err)
     );
-
+  const { light, medium } = useAppHaptics();
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
@@ -71,11 +72,12 @@ export default function InfosScreen() {
           <View style={styles.btnStack}>
             <Button
               label="Réserver en ligne"
-              onPress={() =>
+              onPress={() => {
+                light();
                 handlePress(
                   'https://lafermedubuisson.notre-billetterie.com/formulaire?dial=sommaire2526aa'
-                )
-              }
+                );
+              }}
               color={colors.filtreSelected}
               icon="ticket"
               withBorder
@@ -83,7 +85,10 @@ export default function InfosScreen() {
             />
             <Button
               label="Réserver par téléphone"
-              onPress={() => handlePress('tel:0164627777')}
+              onPress={() => {
+                light();
+                handlePress('tel:0164627777');
+              }}
               color={colors.filtreSelected}
               icon="phone"
               withBorder

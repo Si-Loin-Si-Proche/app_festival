@@ -18,6 +18,7 @@ import { useTheme } from '../../context/ThemeContext';
 // 1. IMPORT DES DEUX SVG
 import TitleLogoBlack from '../../assets/logo_si_loin_si_proche.svg';
 import TitleLogoWhite from '../../assets/logo_slsp_blanc.svg';
+import { useAppHaptics } from '../../hooks/useAppHaptics';
 
 interface SectionHeaderProps {
   title?: string;
@@ -45,8 +46,10 @@ export default function SectionHeader({
     colors.text === '#FFFFFF' ||
     colors.text === '#fff' ||
     colors.text === '#F5F5F5';
+  const { light } = useAppHaptics();
 
   const handleBack = () => {
+    light();
     if (onBack) {
       onBack();
       return;

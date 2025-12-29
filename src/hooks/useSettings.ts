@@ -7,6 +7,10 @@ import { useRouter } from 'expo-router';
 import { useTheme } from '../context/ThemeContext';
 import { useFavorites } from './useFavorites';
 import { NotificationService } from '../services/notifications.service';
+import { setGlobalHapticsEnabled } from './useAppHaptics';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const VIBRATION_KEY = 'user_vibration_enabled';
 
 export const useSettings = () => {
   const router = useRouter();
@@ -27,6 +31,7 @@ export const useSettings = () => {
   const [notifEnabled, setNotifEnabled] = useState(true);
   const [isThemeOpen, setIsThemeOpen] = useState(false);
   const [isResetModalVisible, setResetModalVisible] = useState(false);
+  const [vibrationEnabled, setVibrationEnabled] = useState(true);
 
   // 3. Initialisation : Charger l'état des notifications
   useEffect(() => {
@@ -77,7 +82,11 @@ export const useSettings = () => {
       setResetModalVisible(false);
       Alert.alert('Succès', "L'application a été réinitialisée.");
 
-      // Optionnel : Rediriger vers l'accueil pour rafraîchir
+      const vib = await AsyncStorage.getItem(VIBRATION_KEY);
+      const isVibEnabled = vib !== null ? JSON.parse(vib) : true;
+      setVibrationEnabled(isVibEnabled);
+      setGlobalHapticsEnabled(isVibEnabled);
+
       router.replace('/' as any);
     } catch (error) {
       console.error('Erreur reset', error);
@@ -86,6 +95,12 @@ export const useSettings = () => {
         'Une erreur est survenue lors de la réinitialisation.'
       );
     }
+  };
+
+  const handleToggleVibration = async (value: boolean) => {
+    setVibrationEnabled(value);
+    setGlobalHapticsEnabled(value);
+    await AsyncStorage.setItem(VIBRATION_KEY, JSON.stringify(value));
   };
 
   return {
@@ -103,6 +118,9 @@ export const useSettings = () => {
     handleThemeSelect,
     handleAccessToggle,
     handleResetConfirm,
+
+    vibrationEnabled,
+    handleToggleVibration,
 
     router,
   };

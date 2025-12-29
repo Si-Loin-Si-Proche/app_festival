@@ -27,6 +27,7 @@ import Tag from '../../src/components/atoms/Tag';
 import RemoteImage from '../components/atoms/RemoteImage';
 import SectionHeader from '../components/molecules/SectionHeader';
 import EventCard from '../components/molecules/EventCard';
+import { useAppHaptics } from '../hooks/useAppHaptics';
 
 const SYSTEM_FONTS = [FONTS.regular, FONTS.bold];
 
@@ -57,7 +58,7 @@ export default function EventDetailScreen() {
   const [event, setEvent] = useState<CleanEvent | null>(null);
   const [relatedEvents, setRelatedEvents] = useState<CleanEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  const { success, light } = useAppHaptics();
   // Styles dynamiques pour le rendu HTML
   const tagsStyles = useMemo(
     () => ({
@@ -113,6 +114,7 @@ export default function EventDetailScreen() {
 
   const handleToggle = () => {
     if (event) {
+      success();
       toggleFavorite(event);
     }
   };
@@ -213,6 +215,7 @@ export default function EventDetailScreen() {
               },
             ]}
             onPress={() => {
+              light();
               const url =
                 'https://lafermedubuisson.notre-billetterie.com/billets?kld=2526';
               Linking.openURL(url);

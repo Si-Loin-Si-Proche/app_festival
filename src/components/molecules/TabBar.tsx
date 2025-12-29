@@ -5,6 +5,7 @@ import Icon from '../atoms/Icon';
 import { SHADOWS } from '../../constants/theme';
 import { IconName } from '../../constants/icons';
 import { useTheme } from '../../context/ThemeContext';
+import { useAppHaptics } from '../../hooks/useAppHaptics';
 
 export default function TabBar({
   state,
@@ -19,7 +20,7 @@ export default function TabBar({
     programmation: 'calendar',
     reglages: 'settings',
   };
-
+  const { light } = useAppHaptics();
   return (
     <View
       style={[
@@ -42,6 +43,7 @@ export default function TabBar({
         const isFocused = state.index === index;
 
         const onPress = () => {
+          light();
           const event = navigation.emit({
             type: 'tabPress',
             target: route.key,

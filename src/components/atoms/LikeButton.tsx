@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import Icon from './Icon';
 import { useTheme } from '../../context/ThemeContext';
 import { CleanEvent } from '../../types/api.types';
+import { useAppHaptics } from '../../hooks/useAppHaptics';
 
 const BUTTON_SIZES = {
   small: { size: 32, icon: 16 },
@@ -30,16 +31,19 @@ export default function FavoriteButton({
   activeColor,
   style,
 }: FavoriteButtonProps) {
+  const { success, light } = useAppHaptics();
+
   const router = useRouter();
   const { colors } = useTheme();
 
   const handlePress = () => {
     if (!event) {
+      light();
       router.push('/likes' as any);
       return;
     }
-
     if (onPress) {
+      success();
       onPress();
     }
   };

@@ -2,6 +2,7 @@ import React from 'react';
 import { FlatList, View, StyleSheet, ViewStyle, StyleProp } from 'react-native';
 import Tag from '../atoms/Tag';
 import { SPACING } from '../../constants/theme';
+import { useAppHaptics } from '../../hooks/useAppHaptics';
 
 interface FilterListProps {
   options: string[];
@@ -16,6 +17,7 @@ export default function FilterList({
   onSelect,
   style,
 }: FilterListProps) {
+  const { selection } = useAppHaptics();
   return (
     <View style={[styles.container, style]}>
       <FlatList
@@ -29,7 +31,10 @@ export default function FilterList({
             <Tag
               label={item}
               isSelected={selected === item}
-              onPress={() => onSelect(item)}
+              onPress={() => {
+                selection();
+                onSelect(item);
+              }}
             />
           </View>
         )}
