@@ -7,31 +7,35 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-// --- COMPOSANTS ---
 import Typography from '../components/atoms/Typography';
 import Button from '../components/atoms/Button';
 import SectionHeader from '../components/molecules/SectionHeader';
 import SectionFooter from '../components/molecules/SectionFooter';
 import MapBlock from '../components/organism/MapBlock';
-
-// --- THEME & ICONS ---
-import { COLORS, SPACING } from '../constants/theme';
+import { SPACING } from '../constants/theme';
 import { ICONS } from '../constants/icons';
+import { useTheme } from '../context/ThemeContext';
 
 const logoImg = require('../assets/logo_ferme_du_buisson.png');
 
 export default function InfosScreen() {
+  const { colors } = useTheme();
+
   const handlePress = (url: string) =>
-    Linking.openURL(url).catch(console.error);
+    Linking.openURL(url).catch((err) =>
+      console.error('An error occurred', err)
+    );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top']}
+    >
       <SectionHeader
         logoSource={logoImg}
         useImageTitle={true}
         showFavorite={true}
-        style={{ backgroundColor: COLORS.background }}
+        style={{ backgroundColor: colors.background }}
       />
 
       <ScrollView
@@ -51,7 +55,7 @@ export default function InfosScreen() {
               )
             }
           >
-            <ICONS.location size={16} color={COLORS.text} />
+            <ICONS.location size={16} color={colors.text} />
             <Typography variant="body" style={styles.underline}>
               Allée De La Ferme, 77186 Noisiel
             </Typography>
@@ -72,7 +76,7 @@ export default function InfosScreen() {
                   'https://lafermedubuisson.notre-billetterie.com/formulaire?dial=sommaire2526aa'
                 )
               }
-              color={COLORS.filtreSelected}
+              color={colors.filtreSelected}
               icon="ticket"
               withBorder
               style={styles.capsule}
@@ -80,7 +84,7 @@ export default function InfosScreen() {
             <Button
               label="Réserver par téléphone"
               onPress={() => handlePress('tel:0164627777')}
-              color={COLORS.filtreSelected}
+              color={colors.filtreSelected}
               icon="phone"
               withBorder
               style={styles.capsule}
@@ -158,7 +162,6 @@ export default function InfosScreen() {
           </View>
         </View>
 
-        {/* FOOTER */}
         <View style={styles.footerContainer}>
           <SectionFooter />
         </View>
@@ -170,7 +173,6 @@ export default function InfosScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   scrollContent: {
     paddingVertical: SPACING.m,

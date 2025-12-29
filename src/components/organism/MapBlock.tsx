@@ -2,25 +2,27 @@ import React from 'react';
 import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import Typography from '../atoms/Typography';
-import { COLORS, SPACING, SHADOWS } from '../../constants/theme';
+import { SPACING, SHADOWS } from '../../constants/theme';
+import { useTheme } from '../../context/ThemeContext';
 import { MAP_IMAGE_SOURCE } from '../../constants/mapData';
 
 export default function MapBlock() {
   const router = useRouter();
+  const { colors } = useTheme();
 
   return (
     <View style={styles.container}>
-      {/* Titre avec le style "- plan du site"
-      <Typography variant="h2" style={styles.title}>
-        — plan du site
-      </Typography> */}
-
       <TouchableOpacity
         activeOpacity={0.9}
         onPress={() => router.push('/map')}
-        style={styles.cardContainer}
+        style={[
+          styles.cardContainer,
+          {
+            backgroundColor: colors.card,
+            borderColor: colors.text,
+          },
+        ]}
       >
-        {/* L'image est contenue et coupée (overflow hidden) pour respecter les bords ronds */}
         <View style={styles.imageWrapper}>
           <Image
             source={MAP_IMAGE_SOURCE}
@@ -55,11 +57,8 @@ const styles = StyleSheet.create({
   cardContainer: {
     marginHorizontal: SPACING.m,
     height: 180,
-    backgroundColor: COLORS.card,
     borderRadius: 20,
     borderWidth: 2,
-    borderColor: COLORS.text,
-
     ...SHADOWS.medium,
     overflow: 'hidden',
   },

@@ -3,12 +3,17 @@ import { View, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SectionHeader from '../components/molecules/SectionHeader';
 import Typography from '../components/atoms/Typography';
-import { COLORS, SPACING } from '../constants/theme';
+import { SPACING } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
 
 export default function CGUScreen() {
+  const { colors } = useTheme();
+
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      {/* HEADER : Retour + Logo Centre + Pas de Favori */}
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top']}
+    >
       <SectionHeader
         showBackButton={true}
         useImageTitle={true}
@@ -19,14 +24,21 @@ export default function CGUScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <Typography variant="h1" style={styles.pageTitle}>
+        <Typography
+          variant="h1"
+          style={[styles.pageTitle, { color: colors.text }]}
+        >
           Conditions Générales d'Utilisation
         </Typography>
 
-        {/* --- SECTION 1 : PROPRIÉTÉ INTELLECTUELLE --- */}
         <View style={styles.section}>
-          <Typography variant="h2">Propriété intellectuelle</Typography>
-          <Typography variant="body" style={styles.paragraph}>
+          <Typography variant="h2" style={{ color: colors.text }}>
+            Propriété intellectuelle
+          </Typography>
+          <Typography
+            variant="body"
+            style={[styles.paragraph, { color: colors.text }]}
+          >
             Toute reproduction, toute représentation totale ou partielle, toute
             utilisation, toute adaptation, toute mise à disposition ou
             modification de ces éléments par quelque procédé que ce soit, par
@@ -39,11 +51,15 @@ export default function CGUScreen() {
           </Typography>
         </View>
 
-        {/* --- SECTION 2 : RESPONSABILITÉ --- */}
         <View style={styles.section}>
-          <Typography variant="h2">Responsabilité</Typography>
+          <Typography variant="h2" style={{ color: colors.text }}>
+            Responsabilité
+          </Typography>
 
-          <Typography variant="body" style={styles.paragraph}>
+          <Typography
+            variant="body"
+            style={[styles.paragraph, { color: colors.text }]}
+          >
             Nous ne garantissons pas que cette Application soit exempte de
             défaut, d'erreur ou d’omission et qu'elle corresponde exactement à
             l'usage auquel l'utilisateur la destine. Nous ne pouvons en aucun
@@ -51,7 +67,10 @@ export default function CGUScreen() {
             omissions existant sur cette Application.
           </Typography>
 
-          <Typography variant="body" style={styles.paragraph}>
+          <Typography
+            variant="body"
+            style={[styles.paragraph, { color: colors.text }]}
+          >
             Chaque utilisateur est seul responsable de l'usage qu’il fait des
             informations fournies par l'Application de la Ferme du Buisson, qui
             ne pourra en aucun cas être tenue responsable de tous dommages
@@ -59,7 +78,10 @@ export default function CGUScreen() {
             par l'utilisateur.
           </Typography>
 
-          <Typography variant="body" style={styles.paragraph}>
+          <Typography
+            variant="body"
+            style={[styles.paragraph, { color: colors.text }]}
+          >
             Les liens hypertextes mis en place dans le cadre de la présente
             Application en direction d’autres ressources présentes sur le réseau
             Internet ne sauraient engager la responsabilité de la Ferme du
@@ -74,7 +96,6 @@ export default function CGUScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
   },
   scrollContent: {
     paddingHorizontal: 20,

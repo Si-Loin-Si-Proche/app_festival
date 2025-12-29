@@ -10,7 +10,8 @@ import {
   ImageStyle,
 } from 'react-native';
 import { CleanEvent } from '../../types/api.types';
-import { COLORS, SPACING, FONTS, SIZES } from '../../constants/theme';
+import { SPACING, FONTS, SIZES } from '../../constants/theme';
+import { useTheme } from '../../context/ThemeContext';
 import RemoteImage from '../atoms/RemoteImage';
 import Typography from '../atoms/Typography';
 import FavoriteButton from '../atoms/LikeButton';
@@ -36,6 +37,8 @@ function EventCard({
   isFavorite,
   onToggle,
 }: EventCardProps) {
+  const { colors, sizes } = useTheme();
+
   const firstDate = event.dates[0];
   const placeName = firstDate?.placeName || 'Lieu à définir';
 
@@ -83,7 +86,7 @@ function EventCard({
     if (!imageSource)
       return (
         <View
-          style={[imageStyle as ViewStyle, { backgroundColor: '#E0E0E0' }]}
+          style={[imageStyle as ViewStyle, { backgroundColor: colors.border }]}
         />
       );
     if (isUrl) {
@@ -111,11 +114,29 @@ function EventCard({
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={onPress}
-        style={[styles.cContainer, style]}
+        style={[
+          styles.cContainer,
+          {
+            borderColor: colors.text,
+            backgroundColor: colors.background,
+          },
+          style,
+        ]}
       >
-        <View style={styles.cTagWrapper}>
-          <Icon name="location" size={14} color={COLORS.text} />
-          <Typography variant="caption" style={styles.cTagText}>
+        <View
+          style={[
+            styles.cTagWrapper,
+            {
+              backgroundColor: colors.tag,
+              borderColor: colors.text,
+            },
+          ]}
+        >
+          <Icon name="location" size={14} color={colors.text} />
+          <Typography
+            variant="caption"
+            style={[styles.cTagText, { color: colors.text }]}
+          >
             {placeName.toUpperCase()}
           </Typography>
         </View>
@@ -130,7 +151,7 @@ function EventCard({
           </Typography>
         </View>
 
-        <Icon name="arrowRight" size={24} color={COLORS.text} />
+        <Icon name="arrowRight" size={24} color={colors.text} />
       </TouchableOpacity>
     );
   }
@@ -143,20 +164,22 @@ function EventCard({
         onPress={onPress}
         style={[styles.vContainer, style]}
       >
-        {renderImage(styles.vImage)}
+        {renderImage([styles.vImage, { borderColor: colors.text }])}
 
         <View
           style={[
             styles.vInfoBox,
-            { backgroundColor: backgroundColor || COLORS.card },
+            {
+              // Ici on utilise la prop backgroundColor si elle existe, sinon la couleur par défaut
+              backgroundColor: backgroundColor || colors.card,
+              borderColor: colors.text,
+            },
           ]}
         >
-          {/* TITRE */}
           <Typography variant="h2" style={styles.vTitle} numberOfLines={2}>
             {event.title}
           </Typography>
 
-          {/* SOUS-TITRE */}
           {event.subtitle && (
             <Typography
               variant="caption"
@@ -167,7 +190,6 @@ function EventCard({
             </Typography>
           )}
 
-          {/* DATE & HEURE (Groupés sans marge haute pour utiliser le gap du parent) */}
           <View>
             <Typography variant="caption" style={{ fontFamily: FONTS.bold }}>
               {new Date(firstDate?.start || '').toLocaleDateString('fr-FR', {
@@ -187,28 +209,42 @@ function EventCard({
     );
   }
 
-  // VARIANTE HORIZONTALE
+  // VARIANTE HORIZONTALE (Défaut)
   return (
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={onPress}
-      style={[styles.hContainer, style]}
+      style={[
+        styles.hContainer,
+        {
+          backgroundColor: colors.card,
+          borderColor: colors.text,
+        },
+        style,
+      ]}
     >
       <View style={styles.hImageContainer}>{renderImage(styles.hImage)}</View>
 
       <View style={styles.hContent}>
-        <Typography variant="caption" style={styles.hDateText}>
+        <Typography
+          variant="caption"
+          style={[styles.hDateText, { color: colors.text }]}
+        >
           {dateString} à {timeString}
         </Typography>
 
-        <Typography variant="body" style={styles.hTitle} numberOfLines={2}>
+        <Typography
+          variant="body"
+          style={[styles.hTitle, { color: colors.text, fontSize: sizes.h3 }]}
+          numberOfLines={2}
+        >
           {event.title}
         </Typography>
 
         {event.subtitle && (
           <Typography
             variant="caption"
-            style={styles.hSubtitle}
+            style={[styles.hSubtitle, { color: colors.text }]}
             numberOfLines={1}
           >
             {event.subtitle}
@@ -218,7 +254,7 @@ function EventCard({
         <Tag
           label={placeName}
           iconName="location"
-          backgroundColor={COLORS.tag}
+          backgroundColor={colors.tag}
           style={styles.hTag}
         />
       </View>
@@ -227,8 +263,8 @@ function EventCard({
         <FavoriteButton
           size="medium"
           event={event}
-          backgroundColor={COLORS.secondary}
-          activeColor={COLORS.text}
+          backgroundColor={colors.secondary}
+          activeColor={colors.text}
           isLiked={isFavorite}
           onPress={onToggle}
         />
@@ -244,18 +280,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 40,
     borderWidth: 2,
-    borderColor: COLORS.text,
-    backgroundColor: COLORS.background,
     paddingVertical: 10,
     paddingHorizontal: 15,
     marginBottom: SPACING.m,
     height: 60,
   },
   cTagWrapper: {
-    backgroundColor: '#FFF59D',
     borderRadius: 20,
     borderWidth: 2,
-    borderColor: COLORS.text,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,
@@ -300,7 +332,6 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 24,
     borderWidth: 2,
-    borderColor: COLORS.text,
     overflow: 'hidden',
   },
   vInfoBox: {
@@ -309,19 +340,13 @@ const styles = StyleSheet.create({
     left: 20,
     maxWidth: '85%',
     alignSelf: 'flex-start',
-
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: COLORS.text,
     paddingHorizontal: 16,
-    paddingVertical: 12, // Padding interne égal en haut/bas
-
+    paddingVertical: 12,
     flexDirection: 'column',
     alignItems: 'flex-start',
-
-    // 👇 CORRECTION 2 : Gap unique pour harmoniser les espaces
     gap: 6,
-
     shadowColor: '#000',
     shadowOffset: { width: 3, height: 3 },
     shadowOpacity: 0.2,
@@ -330,7 +355,6 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   vTitle: {
-    // 👇 On enlève les marges individuelles
     marginBottom: 0,
     fontSize: 18,
     lineHeight: 22,
@@ -338,17 +362,14 @@ const styles = StyleSheet.create({
   vSubtitle: {
     fontSize: 13,
     fontStyle: 'italic',
-    // 👇 On enlève les marges individuelles
     marginBottom: 0,
   },
 
   // --- HORIZONTAL ---
   hContainer: {
     flexDirection: 'row',
-    backgroundColor: COLORS.card,
     borderRadius: 24,
     borderWidth: 2,
-    borderColor: COLORS.text,
     padding: SPACING.s,
     marginBottom: SPACING.m,
     alignItems: 'stretch',
@@ -373,20 +394,16 @@ const styles = StyleSheet.create({
   hDateText: {
     fontFamily: FONTS.bold,
     fontSize: 11,
-    color: COLORS.text,
     marginBottom: 2,
   },
   hTitle: {
     fontFamily: FONTS.bold,
-    fontSize: SIZES.h3,
-    color: COLORS.text,
     marginBottom: 2,
     lineHeight: 20,
   },
   hSubtitle: {
     fontFamily: FONTS.italic,
     fontSize: 12,
-    color: COLORS.text,
   },
   hRightSection: {
     justifyContent: 'center',
@@ -406,7 +423,10 @@ const arePropsEqual = (
   const isSelectedChanged = prevProps.isFavorite !== nextProps.isFavorite;
   const isEventChanged = prevProps.event.id !== nextProps.event.id;
 
-  return !isSelectedChanged && !isEventChanged;
+  const isBackgroundChanged =
+    prevProps.backgroundColor !== nextProps.backgroundColor;
+
+  return !isSelectedChanged && !isEventChanged && !isBackgroundChanged;
 };
 
 export default React.memo(EventCard, arePropsEqual);

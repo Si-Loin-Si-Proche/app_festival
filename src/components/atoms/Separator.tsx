@@ -1,24 +1,26 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { COLORS } from '../../constants/theme';
+import { useTheme } from '../../context/ThemeContext';
 
 interface SeparatorProps {
   color?: string;
   thickness?: number;
-  marginVertical?: number; //espace au-dessus et en dessous
+  marginVertical?: number;
 }
 
 export default function Separator({
-  color = COLORS.text, // Par défaut : le gris de ton thème
-  thickness = StyleSheet.hairlineWidth, //la ligne la plus fine possible sur l'écran
-  marginVertical = 15, //espacement par défaut
+  color,
+  thickness = StyleSheet.hairlineWidth,
+  marginVertical = 15,
 }: SeparatorProps) {
+  const { colors } = useTheme();
+
   return (
     <View
       style={[
         styles.base,
         {
-          backgroundColor: color,
+          backgroundColor: color || colors.text,
           height: thickness,
           marginVertical: marginVertical,
         },
@@ -29,6 +31,6 @@ export default function Separator({
 
 const styles = StyleSheet.create({
   base: {
-    width: '100%', //toute la largeur par défaut
+    width: '100%',
   },
 });

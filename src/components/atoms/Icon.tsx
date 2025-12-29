@@ -1,6 +1,6 @@
 import React from 'react';
 import { ICONS, IconName } from '../../constants/icons';
-import theme from '../../constants/theme';
+import { useTheme } from '../../context/ThemeContext';
 import { LucideProps } from 'lucide-react-native';
 
 interface IconProps extends LucideProps {
@@ -9,13 +9,10 @@ interface IconProps extends LucideProps {
   color?: string;
 }
 
-export default function Icon({
-  name,
-  size = 24,
-  color = theme.COLORS.text,
-  ...props
-}: IconProps) {
+export default function Icon({ name, size = 24, color, ...props }: IconProps) {
+  const { colors } = useTheme();
   const IconComponent = ICONS[name];
+
   if (!IconComponent) {
     if (__DEV__) {
       // eslint-disable-next-line no-console
@@ -26,5 +23,12 @@ export default function Icon({
     return null;
   }
 
-  return <IconComponent width={size} height={size} color={color} {...props} />;
+  return (
+    <IconComponent
+      width={size}
+      height={size}
+      color={color || colors.text}
+      {...props}
+    />
+  );
 }

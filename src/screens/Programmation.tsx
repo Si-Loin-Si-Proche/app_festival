@@ -1,22 +1,14 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Switch,
-  Text,
-} from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
-// --- IMPORTS ---
-import { COLORS, SPACING, FONTS, SIZES } from '../constants/theme';
+import { SPACING } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
 import { CleanEvent } from '../types/api.types';
 import { getFestivalEvents } from '../services/festival.service';
 import { useFavorites } from '../hooks/useFavorites';
 
-// --- COMPOSANTS ---
 import EventList from '../components/organism/EventList';
 import SectionHeader from '../components/molecules/SectionHeader';
 import SearchBar from '../components/molecules/SearchBar';
@@ -60,14 +52,13 @@ const isEventToutPublic = (event: CleanEvent): boolean => {
 export default function ProgrammationScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
+  const { colors } = useTheme();
   const { isLiked, toggleFavorite } = useFavorites();
 
-  // --- STATE ---
   const [allEvents, setAllEvents] = useState<CleanEvent[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<CleanEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Filtres
   const [searchQuery, setSearchQuery] = useState('');
   const [activeDateFilter, setActiveDateFilter] = useState('Tous');
   const [activeLocationFilter, setActiveLocationFilter] = useState('Tous');
@@ -76,7 +67,6 @@ export default function ProgrammationScreen() {
 
   const [showFilters, setShowFilters] = useState(true);
 
-  // --- 1. CHARGEMENT INITIAL ---
   useEffect(() => {
     const loadEvents = async () => {
       setIsLoading(true);
@@ -115,11 +105,9 @@ export default function ProgrammationScreen() {
 
   const priceOptions = ['Tous', 'Payant', 'Gratuit', 'Sur réservation'];
 
-  // --- 3. MOTEUR DE FILTRAGE ---
   useEffect(() => {
     let result = allEvents;
 
-    // A. Recherche Texte
     if (searchQuery.trim().length > 0) {
       const lowerQuery = searchQuery.toLowerCase();
       result = result.filter(
@@ -129,7 +117,6 @@ export default function ProgrammationScreen() {
       );
     }
 
-    // B. Filtre Date
     if (activeDateFilter !== 'Tous') {
       result = result.filter((e) => {
         if (!e.dates[0]?.start) return false;
@@ -137,21 +124,18 @@ export default function ProgrammationScreen() {
       });
     }
 
-    // C. Filtre Lieu (Scène)
     if (activeLocationFilter !== 'Tous') {
       result = result.filter(
         (e) => getEventLocation(e) === activeLocationFilter
       );
     }
 
-    // D. Filtre Tarif
     if (activePriceFilter !== 'Tous') {
       result = result.filter(
         (e) => getEventPriceCategory(e) === activePriceFilter
       );
     }
 
-    // E. Filtre Tout Public (Checkbox)
     if (onlyToutPublic) {
       result = result.filter((e) => isEventToutPublic(e));
     }
@@ -166,21 +150,30 @@ export default function ProgrammationScreen() {
     allEvents,
   ]);
 
-  // --- HANDLERS ---
   const handleEventPress = (id: string) => {
     router.push(`/event/${id}` as any);
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top']}
+    >
       <SectionHeader
         logoSource={require('../assets/logo_ferme_du_buisson.png')}
         useImageTitle={true}
         showFavorite={true}
       />
 
-      <View style={styles.headerContainer}>
-        {/* BARRE DE RECHERCHE */}
+      <View
+        style={[
+          styles.headerContainer,
+          {
+            backgroundColor: colors.background,
+            borderBottomColor: colors.border,
+          },
+        ]}
+      >
         <SearchBar
           onChangeText={setSearchQuery}
           onSearch={setSearchQuery}
@@ -191,14 +184,16 @@ export default function ProgrammationScreen() {
           onPress={() => setShowFilters(!showFilters)}
           style={styles.toggleFiltersBtn}
         >
-          <Typography variant="body" style={{ fontWeight: 'bold' }}>
+          <Typography
+            variant="body"
+            style={{ fontWeight: 'bold', color: colors.text }}
+          >
             {showFilters ? 'Masquer les filtres ▲' : 'Afficher les filtres ▼'}
           </Typography>
         </TouchableOpacity>
 
         {showFilters && (
           <View>
-            {/* 1. Dates */}
             <FilterList
               options={dateOptions}
               selected={activeDateFilter}
@@ -220,16 +215,22 @@ export default function ProgrammationScreen() {
               style={{ marginBottom: SPACING.s }}
             />
 
-            <View style={styles.switchRow}>
-              <Typography variant="body" style={{ flex: 1 }}>
+            <View style={[styles.switchRow, { borderTopColor: colors.border }]}>
+              <Typography
+                variant="body"
+                style={{ flex: 1, color: colors.text }}
+              >
                 Spectacles tout public uniquement
               </Typography>
               <Switch
                 value={onlyToutPublic}
                 onValueChange={setOnlyToutPublic}
-                trackColor={{ false: '#767577', true: COLORS.primary }}
-                thumbColor={onlyToutPublic ? '#fff' : '#f4f3f4'}
-                ios_backgroundColor="#3e3e3e"
+                trackColor={{
+                  false: colors.tabBarInactive,
+                  true: colors.primary,
+                }}
+                thumbColor={colors.card}
+                ios_backgroundColor={colors.tabBarInactive}
               />
             </View>
           </View>
@@ -247,7 +248,6 @@ export default function ProgrammationScreen() {
               }
               iconName="search"
             />
-            {/* Bouton Reset si aucun résultat */}
             <TouchableOpacity
               onPress={() => {
                 setSearchQuery('');
@@ -261,7 +261,7 @@ export default function ProgrammationScreen() {
               <Typography
                 variant="body"
                 style={{
-                  color: COLORS.primary,
+                  color: colors.primary,
                   textDecorationLine: 'underline',
                 }}
               >
@@ -286,15 +286,12 @@ export default function ProgrammationScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
   },
   headerContainer: {
     paddingHorizontal: SPACING.m,
     paddingTop: SPACING.m,
     paddingBottom: SPACING.s,
-    backgroundColor: COLORS.background,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
     zIndex: 10,
   },
   toggleFiltersBtn: {
@@ -310,35 +307,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.xl,
     marginTop: 50,
   },
-
-  lastRowFilters: {
-    alignItems: 'center',
-    paddingVertical: 5,
-  },
-  smallFilterBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: COLORS.background,
-    marginRight: 8,
-    backgroundColor: COLORS.background,
-  },
-  smallFilterBadgeActive: {
-    backgroundColor: COLORS.text,
-    borderColor: COLORS.text,
-  },
-  separator: {
-    width: 1,
-    height: 20,
-    backgroundColor: '#ccc',
-    marginHorizontal: 10,
-  },
-  switchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 5,
-  },
   switchRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -346,6 +314,5 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.s,
     marginTop: SPACING.xs,
     borderTopWidth: 1,
-    borderTopColor: '#eee',
   },
 });

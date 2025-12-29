@@ -3,13 +3,17 @@ import { View, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SectionHeader from '../components/molecules/SectionHeader';
 import Typography from '../components/atoms/Typography';
-import { COLORS, SPACING } from '../constants/theme';
-
-const logoImg = require('../assets/logo_ferme_du_buisson.png');
+import { SPACING } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
 
 export default function MentionsLegalesScreen() {
+  const { colors } = useTheme();
+
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top']}
+    >
       <SectionHeader
         showBackButton={true}
         useImageTitle={true}
@@ -20,16 +24,22 @@ export default function MentionsLegalesScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* TITRE DE LA PAGE */}
-        <Typography variant="h1" style={styles.pageTitle}>
+        <Typography
+          variant="h1"
+          style={[styles.pageTitle, { color: colors.text }]}
+        >
           Mentions légales
         </Typography>
 
-        {/* --- SECTION 1 : RESPONSABILITÉ --- */}
         <View style={styles.section}>
-          <Typography variant="h2">Responsabilité éditoriale</Typography>
+          <Typography variant="h2" style={{ color: colors.text }}>
+            Responsabilité éditoriale
+          </Typography>
 
-          <Typography variant="body" style={styles.paragraph}>
+          <Typography
+            variant="body"
+            style={[styles.paragraph, { color: colors.text }]}
+          >
             La Ferme du Buisson{'\n'}
             Établissement Public de Coopération Culturelle{'\n'}
             Allée de la Ferme - Noisiel{'\n'}
@@ -40,7 +50,10 @@ export default function MentionsLegalesScreen() {
             TVA intracommunautaire : FR 43 752 136 523
           </Typography>
 
-          <Typography variant="caption" style={styles.paragraph}>
+          <Typography
+            variant="caption"
+            style={[styles.paragraph, { color: colors.text }]}
+          >
             La Ferme du Buisson subventionnée par la Communauté d'agglomération
             Paris - Vallée de la Marne, le Ministère de la Culture - Direction
             régionale des affaires culturelles d'Île-de-France, le Conseil
@@ -51,11 +64,15 @@ export default function MentionsLegalesScreen() {
           </Typography>
         </View>
 
-        {/* --- SECTION 2 : CONCEPTION --- */}
         <View style={styles.section}>
-          <Typography variant="h2">Conception et réalisation</Typography>
+          <Typography variant="h2" style={{ color: colors.text }}>
+            Conception et réalisation
+          </Typography>
 
-          <Typography variant="body" style={styles.paragraph}>
+          <Typography
+            variant="body"
+            style={[styles.paragraph, { color: colors.text }]}
+          >
             <Typography variant="body" style={{ fontWeight: 'bold' }}>
               Conception, réalisation :
             </Typography>{' '}
@@ -71,7 +88,10 @@ export default function MentionsLegalesScreen() {
             Artishoc - 6 cité joly 75011 - artishoc.com
           </Typography>
 
-          <Typography variant="body" style={styles.paragraph}>
+          <Typography
+            variant="body"
+            style={[styles.paragraph, { color: colors.text }]}
+          >
             <Typography variant="body" style={{ fontWeight: 'bold' }}>
               D'après l'identité visuelle de :
             </Typography>{' '}
@@ -86,7 +106,10 @@ export default function MentionsLegalesScreen() {
             Sébastien Broquère - Edicit
           </Typography>
 
-          <Typography variant="body" style={styles.paragraph}>
+          <Typography
+            variant="body"
+            style={[styles.paragraph, { color: colors.text }]}
+          >
             <Typography variant="body" style={{ fontWeight: 'bold' }}>
               Direction de la publication :
             </Typography>{' '}
@@ -113,10 +136,14 @@ export default function MentionsLegalesScreen() {
           </Typography>
         </View>
 
-        {/* --- SECTION 5 : LIENS HYPERTEXTES --- */}
         <View style={styles.section}>
-          <Typography variant="h2">Liens hypertextes</Typography>
-          <Typography variant="body" style={styles.paragraph}>
+          <Typography variant="h2" style={{ color: colors.text }}>
+            Liens hypertextes
+          </Typography>
+          <Typography
+            variant="body"
+            style={[styles.paragraph, { color: colors.text }]}
+          >
             La Ferme du Buisson autorise la mise en place d'un lien hypertexte
             pointant vers son contenu dès lors qu'il ne crée pas de confusion
             sur la source des services et/ou contenus produits et/ou détenus par
@@ -124,7 +151,6 @@ export default function MentionsLegalesScreen() {
           </Typography>
         </View>
 
-        {/* Espace vide en bas pour le scroll confortable */}
         <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>
@@ -134,7 +160,6 @@ export default function MentionsLegalesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
     marginBottom: 20,
   },
   scrollContent: {

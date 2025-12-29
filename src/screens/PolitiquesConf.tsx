@@ -3,12 +3,17 @@ import { View, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SectionHeader from '../components/molecules/SectionHeader';
 import Typography from '../components/atoms/Typography';
-import { COLORS, SPACING } from '../constants/theme';
+import { SPACING } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
 
 export default function PolitiqueConfScreen() {
+  const { colors } = useTheme();
+
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      {/* HEADER : Retour + Logo Centre + Pas de Favori */}
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top']}
+    >
       <SectionHeader
         showBackButton={true}
         useImageTitle={true}
@@ -19,28 +24,40 @@ export default function PolitiqueConfScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <Typography variant="h1" style={styles.pageTitle}>
+        <Typography
+          variant="h1"
+          style={[styles.pageTitle, { color: colors.text }]}
+        >
           Politique de confidentialité
         </Typography>
 
         <View style={styles.section}>
-          <Typography variant="h2">
+          <Typography variant="h2" style={{ color: colors.text }}>
             Protection de la vie privée et confidentialité
           </Typography>
 
-          <Typography variant="body" style={styles.paragraph}>
+          <Typography
+            variant="body"
+            style={[styles.paragraph, { color: colors.text }]}
+          >
             En application des articles 27 et 34 de la loi dite "Informatique et
             libertés" n° 78-17 du 6 janvier 1978, vous disposez d’un droit de
             modification ou de suppression des données qui vous concernent.
           </Typography>
 
-          <Typography variant="body" style={styles.paragraph}>
+          <Typography
+            variant="body"
+            style={[styles.paragraph, { color: colors.text }]}
+          >
             Si vous souhaitez exercer ce droit, vous pouvez, à tout moment,
             supprimer votre inscription à notre lettre d’information
             électronique via le lien de désinscription, ou nous écrire.
           </Typography>
 
-          <Typography variant="body" style={styles.paragraph}>
+          <Typography
+            variant="body"
+            style={[styles.paragraph, { color: colors.text }]}
+          >
             Les informations collectées et intégrées à nos bases de données font
             l'objet d'une utilisation uniquement à des fins d'informations pour
             la Ferme du Buisson, ou sont exceptionnellement cédées à nos
@@ -55,7 +72,6 @@ export default function PolitiqueConfScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
   },
   scrollContent: {
     paddingHorizontal: 20,

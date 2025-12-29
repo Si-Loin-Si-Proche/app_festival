@@ -1,57 +1,36 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, ScrollView, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+// --- HOOK ---
+import { useSettings } from '../hooks/useSettings';
+
+// --- COMPOSANTS ---
 import SectionHeader from '../components/molecules/SectionHeader';
 import MenuItem from '../components/molecules/MenuItem';
 import Separator from '../components/atoms/Separator';
 import Typography from '../components/atoms/Typography';
 import ConfirmationModal from '../components/molecules/ConfirmationModal';
-import { COLORS } from '../constants/theme';
-import { NotificationService } from '../services/notifications.service';
-
-const logoImg = require('../assets/logo_ferme_du_buisson.png');
 
 export default function ReglagesScreen() {
-  const router = useRouter();
+  const {
+    colors,
+    notifEnabled,
+    isAccessible,
+    currentThemeLabel,
+    isThemeOpen,
+    isResetModalVisible,
+    setIsThemeOpen,
+    setResetModalVisible,
+    handleToggleNotifications,
+    handleThemeSelect,
+    handleAccessToggle,
+    handleResetConfirm,
+    router,
+  } = useSettings();
 
-  // ÉTATS
-  const [notifEnabled, setNotifEnabled] = useState(true);
-  const [accessEnabled, setAccessEnabled] = useState(false);
-  const [theme, setTheme] = useState('Clair');
-
-  // État pour gérer l'ouverture du dropdown "Apparence"
-  const [isThemeOpen, setIsThemeOpen] = useState(false);
-
-  // État pour gérer la visibilité de la modale de reset
-  const [isResetModalVisible, setResetModalVisible] = useState(false);
-
-  // LOGIQUE
-  const handleThemeSelect = (newTheme: string) => {
-    setTheme(newTheme);
-    setIsThemeOpen(false); // On ferme la liste après choix
-  };
-
-  const handleResetConfirm = () => {
-    setResetModalVisible(false);
-    console.log('Reset effectué !');
-  };
-
-  useEffect(() => {
-    const loadSettings = async () => {
-      const isEnabled = await NotificationService.areNotificationsEnabled();
-      setNotifEnabled(isEnabled);
-    };
-    loadSettings();
-  }, []);
-
-  const toggleNotifications = async (newValue: boolean) => {
-    setNotifEnabled(newValue);
-    await NotificationService.setNotificationsEnabled(newValue);
-  };
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       {/* 1. HEADER FIXE */}
       <SectionHeader
         logoSource={require('../assets/logo_ferme_du_buisson.png')}
@@ -67,20 +46,20 @@ export default function ReglagesScreen() {
           paddingBottom: 100,
         }}
       >
-        {/*BLOC 1 : NOTIFICATIONS*/}
+        {/* BLOC 1 : NOTIFICATIONS */}
         <MenuItem
           label="Notifications"
           type="switch"
           value={notifEnabled}
-          onValueChange={toggleNotifications}
+          onValueChange={handleToggleNotifications}
         />
         <Separator marginVertical={5} thickness={2} />
 
-        {/*BLOC 2 : APPARENCE (Dropdown intégré)*/}
+        {/* BLOC 2 : APPARENCE */}
         <MenuItem
           label="Apparence"
           type="dropdown"
-          selectedValue={theme}
+          selectedValue={currentThemeLabel} // 'Clair' ou 'Sombre'
           options={['Clair', 'Sombre']}
           isExpanded={isThemeOpen}
           onPress={() => setIsThemeOpen(!isThemeOpen)}
@@ -88,16 +67,16 @@ export default function ReglagesScreen() {
         />
         <Separator marginVertical={5} thickness={2} />
 
-        {/*BLOC 3 : ACCESSIBILITÉ*/}
+        {/* BLOC 3 : ACCESSIBILITÉ */}
         <MenuItem
           label="Accessibilité +"
           type="switch"
-          value={accessEnabled}
-          onValueChange={setAccessEnabled}
+          value={isAccessible}
+          onValueChange={handleAccessToggle}
         />
         <Separator marginVertical={5} thickness={2} />
 
-        {/*BLOC 4 : MENTIONS LÉGALES*/}
+        {/* BLOC 4 : MENTIONS LÉGALES */}
         <MenuItem
           label="Mentions légales"
           type="link"
@@ -105,19 +84,20 @@ export default function ReglagesScreen() {
         />
         <Separator marginVertical={5} thickness={2} />
 
-        {/*BLOC 5 : REINITIALISATION*/}
+        {/* BLOC 5 : REINITIALISATION */}
         <View style={{ marginTop: 30, marginBottom: 20 }}>
           <TouchableOpacity onPress={() => setResetModalVisible(true)}>
             <Typography
               variant="h2"
-              style={{ color: COLORS.off, textAlign: 'left' }}
+              // On utilise colors.off (Rouge) qui vient du thème dynamique
+              style={{ color: colors.off, textAlign: 'left' }}
             >
               Réinitialiser l'application
             </Typography>
           </TouchableOpacity>
         </View>
 
-        {/*VERSION*/}
+        {/* VERSION */}
         <View style={{ marginTop: 'auto' }}>
           <Typography
             variant="caption"
@@ -128,7 +108,7 @@ export default function ReglagesScreen() {
         </View>
       </ScrollView>
 
-      {/* MODALE DE CONFIRMATION (En dehors du ScrollView) */}
+      {/* MODALE DE CONFIRMATION */}
       <ConfirmationModal
         visible={isResetModalVisible}
         onConfirm={handleResetConfirm}

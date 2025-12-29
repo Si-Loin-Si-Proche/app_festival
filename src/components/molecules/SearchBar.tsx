@@ -7,7 +7,8 @@ import {
   ViewStyle,
 } from 'react-native';
 import Icon from '../atoms/Icon';
-import { COLORS, SIZES, SPACING, FONTS } from '../../constants/theme';
+import { SPACING, FONTS } from '../../constants/theme';
+import { useTheme } from '../../context/ThemeContext';
 
 interface SearchBarProps {
   onSearch?: (query: string) => void;
@@ -21,9 +22,10 @@ export default function SearchBar({
   onSearch,
   onChangeText,
   placeholder = 'Recherche...',
-  backgroundColor = COLORS.secondary,
+  backgroundColor,
   style,
 }: SearchBarProps) {
+  const { colors, sizes } = useTheme();
   const [query, setQuery] = useState('');
 
   const handleTextChange = (text: string) => {
@@ -39,22 +41,34 @@ export default function SearchBar({
     }
   };
 
+  const currentBackgroundColor = backgroundColor || colors.secondary;
+
   return (
     <View style={[styles.container, style]}>
       <View
-        style={[styles.inputContainer, { backgroundColor: backgroundColor }]}
+        style={[
+          styles.inputContainer,
+          {
+            backgroundColor: currentBackgroundColor,
+            borderColor: colors.text,
+          },
+        ]}
       >
-        {/* 1. Icône Loupe */}
         <View style={styles.leftIcon}>
-          <Icon name="search" size={24} color={COLORS.text} />
+          <Icon name="search" size={24} color={colors.text} />
         </View>
 
-        {/* 2. Champ Texte */}
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            {
+              color: colors.text,
+              fontSize: sizes.h3,
+            },
+          ]}
           placeholder={placeholder}
-          placeholderTextColor={COLORS.text}
-          cursorColor={COLORS.text}
+          placeholderTextColor={colors.text}
+          cursorColor={colors.text}
           value={query}
           onChangeText={handleTextChange}
           onSubmitEditing={handleSubmit}
@@ -62,13 +76,12 @@ export default function SearchBar({
           autoCapitalize="none"
         />
 
-        {/* 3. Bouton Flèche */}
         <TouchableOpacity
           onPress={handleSubmit}
           style={styles.rightIcon}
           activeOpacity={0.7}
         >
-          <Icon name="arrowRight" size={24} color={COLORS.text} />
+          <Icon name="arrowRight" size={24} color={colors.text} />
         </TouchableOpacity>
       </View>
     </View>
@@ -86,15 +99,12 @@ const styles = StyleSheet.create({
     height: 54,
     borderRadius: 50,
     borderWidth: 2,
-    borderColor: COLORS.text,
     paddingHorizontal: SPACING.m,
   },
   input: {
     flex: 1,
     height: '100%',
     fontFamily: FONTS.regular,
-    fontSize: SIZES.h3,
-    color: COLORS.text,
   },
   leftIcon: {
     marginRight: SPACING.s,

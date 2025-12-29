@@ -10,13 +10,14 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ReactNativeZoomableView } from '@dudigital/react-native-zoomable-view';
 
-import { COLORS, SPACING } from '../constants/theme';
+import { SPACING } from '../constants/theme';
 import { IconName } from '../constants/icons';
 import { MAP_POINTS, MapPoint, MAP_IMAGE_SOURCE } from '../constants/mapData';
 import MapMarker from '../components/atoms/MapMarker';
 import Typography from '../components/atoms/Typography';
 import Icon from '../components/atoms/Icon';
 import SectionHeader from '../components/molecules/SectionHeader';
+import { useTheme } from '../context/ThemeContext';
 
 const screen = Dimensions.get('window');
 const IMAGE_RATIO = 6500 / 6200;
@@ -29,6 +30,7 @@ const FILTERS = [
 ];
 
 export default function MapScreen() {
+  const { colors } = useTheme();
   const [selectedPoint, setSelectedPoint] = useState<MapPoint | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>('all');
 
@@ -46,14 +48,17 @@ export default function MapScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top']}
+    >
       <SectionHeader
         showBackButton={true}
         useImageTitle={true}
         showFavorite={false}
       />
       <View style={styles.contentContainer}>
-        <View style={styles.mapContainer}>
+        <View style={[styles.mapContainer, { backgroundColor: colors.border }]}>
           <ReactNativeZoomableView
             maxZoom={3}
             minZoom={1}
@@ -69,7 +74,6 @@ export default function MapScreen() {
               style={{
                 width: screen.width,
                 height: mapHeight,
-                backgroundColor: '#fff',
               }}
             >
               <Image
@@ -92,7 +96,6 @@ export default function MapScreen() {
           </ReactNativeZoomableView>
         </View>
 
-        {/* LES FILTRES */}
         <View style={styles.filterContainer}>
           <ScrollView
             horizontal
@@ -101,30 +104,33 @@ export default function MapScreen() {
           >
             {FILTERS.map((filter) => {
               const isActive = activeFilter === filter.id;
-              const iconName = filter.id === 'all' ? 'filter' : filter.id;
+              const iconName = (
+                filter.id === 'all' ? 'filter' : filter.id
+              ) as IconName;
 
               return (
                 <TouchableOpacity
                   key={filter.id}
                   style={[
                     styles.filterChip,
-                    isActive && styles.filterChipActive,
+                    {
+                      backgroundColor: isActive
+                        ? colors.filtreSelected
+                        : colors.background,
+                      borderColor: colors.text,
+                    },
                   ]}
                   onPress={() => setActiveFilter(filter.id)}
                   activeOpacity={0.8}
                 >
                   {filter.id !== 'all' && (
-                    <Icon
-                      name={filter.id as any}
-                      size={16}
-                      color={COLORS.text}
-                    />
+                    <Icon name={iconName} size={16} color={colors.text} />
                   )}
 
                   <Typography
                     variant="caption"
                     style={{
-                      color: COLORS.text,
+                      color: colors.text,
                       fontWeight: isActive ? 'bold' : 'normal',
                       marginLeft: filter.id !== 'all' ? 6 : 0,
                     }}
@@ -138,9 +144,16 @@ export default function MapScreen() {
         </View>
       </View>
 
-      {/* MODALE D'INFORMATION */}
       {selectedPoint && (
-        <View style={styles.infoBox}>
+        <View
+          style={[
+            styles.infoBox,
+            {
+              backgroundColor: colors.card,
+              borderColor: colors.text,
+            },
+          ]}
+        >
           <View style={styles.infoContent}>
             <View style={styles.infoHeader}>
               <View
@@ -149,19 +162,21 @@ export default function MapScreen() {
                   { backgroundColor: selectedPoint.color },
                 ]}
               >
-                <Icon
-                  name={selectedPoint.icon}
-                  size={20}
-                  color={COLORS.background}
-                />
+                <Icon name={selectedPoint.icon} size={20} color={colors.card} />
               </View>
-              <Typography variant="h2" style={styles.title}>
+              <Typography
+                variant="h2"
+                style={[styles.title, { color: colors.text }]}
+              >
                 {selectedPoint.label}
               </Typography>
             </View>
 
             {selectedPoint.description && (
-              <Typography variant="body" style={styles.description}>
+              <Typography
+                variant="body"
+                style={[styles.description, { color: colors.text }]}
+              >
                 {selectedPoint.description}
               </Typography>
             )}
@@ -169,10 +184,10 @@ export default function MapScreen() {
 
           <TouchableOpacity
             onPress={() => setSelectedPoint(null)}
-            style={styles.closeBtn}
+            style={[styles.closeBtn, { backgroundColor: colors.border }]}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Icon name="close" size={24} color={COLORS.text} />
+            <Icon name="close" size={24} color={colors.text} />
           </TouchableOpacity>
         </View>
       )}
@@ -183,10 +198,6 @@ export default function MapScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
-  },
-  header: {
-    zIndex: 9999,
   },
   contentContainer: {
     flex: 1,
@@ -194,14 +205,11 @@ const styles = StyleSheet.create({
   },
   mapContainer: {
     flex: 1,
-    backgroundColor: '#E1E1E1',
     overflow: 'hidden',
   },
   zoomView: {
     flex: 1,
   },
-
-  // --- FILTRES FLOTTANTS ---
   filterContainer: {
     position: 'absolute',
     top: SPACING.s,
@@ -221,35 +229,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: COLORS.background,
     borderWidth: 1,
-    borderColor: COLORS.text,
     marginRight: 8,
-
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 3,
   },
-  filterChipActive: {
-    backgroundColor: COLORS.filtreSelected,
-    color: '#000',
-  },
-
-  // --- MODALE ---
   infoBox: {
     position: 'absolute',
     bottom: 100,
     left: 20,
     right: 20,
-    backgroundColor: COLORS.card,
     borderRadius: 20,
     padding: SPACING.m,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
@@ -257,7 +254,6 @@ const styles = StyleSheet.create({
     elevation: 10,
     zIndex: 100,
     borderWidth: 2,
-    borderColor: COLORS.text,
   },
   infoContent: {
     flex: 1,
@@ -283,11 +279,9 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 14,
-    color: '#666',
   },
   closeBtn: {
     padding: 4,
-    backgroundColor: '#f0f0f0',
     borderRadius: 12,
   },
 });

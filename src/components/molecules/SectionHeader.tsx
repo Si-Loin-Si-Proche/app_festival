@@ -12,9 +12,12 @@ import Typography from '../atoms/Typography';
 import FavoriteButton from '../atoms/LikeButton';
 import Separator from '../atoms/Separator';
 import Icon from '../atoms/Icon';
-import { SPACING, COLORS } from '../../constants/theme';
+import { SPACING } from '../../constants/theme';
+import { useTheme } from '../../context/ThemeContext';
 
-import TitleLogo from '../../assets/logo_si_loin_si_proche.svg';
+// 1. IMPORT DES DEUX SVG
+import TitleLogoBlack from '../../assets/logo_si_loin_si_proche.svg';
+import TitleLogoWhite from '../../assets/logo_slsp_blanc.svg';
 
 interface SectionHeaderProps {
   title?: string;
@@ -36,8 +39,13 @@ export default function SectionHeader({
   style,
 }: SectionHeaderProps) {
   const router = useRouter();
+  const { colors } = useTheme();
 
-  // Gestion du retour en arrière
+  const isDarkMode =
+    colors.text === '#FFFFFF' ||
+    colors.text === '#fff' ||
+    colors.text === '#F5F5F5';
+
   const handleBack = () => {
     if (onBack) {
       onBack();
@@ -50,15 +58,16 @@ export default function SectionHeader({
     }
   };
 
-  // Gestion du clic sur le logo (Retour Home)
   const handleLogoPress = () => {
     router.replace('/');
   };
 
   return (
-    <View style={[styles.container, style]}>
+    <View
+      style={[styles.container, { backgroundColor: colors.background }, style]}
+    >
       <View style={styles.contentRow}>
-        {/* === GAUCHE : LOGO ou RETOUR === */}
+        {/* === GAUCHE === */}
         {showBackButton ? (
           <TouchableOpacity
             onPress={handleBack}
@@ -68,8 +77,8 @@ export default function SectionHeader({
             <Icon
               name="arrowRight"
               size={32}
-              color={COLORS.text}
-              style={{ transform: [{ rotate: '180deg' }] }} // Flèche retour
+              color={colors.text}
+              style={{ transform: [{ rotate: '180deg' }] }}
             />
           </TouchableOpacity>
         ) : (
@@ -81,17 +90,22 @@ export default function SectionHeader({
             >
               <Image
                 source={logoSource}
-                style={styles.logo}
+                style={[styles.logo, { tintColor: colors.text }]}
                 resizeMode="contain"
               />
             </TouchableOpacity>
           )
         )}
 
-        {/* === CENTRE : TITRE TEXTE ou IMAGE SVG === */}
+        {/* === CENTRE === */}
         <View style={styles.centerContainer}>
           {useImageTitle ? (
-            <TitleLogo width={160} height={50} />
+            // 3. AFFICHAGE CONDITIONNEL DU SVG
+            isDarkMode ? (
+              <TitleLogoWhite width={160} height={50} />
+            ) : (
+              <TitleLogoBlack width={160} height={50} />
+            )
           ) : (
             <Typography variant="h2" style={styles.title}>
               {title || ''}
@@ -99,16 +113,13 @@ export default function SectionHeader({
           )}
         </View>
 
-        {/* === DROITE : FAVORI === */}
+        {/* === DROITE === */}
         {showFavorite && (
           <View style={styles.rightAction}>
             <FavoriteButton
               size="large"
-              // 1. Fond pêche
-              backgroundColor={COLORS.secondary}
-              // 2. Cœur noir
-              activeColor={COLORS.text}
-              // 3. L'ASTUCE : On force "isLiked" pour que le cœur soit rempli (fill) et utilise activeColor
+              backgroundColor={colors.secondary}
+              activeColor={colors.text}
               isLiked={true}
             />
           </View>
@@ -121,7 +132,10 @@ export default function SectionHeader({
 }
 
 const styles = StyleSheet.create({
-  container: { width: '100%', backgroundColor: 'white', zIndex: 10 },
+  container: {
+    width: '100%',
+    zIndex: 10,
+  },
   contentRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -147,6 +161,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     maxWidth: '60%',
   },
-  title: { textAlign: 'center', marginBottom: 0 },
-  rightAction: { position: 'absolute', right: SPACING.m, zIndex: 10 },
+  title: {
+    textAlign: 'center',
+    marginBottom: 0,
+  },
+  rightAction: {
+    position: 'absolute',
+    right: SPACING.m,
+    zIndex: 10,
+  },
 });

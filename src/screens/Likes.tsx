@@ -1,20 +1,17 @@
-import React from 'react'; // Plus besoin de useState, useCallback, useFocusEffect ici !
+import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-
-// --- IMPORTS ---
-import { COLORS, SPACING } from '../constants/theme';
+import { SPACING } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
 import { useFavorites } from '../hooks/useFavorites';
-
-// --- COMPOSANTS ---
 import EventList from '../components/organism/EventList';
 import EmptyState from '../components/molecules/EmptyState';
 import SectionHeader from '../components/molecules/SectionHeader';
 
 export default function LikesScreen() {
   const router = useRouter();
-
+  const { colors } = useTheme();
   const { favorites, loading, isLiked, toggleFavorite } = useFavorites();
 
   const handleEventPress = (id: string) => {
@@ -22,14 +19,17 @@ export default function LikesScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top']}
+    >
       <SectionHeader
         showBackButton={true}
         useImageTitle={true}
         showFavorite={false}
       />
 
-      <View style={styles.content}>
+      <View style={[styles.content, { backgroundColor: colors.background }]}>
         {!loading && favorites.length === 0 ? (
           <View style={styles.emptyContainer}>
             <EmptyState
@@ -54,11 +54,9 @@ export default function LikesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
   },
   content: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   emptyContainer: {
     flex: 1,

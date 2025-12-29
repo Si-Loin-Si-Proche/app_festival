@@ -1,15 +1,18 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Settings } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import Icon from '../atoms/Icon';
-import { COLORS, SHADOWS } from '../../constants/theme';
+import { SHADOWS } from '../../constants/theme';
 import { IconName } from '../../constants/icons';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function TabBar({
   state,
   descriptors,
   navigation,
 }: BottomTabBarProps) {
+  const { colors } = useTheme();
+
   const icons: Record<string, IconName> = {
     index: 'house',
     infos: 'info',
@@ -18,7 +21,15 @@ export default function TabBar({
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: colors.filtreSelected,
+          borderColor: colors.text,
+        },
+      ]}
+    >
       {state.routes.map((route, index) => {
         if (
           ['_sitemap', '+not-found'].includes(route.name) ||
@@ -27,8 +38,6 @@ export default function TabBar({
           return null;
         }
         const { options } = descriptors[route.key];
-
-        if (['_sitemap', '+not-found'].includes(route.name)) return null;
 
         const isFocused = state.index === index;
 
@@ -65,7 +74,7 @@ export default function TabBar({
             <Icon
               name={icons[route.name] || 'info'}
               size={28}
-              color={COLORS.text}
+              color={colors.text}
               strokeWidth={isFocused ? 3 : 2}
               opacity={isFocused ? 1 : 0.7}
             />
@@ -85,12 +94,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-
-    backgroundColor: COLORS.filtreSelected,
     borderRadius: 50,
     borderWidth: 2,
-    borderColor: '#333',
-
     height: 65,
     ...SHADOWS.medium,
   },

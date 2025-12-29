@@ -9,7 +9,8 @@ import {
 } from 'react-native';
 import Icon from './Icon';
 import { IconName } from '../../constants/icons';
-import { COLORS, SIZES, SPACING, FONTS } from '../../constants/theme';
+import { FONTS, SPACING } from '../../constants/theme';
+import { useTheme } from '../../context/ThemeContext';
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -28,29 +29,47 @@ export default function Input({
   style,
   ...props
 }: InputProps) {
+  const { colors, sizes } = useTheme();
   const [isFocused, setIsFocused] = useState(false);
 
   const borderColor = error
-    ? COLORS.error
+    ? colors.error
     : isFocused
-      ? COLORS.primary
-      : COLORS.tabBarInactive;
+      ? colors.primary
+      : colors.tabBarInactive;
 
   return (
     <View style={[styles.container, style]}>
-      {label && <Text style={styles.label}>{label}</Text>}
+      {label && (
+        <Text
+          style={[styles.label, { color: colors.text, fontSize: sizes.body }]}
+        >
+          {label}
+        </Text>
+      )}
 
-      <View style={[styles.inputContainer, { borderColor }]}>
+      <View
+        style={[
+          styles.inputContainer,
+          { borderColor, backgroundColor: colors.card },
+        ]}
+      >
         {leftIcon && (
           <View style={styles.leftIcon}>
-            <Icon name={leftIcon} size={20} color={COLORS.secondary} />
+            <Icon name={leftIcon} size={20} color={colors.textLight} />
           </View>
         )}
 
         <TextInput
-          style={styles.input}
-          placeholderTextColor={COLORS.textLight}
-          cursorColor={COLORS.primary}
+          style={[
+            styles.input,
+            {
+              color: colors.text,
+              fontSize: sizes.h3,
+            },
+          ]}
+          placeholderTextColor={colors.textLight}
+          cursorColor={colors.primary}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           {...props}
@@ -62,26 +81,33 @@ export default function Input({
             disabled={!onRightIconPress}
             style={styles.rightIcon}
           >
-            <Icon name={rightIcon} size={20} color={COLORS.secondary} />
+            <Icon name={rightIcon} size={20} color={colors.textLight} />
           </TouchableOpacity>
         )}
       </View>
 
-      {error && <Text style={styles.errorText}>{error}</Text>}
+      {error && (
+        <Text
+          style={[
+            styles.errorText,
+            { color: colors.error, fontSize: sizes.small },
+          ]}
+        >
+          {error}
+        </Text>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: SPACING.m, // 16
+    marginBottom: SPACING.m,
     width: '100%',
   },
   label: {
     fontFamily: FONTS.bold,
-    fontSize: SIZES.body,
     marginBottom: SPACING.s,
-    color: COLORS.secondary,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -89,15 +115,12 @@ const styles = StyleSheet.create({
     height: 50,
     borderWidth: 1.5,
     borderRadius: 12,
-    backgroundColor: COLORS.card,
     paddingHorizontal: SPACING.m,
   },
   input: {
     flex: 1,
     height: '100%',
     fontFamily: FONTS.regular,
-    fontSize: SIZES.h3,
-    color: COLORS.text,
   },
   leftIcon: {
     marginRight: SPACING.s,
@@ -108,7 +131,5 @@ const styles = StyleSheet.create({
   errorText: {
     marginTop: SPACING.xs,
     fontFamily: FONTS.regular,
-    fontSize: SIZES.small,
-    color: COLORS.error,
   },
 });

@@ -2,8 +2,9 @@ import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
 import Typography from '../atoms/Typography';
 import Icon from '../atoms/Icon';
-import { COLORS, SPACING } from '../../constants/theme';
+import { SPACING } from '../../constants/theme';
 import { IconName } from '../../constants/icons';
+import { useTheme } from '../../context/ThemeContext';
 
 interface EmptyStateProps {
   message?: string;
@@ -16,11 +17,11 @@ export default function EmptyState({
   iconName = 'search',
   style,
 }: EmptyStateProps) {
-  const greyColor = COLORS.text;
+  const { colors } = useTheme();
+  const greyColor = colors.text;
 
   return (
     <View style={[styles.container, style]}>
-      {/*Icône*/}
       <Icon
         name={iconName}
         size={48}
@@ -28,7 +29,6 @@ export default function EmptyState({
         style={{ marginBottom: SPACING.s }}
       />
 
-      {/*Message explicatif*/}
       <Typography
         variant="body"
         style={{ color: greyColor, textAlign: 'center' }}

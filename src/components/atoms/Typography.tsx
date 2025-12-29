@@ -6,7 +6,8 @@ import {
   TextProps,
   StyleProp,
 } from 'react-native';
-import { FONTS, COLORS } from '../../constants/theme';
+import { FONTS } from '../../constants/theme';
+import { useTheme } from '../../context/ThemeContext';
 
 interface TypographyProps extends TextProps {
   children: React.ReactNode;
@@ -22,15 +23,33 @@ export default function Typography({
   style,
   ...restProps
 }: TypographyProps) {
+  const { colors, sizes } = useTheme();
+  const getFontSize = () => {
+    switch (variant) {
+      case 'h1':
+        return sizes.h1;
+      case 'h2':
+        return sizes.h2;
+      case 'h3':
+        return sizes.h3;
+      case 'body':
+        return sizes.body;
+      case 'quote':
+        return sizes.body;
+      case 'caption':
+        return sizes.small;
+      default:
+        return sizes.body;
+    }
+  };
+  const dynamicStyle: TextStyle = {
+    color: color || colors.text,
+    fontSize: getFontSize(),
+  };
+
   return (
     <Text
-      style={[
-        styles.base,
-        styles[variant],
-        color ? { color } : undefined,
-        // 3. React Native gère maintenant l'aplatissement du tableau automatiquement
-        style,
-      ]}
+      style={[styles.base, styles[variant], dynamicStyle, style]}
       {...restProps}
     >
       {children}
@@ -41,12 +60,24 @@ export default function Typography({
 const styles = StyleSheet.create({
   base: {
     fontFamily: FONTS.regular,
-    color: COLORS.text,
   },
-  h1: { fontSize: 32, fontFamily: FONTS.bold, marginBottom: 8 },
-  h2: { fontSize: 24, fontFamily: FONTS.bold, marginBottom: 6 },
-  h3: { fontSize: 20, fontFamily: FONTS.bold, marginBottom: 4 },
-  body: { fontSize: 16, lineHeight: 24 },
-  caption: { fontSize: 12 },
-  quote: { fontSize: 16, fontStyle: 'italic' },
+  h1: {
+    fontFamily: FONTS.bold,
+    marginBottom: 8,
+  },
+  h2: {
+    fontFamily: FONTS.bold,
+    marginBottom: 6,
+  },
+  h3: {
+    fontFamily: FONTS.bold,
+    marginBottom: 4,
+  },
+  body: {
+    lineHeight: 24,
+  },
+  caption: {},
+  quote: {
+    fontStyle: 'italic',
+  },
 });
