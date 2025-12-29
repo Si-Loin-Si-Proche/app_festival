@@ -3,7 +3,8 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import Typography from '../atoms/Typography';
 import Icon from '../atoms/Icon';
 import CustomSwitch from '../atoms/Switch';
-import { COLORS, SPACING, FONTS } from '../../constants/theme';
+import { SPACING, FONTS } from '../../constants/theme';
+import { useTheme } from '../../context/ThemeContext';
 
 interface MenuItemProps {
   label: string;
@@ -28,6 +29,8 @@ export default function MenuItem({
   onSelectOption,
   onPress,
 }: MenuItemProps) {
+  const { colors } = useTheme();
+
   return (
     <View style={{ zIndex: isExpanded ? 100 : 1 }}>
       <TouchableOpacity
@@ -41,17 +44,19 @@ export default function MenuItem({
         </Typography>
 
         <View style={styles.rightContent}>
-          {/* CAS 1 : CUSTOM SWITCH */}
           {type === 'switch' && value !== undefined && onValueChange && (
             <CustomSwitch value={value} onValueChange={onValueChange} />
           )}
 
-          {/* CAS 2 : DROPDOWN STYLÉ */}
           {type === 'dropdown' && (
             <View
               style={[
                 styles.dropdownBox,
-                isExpanded && styles.dropdownBoxActive,
+                {
+                  borderColor: colors.text,
+                  backgroundColor: colors.card,
+                },
+                isExpanded && { backgroundColor: colors.background },
               ]}
             >
               <Typography variant="h2" style={styles.dropdownText}>
@@ -62,27 +67,33 @@ export default function MenuItem({
                   transform: [{ rotate: isExpanded ? '180deg' : '0deg' }],
                 }}
               >
-                <Icon name="arrowDown" size={18} color={COLORS.text} />
+                <Icon name="arrowDown" size={18} color={colors.text} />
               </View>
             </View>
           )}
 
-          {/* CAS 3 : LIEN */}
           {type === 'link' && (
-            <Icon name="arrowRight" size={24} color={COLORS.text} />
+            <Icon name="arrowRight" size={24} color={colors.text} />
           )}
         </View>
       </TouchableOpacity>
 
-      {/* LISTE DÉROULANTE STYLÉE */}
       {type === 'dropdown' && isExpanded && options && (
-        <View style={styles.optionsListContainer}>
+        <View
+          style={[
+            styles.optionsListContainer,
+            {
+              borderColor: colors.text,
+              backgroundColor: colors.card,
+            },
+          ]}
+        >
           {options.map((opt, index) => (
             <TouchableOpacity
               key={opt}
               style={[
                 styles.optionItem,
-                // Enlève la bordure du dernier élément pour faire joli
+                { borderBottomColor: colors.border },
                 index === options.length - 1 && { borderBottomWidth: 0 },
               ]}
               onPress={() => onSelectOption && onSelectOption(opt)}
@@ -94,8 +105,8 @@ export default function MenuItem({
                 <Icon
                   name="check"
                   size={22}
-                  color="#8BC34A" // Vert style "cartoon"
-                  strokeWidth={3} // Trait bien gras
+                  color={colors.on}
+                  strokeWidth={3}
                 />
               )}
             </TouchableOpacity>
@@ -116,33 +127,22 @@ const styles = StyleSheet.create({
   },
   label: { marginBottom: 0 },
   rightContent: { flexDirection: 'row', alignItems: 'center' },
-
-  // --- STYLE DU DROPDOWN FERMÉ ---
   dropdownBox: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    borderWidth: 2, // Bordure épaisse
-    borderColor: COLORS.text, // Noir
-    borderRadius: 12, // Coins ronds
+    borderWidth: 2,
+    borderRadius: 12,
     paddingVertical: 6,
     paddingHorizontal: 12,
-    backgroundColor: 'white', // Fond blanc
-  },
-  dropdownBoxActive: {
-    backgroundColor: '#F5F5F5', // Légèrement gris quand ouvert
   },
   dropdownText: {
     marginBottom: 0,
     fontFamily: FONTS.bold,
   },
-
-  // --- STYLE DE LA LISTE DÉROULANTE ---
   optionsListContainer: {
     borderWidth: 2,
-    borderColor: COLORS.text,
     borderRadius: 12,
-    backgroundColor: 'white',
     marginTop: -5,
     marginBottom: 15,
     overflow: 'hidden',
@@ -153,7 +153,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 15,
-    borderBottomWidth: 2, // Séparateur épais entre les options
-    borderBottomColor: '#E0E0E0',
+    borderBottomWidth: 2,
   },
 });

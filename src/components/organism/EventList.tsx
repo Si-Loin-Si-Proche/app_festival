@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
 import { View, StyleSheet, SectionList, ActivityIndicator } from 'react-native';
 import { CleanEvent } from '../../types/api.types';
-import { COLORS, SPACING } from '../../constants/theme';
+import { SPACING } from '../../constants/theme';
+import { useTheme } from '../../context/ThemeContext';
 import EventCard from '../molecules/EventCard';
 import Typography from '../atoms/Typography';
 import EmptyState from '../molecules/EmptyState';
@@ -23,7 +24,8 @@ export default function EventList({
   onToggleFavorite,
   ListHeaderComponent,
 }: EventListProps) {
-  // Logique de regroupement par date
+  const { colors } = useTheme();
+
   const sections = useMemo(() => {
     if (!events.length) return [];
 
@@ -56,16 +58,14 @@ export default function EventList({
     }));
   }, [events]);
 
-  // Gestion du chargement
   if (isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
 
-  // Gestion liste vide
   if (!isLoading && events.length === 0) {
     return (
       <View style={styles.center}>
@@ -80,21 +80,21 @@ export default function EventList({
       keyExtractor={(item) => item.id}
       contentContainerStyle={styles.listContent}
       stickySectionHeadersEnabled={false}
-      // HEADER
       ListHeaderComponent={ListHeaderComponent}
       initialNumToRender={6}
       windowSize={5}
       maxToRenderPerBatch={5}
       removeClippedSubviews={true}
-      // SECTION HEADER
       renderSectionHeader={({ section: { title } }) => (
         <View style={styles.sectionHeader}>
-          <Typography variant="h2" style={styles.sectionTitle}>
+          <Typography
+            variant="h2"
+            style={[styles.sectionTitle, { color: colors.text }]}
+          >
             {title}
           </Typography>
         </View>
       )}
-      // ITEM
       renderItem={({ item }) => (
         <EventCard
           event={item}
@@ -111,7 +111,7 @@ export default function EventList({
 const styles = StyleSheet.create({
   listContent: {
     padding: SPACING.m,
-    paddingBottom: 100, // Pour ne pas être caché par la TabBar
+    paddingBottom: 100,
   },
   center: {
     flex: 1,
@@ -125,7 +125,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   sectionTitle: {
-    color: COLORS.text,
     fontSize: 20,
   },
 });

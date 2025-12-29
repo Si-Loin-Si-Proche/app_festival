@@ -9,7 +9,8 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
-import { COLORS, FONTS, SIZES, SPACING } from '../../constants/theme';
+import { FONTS, SPACING } from '../../constants/theme';
+import { useTheme } from '../../context/ThemeContext';
 import IconComponent from './Icon';
 import { IconName } from '../../constants/icons';
 
@@ -39,6 +40,7 @@ export default function Button({
   style,
   ...props
 }: ButtonProps) {
+  const { colors, sizes } = useTheme();
   const isDisabled = disabled || isLoading;
 
   const getVariantStyles = (): {
@@ -49,19 +51,19 @@ export default function Button({
     if (isDisabled) {
       return {
         container: {
-          backgroundColor: COLORS.tabBarInactive,
-          borderColor: COLORS.tabBarInactive,
+          backgroundColor: colors.tabBarInactive,
+          borderColor: colors.tabBarInactive,
           borderWidth: 0,
         },
-        text: { color: COLORS.card },
-        indicator: COLORS.card,
+        text: { color: colors.card },
+        indicator: colors.card,
       };
     }
 
     const primaryBorder = withBorder
       ? {
           borderWidth: 2.5,
-          borderColor: COLORS.text,
+          borderColor: colors.text,
         }
       : {
           borderWidth: 0,
@@ -95,8 +97,8 @@ export default function Button({
               backgroundColor: color,
               ...primaryBorder,
             },
-            text: { color: COLORS.card },
-            indicator: COLORS.card,
+            text: { color: colors.card },
+            indicator: colors.card,
           };
       }
     }
@@ -107,10 +109,10 @@ export default function Button({
           container: {
             backgroundColor: 'transparent',
             borderWidth: 1.5,
-            borderColor: COLORS.primary,
+            borderColor: colors.primary,
           },
-          text: { color: COLORS.primary },
-          indicator: COLORS.primary,
+          text: { color: colors.primary },
+          indicator: colors.primary,
         };
       case 'ghost':
         return {
@@ -118,18 +120,18 @@ export default function Button({
             backgroundColor: 'transparent',
             borderWidth: 0,
           },
-          text: { color: COLORS.text },
-          indicator: COLORS.text,
+          text: { color: colors.text },
+          indicator: colors.text,
         };
       case 'primary':
       default:
         return {
           container: {
-            backgroundColor: COLORS.primary,
+            backgroundColor: colors.primary,
             ...primaryBorder,
           },
-          text: { color: COLORS.card },
-          indicator: COLORS.card,
+          text: { color: colors.card },
+          indicator: colors.card,
         };
     }
   };
@@ -161,7 +163,11 @@ export default function Button({
             />
           )}
 
-          <Text style={[styles.text, variantStyles.text]}>{label}</Text>
+          <Text
+            style={[styles.text, { fontSize: sizes.h3 }, variantStyles.text]}
+          >
+            {label}
+          </Text>
 
           {icon && iconPosition === 'right' && (
             <IconComponent
@@ -197,7 +203,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: FONTS.bold,
-    fontSize: SIZES.h3,
     textAlign: 'center',
   },
 });

@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { useRouter } from 'expo-router';
 import Icon from './Icon';
-import { COLORS } from '../../constants/theme';
+import { useTheme } from '../../context/ThemeContext';
 import { CleanEvent } from '../../types/api.types';
 
 const BUTTON_SIZES = {
@@ -26,11 +26,12 @@ export default function FavoriteButton({
   onPress,
   event,
   size = 'medium',
-  backgroundColor = COLORS.primary,
-  activeColor = COLORS.text,
+  backgroundColor,
+  activeColor,
   style,
 }: FavoriteButtonProps) {
   const router = useRouter();
+  const { colors } = useTheme();
 
   const handlePress = () => {
     if (!event) {
@@ -45,6 +46,10 @@ export default function FavoriteButton({
 
   const { size: buttonSize, icon: iconSize } = BUTTON_SIZES[size];
 
+  // Gestion des couleurs par défaut via le hook
+  const finalBackgroundColor = backgroundColor || colors.primary;
+  const finalActiveColor = activeColor || colors.text;
+
   return (
     <TouchableOpacity
       activeOpacity={0.8}
@@ -55,7 +60,7 @@ export default function FavoriteButton({
           width: buttonSize,
           height: buttonSize,
           borderRadius: buttonSize / 2,
-          backgroundColor: backgroundColor,
+          backgroundColor: finalBackgroundColor,
         },
         style,
       ]}
@@ -63,8 +68,8 @@ export default function FavoriteButton({
       <Icon
         name="favorite"
         size={iconSize}
-        color={isLiked ? activeColor : COLORS.tabBarInactive}
-        fill={isLiked ? activeColor : 'transparent'}
+        color={isLiked ? finalActiveColor : colors.tabBarInactive}
+        fill={isLiked ? finalActiveColor : 'transparent'}
         strokeWidth={isLiked ? 0 : 2}
       />
     </TouchableOpacity>

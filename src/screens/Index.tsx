@@ -2,15 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-
-// --- IMPORTS ---
 import Typography from '../components/atoms/Typography';
 import SectionHeader from '../components/molecules/SectionHeader';
 import EventCard from '../components/molecules/EventCard';
 import SectionFooter from '../components/molecules/SectionFooter';
-import { COLORS, FONTS } from '../constants/theme';
-
-// --- SERVICES & TYPES ---
+import { FONTS } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
 import { getFestivalEvents } from '../services/festival.service';
 import { CleanEvent } from '../types/api.types';
 import { useFavorites } from '../hooks/useFavorites';
@@ -19,41 +16,34 @@ const logoImg = require('../assets/logo_ferme_du_buisson.png');
 
 export default function IndexScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const [topSectionHeight, setTopSectionHeight] = useState(350);
 
-  // 1. STATE & HOOKS
   const { isLiked, toggleFavorite } = useFavorites();
   const [loading, setLoading] = useState(true);
 
   const [liveEvents, setLiveEvents] = useState<CleanEvent[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<CleanEvent[]>([]);
 
-  // 2. LOGIQUE TEMPORELLE ⏳
   useEffect(() => {
     const fetchData = async () => {
       try {
         const allEvents = await getFestivalEvents();
-        const now = new Date(); // L'heure actuelle
+        const now = new Date();
 
-        // --- FILTRE : EN COURS (LIVE) ---
-        // Un event est "En cours" si Maintenant est entre le Début et la Fin
         const live = allEvents.filter((event) => {
           if (!event.dates || event.dates.length === 0) return false;
-          // On vérifie la première date (ou tu peux boucler sur toutes les dates si c'est multi-dates)
           const start = new Date(event.dates[0].start);
           const end = new Date(event.dates[0].end);
           return now >= start && now <= end;
         });
 
-        // --- FILTRE : À VENIR ---
-        // Un event est "À venir" si son Début est dans le futur
         const upcoming = allEvents.filter((event) => {
           if (!event.dates || event.dates.length === 0) return false;
           const start = new Date(event.dates[0].start);
           return start > now;
         });
 
-        // TRI : Du plus proche au plus lointain
         upcoming.sort((a, b) => {
           const dateA = new Date(a.dates[0].start);
           const dateB = new Date(b.dates[0].start);
@@ -63,6 +53,7 @@ export default function IndexScreen() {
         setLiveEvents(live);
         setUpcomingEvents(upcoming);
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Erreur home', error);
       } finally {
         setLoading(false);
@@ -78,27 +69,31 @@ export default function IndexScreen() {
 
   if (loading) {
     return (
-      <View style={[styles.center, { backgroundColor: COLORS.secondary }]}>
-        <ActivityIndicator size="large" color={COLORS.text} />
+      <View style={[styles.center, { backgroundColor: colors.secondary }]}>
+        <ActivityIndicator size="large" color={colors.text} />
       </View>
     );
   }
 
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: COLORS.background }}
+      style={{ flex: 1, backgroundColor: colors.background }}
       edges={['top']}
     >
       <SectionHeader
         logoSource={logoImg}
         useImageTitle={true}
         showFavorite={true}
-        style={{ backgroundColor: COLORS.background, zIndex: 100 }}
+        style={{ backgroundColor: colors.background, zIndex: 100 }}
       />
 
       <View style={{ flex: 1, position: 'relative' }}>
-        {/* --- ZONE DU HAUT (ROSE - EN CE MOMENT) --- */}
-        <View style={styles.fixedBackgroundLayer}>
+        <View
+          style={[
+            styles.fixedBackgroundLayer,
+            { backgroundColor: colors.secondary },
+          ]}
+        >
           <View
             style={styles.contentMeasurer}
             onLayout={(event) =>
@@ -113,7 +108,6 @@ export default function IndexScreen() {
               En ce moment...
             </Typography>
 
-            {/* LOGIQUE D'AFFICHAGE LIVE */}
             {liveEvents.length > 0 ? (
               liveEvents.map((event) => (
                 <EventCard
@@ -126,7 +120,6 @@ export default function IndexScreen() {
                 />
               ))
             ) : (
-              // 👈 TEXTE SI VIDE
               <View style={styles.emptyStateBox}>
                 <Typography variant="body" style={{ fontStyle: 'italic' }}>
                   Pas d'événement en cours actuellement.
@@ -136,25 +129,29 @@ export default function IndexScreen() {
           </View>
         </View>
 
-        {/* --- SCROLLVIEW (BLANC - À VENIR) --- */}
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ flexGrow: 1 }}
           bounces={false}
           scrollEventThrottle={16}
         >
-          {/* ESPACEUR TRANSPARENT */}
           <View
             style={{ height: topSectionHeight, backgroundColor: 'transparent' }}
           />
 
-          {/* --- FEUILLE BLANCHE --- */}
-          <View style={styles.bottomSheet}>
+          <View
+            style={[
+              styles.bottomSheet,
+              {
+                backgroundColor: colors.background,
+                borderColor: colors.text,
+              },
+            ]}
+          >
             <Typography variant="h2" style={{ marginTop: 0, marginBottom: 20 }}>
               Événements à venir
             </Typography>
 
-            {/* LOGIQUE D'AFFICHAGE À VENIR */}
             {upcomingEvents.length > 0 ? (
               upcomingEvents.map((event, index) => (
                 <EventCard
@@ -162,7 +159,7 @@ export default function IndexScreen() {
                   variant="vertical"
                   event={event}
                   backgroundColor={
-                    index % 2 === 0 ? COLORS.secondary : COLORS.card
+                    index % 2 === 0 ? colors.secondary : colors.card
                   }
                   onPress={() => handlePress(event.id)}
                   isFavorite={isLiked(event.id)}
@@ -170,7 +167,6 @@ export default function IndexScreen() {
                 />
               ))
             ) : (
-              // 👈 TEXTE SI VIDE
               <View style={styles.emptyStateBox}>
                 <Typography
                   variant="body"
@@ -203,7 +199,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: COLORS.secondary,
     zIndex: 0,
   },
   contentMeasurer: {
@@ -217,11 +212,9 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.bold,
   },
   bottomSheet: {
-    backgroundColor: COLORS.background,
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
     borderWidth: 2,
-    borderColor: COLORS.text,
     borderBottomWidth: 0,
     paddingHorizontal: 20,
     paddingTop: 30,

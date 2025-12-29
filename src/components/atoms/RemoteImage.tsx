@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
   ImageProps,
 } from 'react-native';
-import { COLORS } from '../../constants/theme';
+import { useTheme } from '../../context/ThemeContext';
 import Icon from './Icon';
 
 interface RemoteImageProps extends Omit<ImageProps, 'source'> {
@@ -21,19 +21,27 @@ export default function RemoteImage({
   showLoader = true,
   ...props
 }: RemoteImageProps) {
+  const { colors } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
   if (!url || hasError) {
     return (
-      <View style={[styles.container, styles.fallbackContainer, style]}>
-        <Icon name="image" size={30} color={COLORS.tabBarInactive} />
+      <View
+        style={[
+          styles.container,
+          styles.fallbackContainer,
+          { backgroundColor: colors.border }, // Adapte le fond gris
+          style,
+        ]}
+      >
+        <Icon name="image" size={30} color={colors.tabBarInactive} />
       </View>
     );
   }
 
   return (
-    <View style={[styles.container, style]}>
+    <View style={[styles.container, { backgroundColor: colors.card }, style]}>
       <Image
         source={{ uri: url }}
         style={[StyleSheet.absoluteFill, styles.image]}
@@ -49,7 +57,7 @@ export default function RemoteImage({
 
       {isLoading && showLoader && (
         <View style={styles.loaderContainer}>
-          <ActivityIndicator size="small" color={COLORS.primary} />
+          <ActivityIndicator size="small" color={colors.primary} />
         </View>
       )}
     </View>
@@ -59,7 +67,6 @@ export default function RemoteImage({
 const styles = StyleSheet.create({
   container: {
     overflow: 'hidden',
-    backgroundColor: COLORS.card,
   },
   image: {
     width: '100%',
@@ -68,12 +75,11 @@ const styles = StyleSheet.create({
   fallbackContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#E1E1E1',
   },
   loaderContainer: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: 'rgba(0, 0, 0, 0.1)', // Légèrement assombri pour le contraste
   },
 });

@@ -1,8 +1,9 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet, View } from 'react-native';
+import { TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from './Icon';
 import { MapPoint } from '../../constants/mapData';
-import { COLORS, SHADOWS, SIZES } from '../../constants/theme';
+import { SHADOWS } from '../../constants/theme';
+import { useTheme } from '../../context/ThemeContext';
 
 interface MapMarkerProps {
   point: MapPoint;
@@ -10,6 +11,8 @@ interface MapMarkerProps {
 }
 
 export default function MapMarker({ point, onPress }: MapMarkerProps) {
+  const { colors, sizes } = useTheme();
+
   return (
     <TouchableOpacity
       activeOpacity={0.8}
@@ -20,10 +23,11 @@ export default function MapMarker({ point, onPress }: MapMarkerProps) {
           left: point.x,
           top: point.y,
           backgroundColor: point.color,
+          borderColor: colors.card,
         },
       ]}
     >
-      <Icon name={point.icon} size={SIZES.small} color={COLORS.card} />
+      <Icon name={point.icon} size={sizes.small} color={colors.card} />
     </TouchableOpacity>
   );
 }
@@ -37,7 +41,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1.5,
-    borderColor: COLORS.card,
     ...SHADOWS.medium,
     zIndex: 10,
   },

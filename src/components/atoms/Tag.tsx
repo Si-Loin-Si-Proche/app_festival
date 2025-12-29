@@ -4,18 +4,20 @@ import {
   StyleSheet,
   ViewStyle,
   TouchableOpacityProps,
+  StyleProp,
 } from 'react-native';
 import Typography from './Typography';
 import Icon from './Icon';
-import { COLORS, FONTS } from '../../constants/theme';
+import { FONTS } from '../../constants/theme';
 import { IconName } from '../../constants/icons';
+import { useTheme } from '../../context/ThemeContext';
 
 interface TagProps extends TouchableOpacityProps {
   label: string;
   iconName?: IconName;
   isSelected?: boolean;
   backgroundColor?: string;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export default function Tag({
@@ -27,12 +29,10 @@ export default function Tag({
   onPress,
   ...props
 }: TagProps) {
-  // LOGIQUE DE STYLE INTELLIGENTE
-  // 1. Si "isSelected" est vrai, on force le BLEU CIEL (Filtre actif)
-  // 2. Sinon, si une "backgroundColor" est fournie, on l'utilise (Catégorie)
-  // 3. Sinon, c'est transparent (Filtre inactif)
+  const { colors } = useTheme();
+
   const currentBackgroundColor = isSelected
-    ? COLORS.filtreSelected
+    ? colors.filtreSelected
     : backgroundColor || 'transparent';
 
   const currentBorderWidth = isSelected ? 2.5 : 1.5;
@@ -41,13 +41,13 @@ export default function Tag({
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      // On désactive le clic si on n'a pas passé de fonction onPress
       disabled={!onPress}
       style={[
         styles.container,
         {
           backgroundColor: currentBackgroundColor,
           borderWidth: currentBorderWidth,
+          borderColor: colors.text,
         },
         style,
       ]}
@@ -57,12 +57,15 @@ export default function Tag({
         <Icon
           name={iconName}
           size={14}
-          color={COLORS.text}
+          color={colors.text}
           style={styles.icon}
         />
       )}
 
-      <Typography variant="caption" style={styles.text}>
+      <Typography
+        variant="caption"
+        style={[styles.text, { color: colors.text }]}
+      >
         {label.toUpperCase()}
       </Typography>
     </TouchableOpacity>
@@ -77,13 +80,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 50,
-    borderColor: COLORS.text,
     gap: 6,
   },
   text: {
     fontFamily: FONTS.bold,
     fontSize: 12,
-    color: COLORS.text,
     lineHeight: undefined,
   },
   icon: {},

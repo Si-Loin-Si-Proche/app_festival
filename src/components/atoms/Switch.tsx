@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { TouchableOpacity, StyleSheet, Animated } from 'react-native';
-import { COLORS } from '../../constants/theme';
+import { useTheme } from '../../context/ThemeContext';
 
 interface CustomSwitchProps {
   value: boolean;
@@ -11,6 +11,7 @@ export default function CustomSwitch({
   value,
   onValueChange,
 }: CustomSwitchProps) {
+  const { colors } = useTheme();
   const [animatedValue] = useState(() => new Animated.Value(value ? 1 : 0));
 
   useEffect(() => {
@@ -28,7 +29,7 @@ export default function CustomSwitch({
 
   const backgroundColor = animatedValue.interpolate({
     inputRange: [0, 1],
-    outputRange: [COLORS.off, COLORS.on],
+    outputRange: [colors.off, colors.on],
   });
 
   return (
@@ -37,9 +38,23 @@ export default function CustomSwitch({
       onPress={() => onValueChange(!value)}
       style={styles.container}
     >
-      <Animated.View style={[styles.track, { backgroundColor }]}>
+      <Animated.View
+        style={[
+          styles.track,
+          {
+            backgroundColor,
+            borderColor: colors.text,
+          },
+        ]}
+      >
         <Animated.View
-          style={[styles.thumb, { transform: [{ translateX }] }]}
+          style={[
+            styles.thumb,
+            {
+              transform: [{ translateX }],
+              backgroundColor: colors.text,
+            },
+          ]}
         />
       </Animated.View>
     </TouchableOpacity>
@@ -54,16 +69,14 @@ const styles = StyleSheet.create({
   track: {
     width: '100%',
     height: '100%',
-    borderRadius: 15, // Forme pilule
-    borderWidth: 2, // Bordure épaisse
-    borderColor: COLORS.text,
+    borderRadius: 15,
+    borderWidth: 2,
     justifyContent: 'center',
   },
   thumb: {
     width: 22,
     height: 22,
-    borderRadius: 11, // Rond parfait
-    backgroundColor: COLORS.text,
+    borderRadius: 11,
     position: 'absolute',
   },
 });

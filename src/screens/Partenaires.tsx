@@ -3,16 +3,21 @@ import { ScrollView, StyleSheet, Image, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SectionHeader from '../components/molecules/SectionHeader';
 import Typography from '../components/atoms/Typography';
-import { COLORS, SPACING } from '../constants/theme';
+import { SPACING } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
 
-// Import des images locales
 const partnerImg1 = require('../assets/partenaires_1.png');
 const partnerImg2 = require('../assets/partenaires_2.png');
 const partnerImg3 = require('../assets/partenaires_3.png');
 
 export default function PartenairesScreen() {
+  const { colors } = useTheme();
+
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top']}
+    >
       <SectionHeader
         showBackButton={true}
         useImageTitle={true}
@@ -23,23 +28,21 @@ export default function PartenairesScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Titre de la page */}
-        <Typography variant="h1" style={styles.pageTitle}>
+        <Typography
+          variant="h1"
+          style={[styles.pageTitle, { color: colors.text }]}
+        >
           Nos partenaires
         </Typography>
 
-        {/* --- LISTE DES IMAGES EMPILÉES --- */}
-
-        {/* Image 1 */}
         <View style={styles.imageWrapper}>
           <Image
             source={partnerImg1}
             style={styles.partnerImage}
-            resizeMode="contain" // Important pour ne pas déformer les logos
+            resizeMode="contain"
           />
         </View>
 
-        {/* Image 2 */}
         <View style={styles.imageWrapper}>
           <Image
             source={partnerImg2}
@@ -48,7 +51,6 @@ export default function PartenairesScreen() {
           />
         </View>
 
-        {/* Image 3 */}
         <View style={styles.imageWrapper}>
           <Image
             source={partnerImg3}
@@ -57,7 +59,6 @@ export default function PartenairesScreen() {
           />
         </View>
 
-        {/* Espace en bas pour le scroll */}
         <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>
@@ -67,7 +68,6 @@ export default function PartenairesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white', // Fond blanc
   },
   scrollContent: {
     paddingHorizontal: 20,
@@ -78,19 +78,12 @@ const styles = StyleSheet.create({
     marginTop: SPACING.m,
     marginBottom: SPACING.s,
   },
-  introText: {
-    marginBottom: SPACING.xl,
-  },
-
-  // Wrapper pour espacer les blocs d'images
   imageWrapper: {
     alignItems: 'center',
     width: '100%',
   },
-
-  // Style de l'image elle-même
   partnerImage: {
-    width: '100%', // Prend toute la largeur disponible (moins le padding du parent)
-    height: 300, // Hauteur arbitraire suffisante pour afficher les logos sans les couper. Ajuste si besoin.
+    width: '100%',
+    height: 300,
   },
 });

@@ -14,7 +14,8 @@ import RenderHtml from 'react-native-render-html';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // --- IMPORTS ---
-import { COLORS, SPACING, FONTS, SIZES } from '../constants/theme';
+import { SPACING, FONTS, SIZES } from '../constants/theme';
+import { useTheme } from '../context/ThemeContext';
 import { CleanEvent } from '../types/api.types';
 import { getFestivalEvents } from '../services/festival.service';
 import { useFavorites } from '../hooks/useFavorites';
@@ -27,19 +28,6 @@ import RemoteImage from '../components/atoms/RemoteImage';
 import SectionHeader from '../components/molecules/SectionHeader';
 
 const SYSTEM_FONTS = [FONTS.regular, FONTS.bold];
-
-const TAGS_STYLES = {
-  body: {
-    color: COLORS.text,
-    fontFamily: FONTS.regular,
-    fontSize: SIZES.body,
-    lineHeight: 22,
-  },
-  ul: { paddingLeft: 0, margin: 0 },
-  li: { marginBottom: 5 },
-  p: { marginBottom: 10 },
-  strong: { fontFamily: FONTS.bold },
-};
 
 const formatDateRange = (dates: any[]) => {
   if (!dates || dates.length === 0) return '';
@@ -59,13 +47,31 @@ const formatDateRange = (dates: any[]) => {
 
 export default function EventDetailScreen() {
   const { id } = useLocalSearchParams();
-  const router = useRouter();
   const { width } = useWindowDimensions();
+  const { colors } = useTheme();
 
   const { isLiked, toggleFavorite } = useFavorites();
 
   const [event, setEvent] = useState<CleanEvent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Styles dynamiques pour le rendu HTML
+  const tagsStyles = useMemo(
+    () => ({
+      body: {
+        color: colors.text,
+        fontFamily: FONTS.regular,
+        fontSize: SIZES.body,
+        lineHeight: 22,
+      },
+      ul: { paddingLeft: 0, margin: 0, color: colors.text },
+      li: { marginBottom: 5, color: colors.text },
+      p: { marginBottom: 10, color: colors.text },
+      strong: { fontFamily: FONTS.bold, color: colors.text },
+      a: { color: colors.primary, textDecorationLine: 'underline' },
+    }),
+    [colors]
+  );
 
   const htmlSource = useMemo(() => {
     return { html: event?.description || '' };
@@ -93,66 +99,74 @@ export default function EventDetailScreen() {
 
   if (isLoading || !event) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+      <View
+        style={[
+          styles.loadingContainer,
+          { backgroundColor: colors.background },
+        ]}
+      >
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
-
-  const tagsStyles = {
-    body: {
-      color: COLORS.text,
-      fontFamily: FONTS.regular,
-      fontSize: SIZES.body,
-      lineHeight: 22,
-    },
-    ul: { paddingLeft: 0, margin: 0 },
-    li: { marginBottom: 5 },
-    p: { marginBottom: 10 },
-    strong: { fontFamily: FONTS.bold },
-  };
 
   const firstDate = event.dates[0];
   const placeName = firstDate?.placeName || 'Lieu à définir';
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <StatusBar style="dark" />
       <Stack.Screen options={{ headerShown: false }} />
 
-      <SafeAreaView style={styles.headerSafeArea} edges={['top']}>
+      <SafeAreaView
+        style={[styles.headerSafeArea, { backgroundColor: colors.background }]}
+        edges={['top']}
+      >
         <SectionHeader
           showBackButton={true}
           useImageTitle={true}
           showFavorite={false}
+          style={{ backgroundColor: colors.background }}
         />
       </SafeAreaView>
 
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { backgroundColor: colors.background },
+        ]}
         showsVerticalScrollIndicator={false}
         bounces={false}
       >
         <View style={styles.topSection}>
           <View style={styles.titleRow}>
-            <Typography variant="h1" style={styles.title}>
+            <Typography
+              variant="h1"
+              style={[styles.title, { color: colors.text }]}
+            >
               {event.title}
             </Typography>
 
             <Tag
               label={placeName}
               iconName="location"
-              backgroundColor={COLORS.tag}
-              style={styles.locationTag}
+              backgroundColor={colors.tag}
+              style={[styles.locationTag, { borderColor: colors.text }]}
             />
           </View>
 
-          <Typography variant="caption" style={styles.dateText}>
+          <Typography
+            variant="caption"
+            style={[styles.dateText, { color: colors.tabBarInactive }]}
+          >
             {formatDateRange(event.dates)}
           </Typography>
 
           {event.subtitle && (
-            <Typography variant="body" style={styles.introText}>
+            <Typography
+              variant="body"
+              style={[styles.introText, { color: colors.text }]}
+            >
               {event.subtitle}
             </Typography>
           )}
@@ -160,13 +174,19 @@ export default function EventDetailScreen() {
 
         <RemoteImage
           url={event.imageUrl}
-          style={styles.mainImage}
+          style={[styles.mainImage, { borderColor: colors.text }]}
           resizeMode="cover"
         />
 
         <View style={styles.actionsRow}>
           <TouchableOpacity
-            style={[styles.actionBtn, styles.btnOutline]}
+            style={[
+              styles.actionBtn,
+              {
+                backgroundColor: colors.card,
+                borderColor: colors.text,
+              },
+            ]}
             onPress={() => {
               const url =
                 'https://lafermedubuisson.notre-billetterie.com/billets?kld=2526';
@@ -174,21 +194,31 @@ export default function EventDetailScreen() {
             }}
             activeOpacity={0.7}
           >
-            <Typography variant="body">Réserver</Typography>
+            <Typography variant="body" style={{ fontFamily: FONTS.bold }}>
+              Réserver
+            </Typography>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.actionBtn, styles.btnFilled]}
+            style={[
+              styles.actionBtn,
+              {
+                backgroundColor: colors.secondary,
+                borderColor: colors.text,
+              },
+            ]}
             onPress={handleToggle}
             activeOpacity={0.7}
           >
-            <Typography variant="body">Favori</Typography>
+            <Typography variant="body" style={{ fontFamily: FONTS.bold }}>
+              Favori
+            </Typography>
             <View style={{ marginLeft: 8 }}>
               <Icon
                 name="favorite"
                 size={20}
-                color={COLORS.text}
-                fill={isEventLiked ? COLORS.text : 'transparent'}
+                color={colors.text}
+                fill={isEventLiked ? colors.text : 'transparent'}
                 strokeWidth={2}
               />
             </View>
@@ -196,7 +226,10 @@ export default function EventDetailScreen() {
         </View>
 
         <View style={styles.detailsSection}>
-          <Typography variant="h2" style={{ marginBottom: SPACING.s }}>
+          <Typography
+            variant="h2"
+            style={{ marginBottom: SPACING.s, color: colors.text }}
+          >
             Détail de l’évenement :
           </Typography>
 
@@ -204,11 +237,11 @@ export default function EventDetailScreen() {
             <RenderHtml
               contentWidth={width - SPACING.m * 2}
               source={htmlSource}
-              tagsStyles={TAGS_STYLES}
+              tagsStyles={tagsStyles as any}
               systemFonts={SYSTEM_FONTS}
             />
           ) : (
-            <Typography variant="body">
+            <Typography variant="body" style={{ color: colors.text }}>
               Pas de description détaillée.
             </Typography>
           )}
@@ -221,25 +254,19 @@ export default function EventDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
   },
   headerSafeArea: {
-    backgroundColor: 'white',
-  },
-  headerCustom: {
-    marginBottom: 0,
+    //
   },
   scrollContent: {
     padding: SPACING.m,
     paddingBottom: 100,
     flexGrow: 1,
-    backgroundColor: COLORS.background,
   },
   topSection: {
     marginBottom: SPACING.m,
@@ -253,22 +280,19 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    color: COLORS.text,
     fontSize: 22,
   },
   locationTag: {
     borderWidth: 1.5,
-    borderColor: COLORS.text,
     paddingVertical: 4,
     paddingHorizontal: 12,
   },
   dateText: {
-    color: COLORS.tabBarInactive,
     marginBottom: SPACING.m,
   },
   introText: {
-    color: '#444',
     lineHeight: 20,
+    fontStyle: 'italic',
   },
   mainImage: {
     width: '100%',
@@ -277,7 +301,6 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.l,
     backgroundColor: '#eee',
     borderWidth: 2,
-    borderColor: COLORS.text,
   },
   actionsRow: {
     flexDirection: 'row',
@@ -293,13 +316,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: COLORS.text,
-  },
-  btnOutline: {
-    backgroundColor: COLORS.card,
-  },
-  btnFilled: {
-    backgroundColor: COLORS.secondary,
   },
   detailsSection: {
     marginTop: SPACING.s,

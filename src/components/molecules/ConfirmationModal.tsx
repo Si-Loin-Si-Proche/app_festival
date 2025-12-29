@@ -1,7 +1,8 @@
 import React from 'react';
 import { Modal, View, StyleSheet, TouchableOpacity } from 'react-native';
 import Typography from '../atoms/Typography';
-import { COLORS, FONTS } from '../../constants/theme';
+import { FONTS } from '../../constants/theme';
+import { useTheme } from '../../context/ThemeContext';
 
 interface ConfirmationModalProps {
   visible: boolean;
@@ -14,10 +15,12 @@ export default function ConfirmationModal({
   onConfirm,
   onCancel,
 }: ConfirmationModalProps) {
+  const { colors } = useTheme();
+
   return (
     <Modal transparent visible={visible} animationType="fade">
       <View style={styles.overlay}>
-        <View style={styles.modalContainer}>
+        <View style={[styles.modalContainer, { backgroundColor: colors.card }]}>
           <Typography variant="h2" style={styles.title}>
             Voulez vous vraiment supprimer vos données ?
           </Typography>
@@ -25,7 +28,13 @@ export default function ConfirmationModal({
           <View style={styles.buttonRow}>
             {/* BOUTON OUI (Vert) */}
             <TouchableOpacity
-              style={[styles.button, styles.confirmButton]}
+              style={[
+                styles.button,
+                {
+                  backgroundColor: colors.on,
+                  borderColor: colors.text,
+                },
+              ]}
               onPress={onConfirm}
             >
               <Typography variant="h2" style={styles.btnText}>
@@ -35,7 +44,13 @@ export default function ConfirmationModal({
 
             {/* BOUTON NON (Rouge) */}
             <TouchableOpacity
-              style={[styles.button, styles.cancelButton]}
+              style={[
+                styles.button,
+                {
+                  backgroundColor: colors.off,
+                  borderColor: colors.text,
+                },
+              ]}
               onPress={onCancel}
             >
               <Typography variant="h2" style={styles.btnText}>
@@ -52,13 +67,12 @@ export default function ConfirmationModal({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)', // Fond gris transparent derrière
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContainer: {
     width: '85%',
-    backgroundColor: 'white',
     borderRadius: 20,
     paddingVertical: 30,
     paddingHorizontal: 20,
@@ -72,7 +86,6 @@ const styles = StyleSheet.create({
   title: {
     textAlign: 'center',
     marginBottom: 25,
-    fontSize: 20,
   },
   buttonRow: {
     flexDirection: 'row',
@@ -83,13 +96,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     borderRadius: 50,
     borderWidth: 2,
-    borderColor: COLORS.text,
-  },
-  confirmButton: {
-    backgroundColor: COLORS.on, // Vert style maquette
-  },
-  cancelButton: {
-    backgroundColor: COLORS.off, // Rouge style maquette
   },
   btnText: {
     marginBottom: 0,

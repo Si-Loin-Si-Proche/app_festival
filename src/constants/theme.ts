@@ -5,42 +5,74 @@
  * il suffit de modifier les valeurs ici.
  */
 
-// Palette de couleurs
-export const COLORS = {
-  /*
-      /!\  Variables randoms a modifier
-     */
-  primary: '#E63946', // Couleur principale (Boutons, titres actifs)
-  secondary: '#FFCCBC', // Couleur secondaire (Headers, navigation)
-  background: '#F1FAEE', // Fond des écrans
-  card: '#FFFFFF', // Fond des cartes (events)
-  text: '#000000', // Texte principal
-  textLight: '#A8DADC', // Texte secondaire (dates, sous-titres)
-  error: '#FF0000', // Messages d'erreur
-  success: '#4CAF50', // Messages de succès
-  tabBarActive: '#E63946',
-  tabBarInactive: '#8D99AE',
-  tag: '#F5F294',
-  filtreSelected: '#B3E5FC',
-  off: '#E57373',
-  on: '#8BC34A',
+export const PALETTE = {
+  light: {
+    primary: '#E63946',
+    secondary: '#FFCCBC', // Rose
+    background: '#F1FAEE', // Blanc cassé
+    card: '#FFFFFF',
+    text: '#000000',
+    textLight: '#A8DADC',
+    error: '#FF0000',
+    success: '#4CAF50',
+    tabBarActive: '#E63946',
+    tabBarInactive: '#8D99AE',
+    tag: '#F5F294',
+    filtreSelected: '#B3E5FC',
+    off: '#E57373',
+    on: '#8BC34A',
+    border: '#E0E0E0',
+    icon: '#000000',
+  },
+  dark: {
+    primary: '#FF5A5F',
+    secondary: '#333333',
+    background: '#121212',
+    card: '#1E1E1E', // Gris anthracite
+    text: '#FFFFFF', // Blanc
+    textLight: '#AAAAAA', // Gris clair
+    error: '#FF5252',
+    success: '#66BB6A',
+    tabBarActive: '#FF5A5F',
+    tabBarInactive: '#666666',
+    tag: '#37474F', // Tag sombre
+    filtreSelected: '#37474F',
+    off: '#D32F2F',
+    on: '#689F38',
+    border: '#333333',
+    icon: '#FFFFFF',
+  },
 };
 
-// Tailles de police (pour la cohérence)
+// VARIABLE DE TRANSITION
+export const COLORS = PALETTE.light;
+
+// 2. TAILLES DE POLICE
+// Mode Normal
 export const SIZES = {
-  h1: 24, // Titres d'écrans
-  h2: 20, // Titres de sections
-  h3: 16, // Titres de cartes
-  body: 14, // Texte courant
-  small: 12, // Légendes, dates
-  xsmall: 8, // Légendes, dates
+  h1: 24,
+  h2: 20,
+  h3: 16,
+  body: 14,
+  small: 12,
+  xsmall: 8,
 };
 
-// Espacements (Marges et Paddings)
+// Mode Accessibilité +25%
+export const SIZES_ACCESSIBILITY = {
+  h1: 30,
+  h2: 25,
+  h3: 20,
+  body: 18,
+  small: 15,
+  xsmall: 10,
+};
+
+// Espacements
 export const SPACING = {
   xs: 4,
   s: 8,
-  m: 16, // Marge standard
+  m: 16,
   l: 24,
   xl: 32,
 };
@@ -52,20 +84,19 @@ export const FONTS = {
   boldItalic: 'AtkinsonHyperlegible_700Bold_Italic',
 };
 
-// Configuration des ombres (Shadows) pour iOS et Android
 export const SHADOWS = {
   light: {
-    shadowColor: COLORS.text,
+    shadowColor: '#000000',
     shadowOffset: {
       width: 0,
       height: 2,
     },
     shadowOpacity: 0.1,
     shadowRadius: 3.84,
-    elevation: 2, // Pour Android
+    elevation: 2,
   },
   medium: {
-    shadowColor: COLORS.text,
+    shadowColor: '#000000',
     shadowOffset: {
       width: 0,
       height: 5,
@@ -76,6 +107,14 @@ export const SHADOWS = {
   },
 };
 
-const theme = { COLORS, SIZES, SPACING, FONTS, SHADOWS };
+const theme = {
+  PALETTE,
+  COLORS,
+  SIZES,
+  SIZES_ACCESSIBILITY,
+  SPACING,
+  FONTS,
+  SHADOWS,
+};
 
 export default theme;
