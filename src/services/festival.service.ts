@@ -1,8 +1,10 @@
 /* eslint-disable no-console */
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from './api';
 import { ApiResponse, FestivalEvent, CleanEvent } from '../types/api.types';
 
 const FESTIVAL_ID = process.env.EXPO_PUBLIC_FESTIVAL_ID;
+const STORAGE_KEY = 'festival_events_cache_v1';
 
 const COMMON_INCLUDES =
   'main_image,spacetimes,spacetimes.place,content_field,section_tags,tags';
@@ -74,40 +76,92 @@ const paramsSerializer = {
   },
 };
 
-export const getFestivalEvents = async (): Promise<CleanEvent[]> => {
+// --- FONCTION PRIVÉE : APPEL RÉSEAU PUR ---
+// C'est l'ancienne logique de getFestivalEvents, isolée pour être réutilisée
+const fetchFromApi = async (): Promise<CleanEvent[]> => {
+  const config = {
+    params: {
+      'filter[tag_ids]': FESTIVAL_ID,
+      include: COMMON_INCLUDES,
+      per_page: 300,
+    },
+    paramsSerializer,
+  };
+
+  if (__DEV__) {
+    const debugUrl = api.getUri({ url: '/contents', ...config });
+    console.log('🚀 API FETCH (Background) :', debugUrl);
+  }
+
+  const response = await api.get<ApiResponse<FestivalEvent>>(
+    '/contents',
+    config
+  );
+
+  const rawEvents = response.data.data;
+  const included = response.data.included || [];
+  const eventsArray = Array.isArray(rawEvents) ? rawEvents : [rawEvents];
+
+  return eventsArray.map((event) => mapToCleanEvent(event, included));
+};
+
+export const getFestivalEvents = async (
+  onBackgroundUpdate?: (newData: CleanEvent[]) => void
+): Promise<CleanEvent[]> => {
+  let localData: CleanEvent[] = [];
+
   try {
-    const config = {
-      params: {
-        'filter[tag_ids]': FESTIVAL_ID,
-        include: COMMON_INCLUDES,
-        per_page: 300,
-      },
-      paramsSerializer,
-    };
-    if (__DEV__) {
-      const debugUrl = api.getUri({ url: '/contents', ...config });
-      console.log('🚀 URL LISTE :', debugUrl);
+    const jsonValue = await AsyncStorage.getItem(STORAGE_KEY);
+    if (jsonValue != null) {
+      localData = JSON.parse(jsonValue);
+      if (__DEV__) console.log('📦 Données chargées depuis le CACHE');
     }
-    const response = await api.get<ApiResponse<FestivalEvent>>(
-      '/contents',
-      config
-    );
+  } catch (e) {
+    console.warn('Erreur lecture cache local', e);
+  }
 
-    const rawEvents = response.data.data;
-    const included = response.data.included || [];
-    const eventsArray = Array.isArray(rawEvents) ? rawEvents : [rawEvents];
+  // Mise à jour réseau
+  const networkPromise = (async () => {
+    try {
+      const freshData = await fetchFromApi();
 
-    return eventsArray.map((event) => mapToCleanEvent(event, included));
-  } catch (error: any) {
-    if (__DEV__) {
-      console.error('❌ ERREUR LISTE :', error);
-      if (error.response) console.log(error.response.status);
+      // Sauvegarde
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(freshData));
+      if (__DEV__) console.log('🌐 Données mises à jour depuis API');
+
+      // Notification
+      if (onBackgroundUpdate) {
+        onBackgroundUpdate(freshData);
+      }
+      return freshData;
+    } catch (error: any) {
+      if (__DEV__) console.error('❌ Echec Fetch Background :', error);
+      if (localData.length === 0) throw error;
+      return [];
     }
-    return [];
+  })();
+
+  if (localData.length > 0) {
+    return localData;
+  } else {
+    return networkPromise;
   }
 };
 
 export const getEventById = async (id: string): Promise<CleanEvent | null> => {
+  try {
+    const jsonValue = await AsyncStorage.getItem(STORAGE_KEY);
+    if (jsonValue != null) {
+      const allEvents: CleanEvent[] = JSON.parse(jsonValue);
+      const found = allEvents.find((e) => e.id === id);
+      if (found) {
+        if (__DEV__) console.log('📦 Event trouvé dans le CACHE');
+        return found;
+      }
+    }
+  } catch (e) {
+    // Ignore error, fallback to API
+  }
   try {
     const config = {
       params: {
@@ -118,7 +172,7 @@ export const getEventById = async (id: string): Promise<CleanEvent | null> => {
     };
     if (__DEV__) {
       const debugUrl = api.getUri({ url: '/contents', ...config });
-      console.log('🚀 URL DETAIL :', debugUrl);
+      console.log('🚀 URL DETAIL (Network fallback) :', debugUrl);
     }
     const response = await api.get<ApiResponse<FestivalEvent>>(
       '/contents',
