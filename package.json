@@ -12,6 +12,7 @@
     "reset": "npx expo start --clear",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --write .",
+    "compile": "eas build --platform android --profile preview",
     "---------- GIT FACILE ----------": "",
     "save": "node easy-git.js",
     "prepare": "husky install"
