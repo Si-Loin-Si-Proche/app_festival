@@ -26,34 +26,40 @@ export default function IndexScreen() {
   const [upcomingEvents, setUpcomingEvents] = useState<CleanEvent[]>([]);
 
   useEffect(() => {
+    const processData = (events: CleanEvent[]) => {
+      const now = new Date();
+
+      const live = events.filter((event) => {
+        if (!event.dates || event.dates.length === 0) return false;
+        const start = new Date(event.dates[0].start);
+        const end = new Date(event.dates[0].end);
+        return now >= start && now <= end;
+      });
+
+      const upcoming = events.filter((event) => {
+        if (!event.dates || event.dates.length === 0) return false;
+        const start = new Date(event.dates[0].start);
+        return start > now;
+      });
+
+      upcoming.sort((a, b) => {
+        const dateA = new Date(a.dates[0].start);
+        const dateB = new Date(b.dates[0].start);
+        return dateA.getTime() - dateB.getTime();
+      });
+
+      setLiveEvents(live);
+      setUpcomingEvents(upcoming);
+    };
+
     const fetchData = async () => {
       try {
-        const allEvents = await getFestivalEvents();
-        const now = new Date();
-
-        const live = allEvents.filter((event) => {
-          if (!event.dates || event.dates.length === 0) return false;
-          const start = new Date(event.dates[0].start);
-          const end = new Date(event.dates[0].end);
-          return now >= start && now <= end;
+        const data = await getFestivalEvents((newData) => {
+          console.log("⚡️ Mise à jour de l'accueil via le réseau");
+          processData(newData);
         });
-
-        const upcoming = allEvents.filter((event) => {
-          if (!event.dates || event.dates.length === 0) return false;
-          const start = new Date(event.dates[0].start);
-          return start > now;
-        });
-
-        upcoming.sort((a, b) => {
-          const dateA = new Date(a.dates[0].start);
-          const dateB = new Date(b.dates[0].start);
-          return dateA.getTime() - dateB.getTime();
-        });
-
-        setLiveEvents(live);
-        setUpcomingEvents(upcoming);
+        processData(data);
       } catch (error) {
-        // eslint-disable-next-line no-console
         console.error('Erreur home', error);
       } finally {
         setLoading(false);

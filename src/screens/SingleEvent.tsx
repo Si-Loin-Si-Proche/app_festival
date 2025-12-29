@@ -26,7 +26,7 @@ import Icon from '../../src/components/atoms/Icon';
 import Tag from '../../src/components/atoms/Tag';
 import RemoteImage from '../components/atoms/RemoteImage';
 import SectionHeader from '../components/molecules/SectionHeader';
-import EventCard from '../components/molecules/EventCard'; // <--- 1. Import d'EventCard
+import EventCard from '../components/molecules/EventCard';
 
 const SYSTEM_FONTS = [FONTS.regular, FONTS.bold];
 
@@ -48,14 +48,14 @@ const formatDateRange = (dates: any[]) => {
 
 export default function EventDetailScreen() {
   const { id } = useLocalSearchParams();
-  const router = useRouter(); // Utilisation de router pour la navigation
+  const router = useRouter();
   const { width } = useWindowDimensions();
   const { colors } = useTheme();
 
   const { isLiked, toggleFavorite } = useFavorites();
 
   const [event, setEvent] = useState<CleanEvent | null>(null);
-  const [relatedEvents, setRelatedEvents] = useState<CleanEvent[]>([]); // <--- 2. State pour les suggestions
+  const [relatedEvents, setRelatedEvents] = useState<CleanEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Styles dynamiques pour le rendu HTML
@@ -81,29 +81,32 @@ export default function EventDetailScreen() {
   }, [event?.description]);
 
   useEffect(() => {
-    const fetchEvent = async () => {
-      setIsLoading(true);
-      const allEvents = await getFestivalEvents();
+    const processData = (allEvents: CleanEvent[]) => {
       const found = allEvents.find((e) => e.id === id);
       setEvent(found || null);
 
       if (found) {
         const currentPlace = found.dates[0]?.placeName;
-
         if (currentPlace) {
           const suggestions = allEvents.filter((e) => {
             const isNotSelf = e.id !== found.id;
             const isSamePlace = e.dates[0]?.placeName === currentPlace;
-
             return isNotSelf && isSamePlace;
           });
-          setRelatedEvents(suggestions.slice(0, 3));
+          setRelatedEvents(suggestions.slice(0, 5));
         }
       }
+    };
+
+    const loadData = async () => {
+      const data = await getFestivalEvents((newData) => {
+        processData(newData);
+      });
+      processData(data);
 
       setIsLoading(false);
     };
-    if (id) fetchEvent();
+    if (id) loadData();
   }, [id]);
 
   const isEventLiked = event ? isLiked(event.id) : false;

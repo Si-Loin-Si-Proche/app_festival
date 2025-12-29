@@ -71,7 +71,10 @@ export default function ProgrammationScreen() {
     const loadEvents = async () => {
       setIsLoading(true);
       try {
-        const data = await getFestivalEvents();
+        const data = await getFestivalEvents((newData) => {
+          console.log('⚡️ Mise à jour de la programmation via le réseau');
+          setAllEvents(newData);
+        });
         setAllEvents(data);
         setFilteredEvents(data);
         if (params.location) {

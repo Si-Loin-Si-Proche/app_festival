@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import {
   View,
-  Image,
   StyleSheet,
   ActivityIndicator,
-  ImageProps,
+  ViewStyle,
+  StyleProp,
 } from 'react-native';
+import { Image, ImageStyle, ImageContentFit } from 'expo-image';
 import { useTheme } from '../../context/ThemeContext';
 import Icon from './Icon';
 
-interface RemoteImageProps extends Omit<ImageProps, 'source'> {
+interface RemoteImageProps {
   url?: string | null;
+  style?: StyleProp<ImageStyle>;
+  resizeMode?: 'cover' | 'contain' | 'stretch' | 'center';
   showLoader?: boolean;
 }
 
@@ -19,11 +22,21 @@ export default function RemoteImage({
   style,
   resizeMode = 'cover',
   showLoader = true,
-  ...props
 }: RemoteImageProps) {
   const { colors } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+
+  const getContentFit = (): ImageContentFit => {
+    switch (resizeMode) {
+      case 'stretch':
+        return 'fill';
+      case 'center':
+        return 'none';
+      default:
+        return resizeMode as ImageContentFit;
+    }
+  };
 
   if (!url || hasError) {
     return (
@@ -31,8 +44,8 @@ export default function RemoteImage({
         style={[
           styles.container,
           styles.fallbackContainer,
-          { backgroundColor: colors.border }, // Adapte le fond gris
-          style,
+          { backgroundColor: colors.border },
+          style as StyleProp<ViewStyle>,
         ]}
       >
         <Icon name="image" size={30} color={colors.tabBarInactive} />
@@ -41,18 +54,24 @@ export default function RemoteImage({
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.card }, style]}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: colors.card },
+        style as StyleProp<ViewStyle>,
+      ]}
+    >
       <Image
-        source={{ uri: url }}
+        source={url}
         style={[StyleSheet.absoluteFill, styles.image]}
-        resizeMode={resizeMode}
+        contentFit={getContentFit()}
+        cachePolicy="disk"
         onLoadStart={() => setIsLoading(true)}
-        onLoadEnd={() => setIsLoading(false)}
+        onLoad={() => setIsLoading(false)}
         onError={() => {
           setHasError(true);
           setIsLoading(false);
         }}
-        {...props}
       />
 
       {isLoading && showLoader && (
@@ -80,6 +99,6 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.1)', // Légèrement assombri pour le contraste
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
   },
 });
