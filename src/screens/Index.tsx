@@ -11,6 +11,7 @@ import { useTheme } from '../context/ThemeContext';
 import { getFestivalEvents } from '../services/festival.service';
 import { CleanEvent } from '../types/api.types';
 import { useFavorites } from '../hooks/useFavorites';
+import { useAppHaptics } from '../hooks/useAppHaptics';
 
 const logoImg = require('../assets/logo_ferme_du_buisson.png');
 
@@ -68,8 +69,9 @@ export default function IndexScreen() {
 
     fetchData();
   }, []);
-
+  const { medium } = useAppHaptics();
   const handlePress = (id: string) => {
+    medium();
     router.push(`/event/${id}` as any);
   };
 

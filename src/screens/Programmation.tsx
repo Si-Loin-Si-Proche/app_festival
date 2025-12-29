@@ -15,6 +15,7 @@ import SearchBar from '../components/molecules/SearchBar';
 import FilterList from '../components/molecules/FilterList';
 import EmptyState from '../components/molecules/EmptyState';
 import Typography from '../components/atoms/Typography';
+import { useAppHaptics } from '../hooks/useAppHaptics';
 
 const formatDateForFilter = (isoString: string) => {
   const date = new Date(isoString);
@@ -153,7 +154,9 @@ export default function ProgrammationScreen() {
     allEvents,
   ]);
 
+  const { medium } = useAppHaptics();
   const handleEventPress = (id: string) => {
+    medium();
     router.push(`/event/${id}` as any);
   };
 

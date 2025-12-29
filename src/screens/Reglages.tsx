@@ -16,6 +16,7 @@ export default function ReglagesScreen() {
   const {
     colors,
     notifEnabled,
+    vibrationEnabled, // 👈 Récupère l'état
     isAccessible,
     currentThemeLabel,
     isThemeOpen,
@@ -23,6 +24,7 @@ export default function ReglagesScreen() {
     setIsThemeOpen,
     setResetModalVisible,
     handleToggleNotifications,
+    handleToggleVibration, // 👈 Récupère la fonction
     handleThemeSelect,
     handleAccessToggle,
     handleResetConfirm,
@@ -46,7 +48,7 @@ export default function ReglagesScreen() {
           paddingBottom: 100,
         }}
       >
-        {/* BLOC 1 : NOTIFICATIONS */}
+        {/* BLOC 1 : NOTIFICATIONS & VIBRATIONS */}
         <MenuItem
           label="Notifications"
           type="switch"
@@ -55,11 +57,19 @@ export default function ReglagesScreen() {
         />
         <Separator marginVertical={5} thickness={2} />
 
+        <MenuItem
+          label="Vibrations"
+          type="switch"
+          value={vibrationEnabled}
+          onValueChange={handleToggleVibration}
+        />
+        <Separator marginVertical={5} thickness={2} />
+
         {/* BLOC 2 : APPARENCE */}
         <MenuItem
           label="Apparence"
           type="dropdown"
-          selectedValue={currentThemeLabel} // 'Clair' ou 'Sombre'
+          selectedValue={currentThemeLabel}
           options={['Clair', 'Sombre']}
           isExpanded={isThemeOpen}
           onPress={() => setIsThemeOpen(!isThemeOpen)}
@@ -89,7 +99,6 @@ export default function ReglagesScreen() {
           <TouchableOpacity onPress={() => setResetModalVisible(true)}>
             <Typography
               variant="h2"
-              // On utilise colors.off (Rouge) qui vient du thème dynamique
               style={{ color: colors.off, textAlign: 'left' }}
             >
               Réinitialiser l'application
