@@ -10,7 +10,7 @@ const TabsLayout = () => {
   return (
     <>
       <StatusBar
-        style="dark"
+        style={colors.text === '#FFFFFF' ? 'light' : 'dark'}
         backgroundColor={colors.background}
         translucent={false}
       />

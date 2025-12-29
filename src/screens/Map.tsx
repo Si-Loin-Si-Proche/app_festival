@@ -19,6 +19,7 @@ import Typography from '../components/atoms/Typography';
 import Icon from '../components/atoms/Icon';
 import SectionHeader from '../components/molecules/SectionHeader';
 import { useTheme } from '../context/ThemeContext';
+import { useAppHaptics } from '../hooks/useAppHaptics';
 
 const screen = Dimensions.get('window');
 const IMAGE_RATIO = 6500 / 6200;
@@ -35,7 +36,7 @@ export default function MapScreen() {
   const { colors } = useTheme();
   const [selectedPoint, setSelectedPoint] = useState<MapPoint | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>('all');
-
+  const { selection } = useAppHaptics();
   const mapHeight = screen.width / IMAGE_RATIO;
 
   const displayedPoints = useMemo(() => {
@@ -122,7 +123,10 @@ export default function MapScreen() {
                       borderColor: colors.text,
                     },
                   ]}
-                  onPress={() => setActiveFilter(filter.id)}
+                  onPress={() => {
+                    selection();
+                    setActiveFilter(filter.id);
+                  }}
                   activeOpacity={0.8}
                 >
                   {filter.id !== 'all' && (

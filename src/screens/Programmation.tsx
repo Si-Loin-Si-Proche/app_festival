@@ -73,7 +73,6 @@ export default function ProgrammationScreen() {
       setIsLoading(true);
       try {
         const data = await getFestivalEvents((newData) => {
-          console.log('⚡️ Mise à jour de la programmation via le réseau');
           setAllEvents(newData);
         });
         setAllEvents(data);

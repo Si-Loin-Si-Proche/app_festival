@@ -56,7 +56,6 @@ export default function IndexScreen() {
     const fetchData = async () => {
       try {
         const data = await getFestivalEvents((newData) => {
-          console.log("⚡️ Mise à jour de l'accueil via le réseau");
           processData(newData);
         });
         processData(data);
@@ -233,7 +232,6 @@ const styles = StyleSheet.create({
   },
   footerContainer: {
     marginHorizontal: -22,
-    marginBottom: -20,
     marginTop: 20,
     zIndex: 1,
   },
