@@ -1,18 +1,33 @@
-import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { CleanEvent } from '../types/api.types';
+
+import type * as NotificationsType from 'expo-notifications';
 
 const NOTIF_PREF_KEY = 'user_notifications_enabled';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+const isExpoGo =
+  Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+let Notifications: typeof NotificationsType | null = null;
+
+if (!isExpoGo) {
+  try {
+    Notifications = require('expo-notifications');
+    if (Notifications) {
+      Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+          shouldShowAlert: true,
+          shouldPlaySound: true,
+          shouldSetBadge: false,
+          shouldShowBanner: true,
+          shouldShowList: true,
+        }),
+      });
+    }
+  } catch (e) {
+    console.warn('Erreur chargement natif notifications', e);
+  }
+}
 
 export const NotificationService = {
   /**
@@ -34,7 +49,8 @@ export const NotificationService = {
   setNotificationsEnabled: async (enabled: boolean) => {
     try {
       await AsyncStorage.setItem(NOTIF_PREF_KEY, JSON.stringify(enabled));
-      if (!enabled) {
+      // On utilise la variable dynamique 'Notifications'
+      if (!enabled && Notifications) {
         await Notifications.cancelAllScheduledNotificationsAsync();
         console.log('Notifications désactivées : Tout a été annulé.');
       }
@@ -44,20 +60,33 @@ export const NotificationService = {
   },
 
   requestPermissions: async () => {
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-
-    if (existingStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
+    // PROTECTION EXPO GO
+    if (!Notifications) {
+      console.log(
+        '🚧 [Expo Go] Permissions simulées (librairie native absente)'
+      );
+      return true; // On fait croire que c'est bon pour ne pas bloquer l'UI
     }
 
-    if (finalStatus !== 'granted') {
-      console.log('Permission refusée !');
+    try {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+
+      if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+
+      if (finalStatus !== 'granted') {
+        console.log('Permission refusée !');
+        return false;
+      }
+      return true;
+    } catch (e) {
+      console.warn('Erreur permissions:', e);
       return false;
     }
-    return true;
   },
 
   /**
@@ -67,6 +96,11 @@ export const NotificationService = {
     event: CleanEvent,
     minutesBefore: number = 15
   ) => {
+    if (!Notifications) {
+      console.log(`🚧 [Expo Go] Notification SIMULÉE pour : ${event.title}`);
+      return;
+    }
+
     const isAppEnabled = await NotificationService.areNotificationsEnabled();
     if (!isAppEnabled) {
       console.log('Notif bloquée par le réglage utilisateur (OFF)');
@@ -107,7 +141,7 @@ export const NotificationService = {
         },
       });
       console.log(
-        `Notif programmée pour ${event.title} à ${triggerDate.toLocaleTimeString()}`
+        `✅ Notif programmée pour ${event.title} à ${triggerDate.toLocaleTimeString()}`
       );
       return id;
     } catch (e) {
@@ -119,15 +153,20 @@ export const NotificationService = {
    * Annule la notification
    */
   cancelEventNotification: async (eventId: string) => {
-    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-    const notification = scheduled.find(
-      (n) => n.content.data?.eventId === eventId
-    );
-    if (notification) {
-      await Notifications.cancelScheduledNotificationAsync(
-        notification.identifier
+    if (!Notifications) return;
+    try {
+      const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+      const notification = scheduled.find(
+        (n) => n.content.data?.eventId === eventId
       );
-      console.log(`Notif annulée pour ${eventId}`);
+      if (notification) {
+        await Notifications.cancelScheduledNotificationAsync(
+          notification.identifier
+        );
+        console.log(`🗑 Notif annulée pour ${eventId}`);
+      }
+    } catch (e) {
+      console.warn('Erreur annulation notif:', e);
     }
   },
 };

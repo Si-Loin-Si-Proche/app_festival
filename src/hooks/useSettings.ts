@@ -1,14 +1,13 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
-import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Services & Contextes
 import { useTheme } from '../context/ThemeContext';
 import { useFavorites } from './useFavorites';
 import { NotificationService } from '../services/notifications.service';
 import { setGlobalHapticsEnabled } from './useAppHaptics';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const VIBRATION_KEY = 'user_vibration_enabled';
 
@@ -63,7 +62,6 @@ export const useSettings = () => {
 
   // C. Accessibilité
   const handleAccessToggle = (value: boolean) => {
-    // On appelle toggle seulement si la valeur change (sécurité)
     if (value !== isAccessible) {
       toggleAccessibility();
     }
@@ -75,7 +73,8 @@ export const useSettings = () => {
 
       await resetPreferences();
 
-      await Notifications.cancelAllScheduledNotificationsAsync();
+      await NotificationService.setNotificationsEnabled(false);
+
       await NotificationService.setNotificationsEnabled(true);
       setNotifEnabled(true);
 
