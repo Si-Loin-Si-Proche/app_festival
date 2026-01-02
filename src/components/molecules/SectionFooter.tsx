@@ -24,11 +24,11 @@ export default function SectionFooter() {
     colors.text === '#F5F5F5';
 
   const openExternalLink = async (url: string) => {
-    const supported = await Linking.canOpenURL(url);
-    if (supported) {
+    try {
       await Linking.openURL(url);
-    } else {
-      Alert.alert('Erreur', "Impossible d'ouvrir ce lien : " + url);
+    } catch (error) {
+      Alert.alert('Erreur', "Impossible d'ouvrir ce lien");
+      console.error(error);
     }
   };
 
@@ -38,7 +38,6 @@ export default function SectionFooter() {
 
   return (
     <View style={styles.container}>
-      {/* 3. AFFICHAGE CONDITIONNEL DU SVG DE FOND */}
       <View style={styles.backgroundContainer}>
         {isDarkMode ? (
           <FooterBackgroundDark
@@ -121,7 +120,7 @@ export default function SectionFooter() {
               <TouchableOpacity
                 onPress={() =>
                   openExternalLink(
-                    'https://www.instagram.com/lafermedubuisson/?hl=fr'
+                    'https://www.instagram.com/lafermedubuisson/'
                   )
                 }
               >
@@ -161,14 +160,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: SPACING.l,
+    width: '100%',
   },
   leftColumn: {
-    flex: 0,
+    flex: 1,
     gap: 12,
     alignItems: 'flex-start',
   },
   linkText: {
     textDecorationLine: 'none',
+    textAlign: 'left',
   },
   verticalSeparator: {
     width: 2,
@@ -177,7 +178,7 @@ const styles = StyleSheet.create({
     opacity: 1,
   },
   rightColumn: {
-    flex: 0,
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 15,
