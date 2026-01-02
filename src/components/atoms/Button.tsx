@@ -43,6 +43,10 @@ export default function Button({
   const { colors, sizes } = useTheme();
   const isDisabled = disabled || isLoading;
 
+  const fontSize = sizes.h3;
+  const iconSize = fontSize * 1.2;
+  const lineHeight = fontSize * 1.4;
+
   const getVariantStyles = (): {
     container: ViewStyle;
     text: TextStyle;
@@ -157,14 +161,23 @@ export default function Button({
           {icon && iconPosition === 'left' && (
             <IconComponent
               name={icon}
-              size={20}
+              size={iconSize}
               color={variantStyles.text.color as string}
               style={{ marginRight: SPACING.s }}
             />
           )}
 
           <Text
-            style={[styles.text, { fontSize: sizes.h3 }, variantStyles.text]}
+            style={[
+              styles.text,
+              {
+                fontSize: fontSize,
+                lineHeight: lineHeight,
+              },
+              variantStyles.text,
+            ]}
+            numberOfLines={2}
+            adjustsFontSizeToFit={false}
           >
             {label}
           </Text>
@@ -172,7 +185,7 @@ export default function Button({
           {icon && iconPosition === 'right' && (
             <IconComponent
               name={icon}
-              size={20}
+              size={iconSize}
               color={variantStyles.text.color as string}
               style={{ marginLeft: SPACING.s }}
             />
@@ -188,7 +201,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
+    paddingVertical: 12,
     paddingHorizontal: SPACING.l,
     borderRadius: 12,
     minHeight: 50,
@@ -200,9 +213,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 1,
   },
   text: {
     fontFamily: FONTS.bold,
     textAlign: 'center',
+    textAlignVertical: 'center',
+    includeFontPadding: false,
+    flexShrink: 1,
   },
 });
