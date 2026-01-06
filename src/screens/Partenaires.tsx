@@ -6,9 +6,30 @@ import Typography from '../components/atoms/Typography';
 import { SPACING } from '../constants/theme';
 import { useTheme } from '../context/ThemeContext';
 
-const partnerImg1 = require('../assets/partenaires_1.png');
-const partnerImg2 = require('../assets/partenaires_2.png');
-const partnerImg3 = require('../assets/partenaires_3.png');
+// Import des assets
+const partnerImg1 = require('../assets/partenaire1.png');
+const partnerImg2 = require('../assets/partenaire2.png');
+const partnerImg3 = require('../assets/partenaire3.png');
+const partnerImg4 = require('../assets/partenaire4.png');
+const partnerImg5 = require('../assets/partenaire5.png');
+const partnerImg6 = require('../assets/partenaire6.png');
+
+const FullWidthImage = ({ source }: { source: any }) => {
+  const { width, height } = Image.resolveAssetSource(source);
+  const ratio = width / height;
+
+  return (
+    <Image
+      source={source}
+      style={{
+        width: '100%',
+        aspectRatio: ratio,
+        height: undefined,
+      }}
+      resizeMode="contain"
+    />
+  );
+};
 
 export default function PartenairesScreen() {
   const { colors } = useTheme();
@@ -35,28 +56,70 @@ export default function PartenairesScreen() {
           Nos partenaires
         </Typography>
 
-        <View style={styles.imageWrapper}>
-          <Image
-            source={partnerImg1}
-            style={styles.partnerImage}
-            resizeMode="contain"
-          />
+        {/* 1. Subventions */}
+        <View style={styles.section}>
+          <Typography
+            variant="h3"
+            style={[styles.sectionTitle, { color: colors.text }]}
+          >
+            La Ferme du Buisson est subventionnée par
+          </Typography>
+          <FullWidthImage source={partnerImg1} />
         </View>
 
-        <View style={styles.imageWrapper}>
-          <Image
-            source={partnerImg2}
-            style={styles.partnerImage}
-            resizeMode="contain"
-          />
+        {/* 2. Soutien */}
+        <View style={styles.section}>
+          <Typography
+            variant="h3"
+            style={[styles.sectionTitle, { color: colors.text }]}
+          >
+            Elle reçoit le soutien de
+          </Typography>
+          <FullWidthImage source={partnerImg2} />
         </View>
 
-        <View style={styles.imageWrapper}>
-          <Image
-            source={partnerImg3}
-            style={styles.partnerImage}
-            resizeMode="contain"
-          />
+        {/* 3. Centre d'art */}
+        <View style={styles.section}>
+          <Typography
+            variant="h3"
+            style={[styles.sectionTitle, { color: colors.text }]}
+          >
+            Partenaires du Centre d'art
+          </Typography>
+          <FullWidthImage source={partnerImg3} />
+        </View>
+
+        {/* 4. Cinéma */}
+        <View style={styles.section}>
+          <Typography
+            variant="h3"
+            style={[styles.sectionTitle, { color: colors.text }]}
+          >
+            Partenaires du Cinéma
+          </Typography>
+          <FullWidthImage source={partnerImg4} />
+        </View>
+
+        {/* 5. Territoire */}
+        <View style={styles.section}>
+          <Typography
+            variant="h3"
+            style={[styles.sectionTitle, { color: colors.text }]}
+          >
+            Partenaires du territoire
+          </Typography>
+          <FullWidthImage source={partnerImg5} />
+        </View>
+
+        {/* 6. Médias */}
+        <View style={styles.section}>
+          <Typography
+            variant="h3"
+            style={[styles.sectionTitle, { color: colors.text }]}
+          >
+            Partenaires médias
+          </Typography>
+          <FullWidthImage source={partnerImg6} />
         </View>
 
         <View style={{ height: 40 }} />
@@ -73,17 +136,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 10,
     paddingBottom: 60,
+    gap: SPACING.xl,
   },
   pageTitle: {
     marginTop: SPACING.m,
     marginBottom: SPACING.s,
   },
-  imageWrapper: {
-    alignItems: 'center',
+  section: {
+    gap: SPACING.m,
     width: '100%',
   },
-  partnerImage: {
-    width: '100%',
-    height: 300,
+  sectionTitle: {
+    fontWeight: 'bold',
+    marginBottom: 5,
   },
 });

@@ -42,24 +42,12 @@ export default function PolitiqueConfScreen() {
           >
             En application des articles 27 et 34 de la loi dite "Informatique et
             libertés" n° 78-17 du 6 janvier 1978, vous disposez d’un droit de
-            modification ou de suppression des données qui vous concernent.
-          </Typography>
-
-          <Typography
-            variant="body"
-            style={[styles.paragraph, { color: colors.text }]}
-          >
-            Si vous souhaitez exercer ce droit, vous pouvez, à tout moment,
+            modification ou de suppression des données qui vous concernent. Si
+            vous souhaitez exercer ce droit, vous pouvez, à tout moment,
             supprimer votre inscription à notre lettre d’information
-            électronique via le lien de désinscription, ou nous écrire.
-          </Typography>
-
-          <Typography
-            variant="body"
-            style={[styles.paragraph, { color: colors.text }]}
-          >
-            Les informations collectées et intégrées à nos bases de données font
-            l'objet d'une utilisation uniquement à des fins d'informations pour
+            électronique via le lien de désinscription, ou nous écrire. Les
+            informations collectées et intrégrées à nos bases de données font
+            l’objet d'une utilisation uniquement à des fins d'informations pour
             la Ferme du Buisson, ou sont exceptionnellement cédées à nos
             partenaires culturels lorsque vous en avez donné l'autorisation.
           </Typography>
