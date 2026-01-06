@@ -92,6 +92,7 @@ export default function IndexScreen() {
         useImageTitle={true}
         showFavorite={true}
         style={{ backgroundColor: colors.background, zIndex: 100 }}
+        subtitle="Bienvenue au festival des cinémas du Cambodge, Laos et Vietnam"
       />
 
       <View style={{ flex: 1, position: 'relative' }}>
@@ -107,10 +108,6 @@ export default function IndexScreen() {
               setTopSectionHeight(event.nativeEvent.layout.height)
             }
           >
-            <Typography variant="h3" style={styles.introText}>
-              Bienvenue au festival des cinémas du Cambodge, Laos et Vietnam
-            </Typography>
-
             <Typography variant="h2" style={{ marginBottom: 15 }}>
               En ce moment...
             </Typography>

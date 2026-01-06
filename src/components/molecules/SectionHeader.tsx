@@ -28,6 +28,7 @@ interface SectionHeaderProps {
   showFavorite?: boolean;
   onBack?: () => void;
   style?: ViewStyle;
+  subtitle?: string;
 }
 
 export default function SectionHeader({
@@ -38,6 +39,7 @@ export default function SectionHeader({
   showFavorite = true,
   onBack,
   style,
+  subtitle,
 }: SectionHeaderProps) {
   const router = useRouter();
   const { colors } = useTheme();
@@ -103,7 +105,6 @@ export default function SectionHeader({
         {/* === CENTRE === */}
         <View style={styles.centerContainer}>
           {useImageTitle ? (
-            // 3. AFFICHAGE CONDITIONNEL DU SVG
             isDarkMode ? (
               <TitleLogoWhite width={160} height={50} />
             ) : (
@@ -129,6 +130,15 @@ export default function SectionHeader({
         )}
       </View>
 
+      {/*ZONE SOUS-TITRE*/}
+      {subtitle && (
+        <View style={styles.subtitleContainer}>
+          <Typography variant="h3" style={styles.subtitleText}>
+            {subtitle}
+          </Typography>
+        </View>
+      )}
+
       <Separator thickness={2} marginVertical={0} />
     </View>
   );
@@ -144,7 +154,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: SPACING.m,
-    paddingVertical: SPACING.l,
+    paddingTop: SPACING.l,
+    paddingBottom: SPACING.l,
     position: 'relative',
     minHeight: 80,
   },
@@ -154,6 +165,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    top: SPACING.l,
   },
   logo: {
     width: 70,
@@ -163,6 +175,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     maxWidth: '60%',
+    marginTop: 0,
   },
   title: {
     textAlign: 'center',
@@ -172,5 +185,16 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: SPACING.m,
     zIndex: 10,
+    top: SPACING.l,
+  },
+
+  subtitleContainer: {
+    paddingHorizontal: SPACING.l,
+    paddingBottom: SPACING.l,
+    alignItems: 'center',
+    marginTop: 5,
+  },
+  subtitleText: {
+    textAlign: 'center',
   },
 });

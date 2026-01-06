@@ -1,11 +1,7 @@
 import React from 'react';
 import { View, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-// --- HOOK ---
 import { useSettings } from '../hooks/useSettings';
-
-// --- COMPOSANTS ---
 import SectionHeader from '../components/molecules/SectionHeader';
 import MenuItem from '../components/molecules/MenuItem';
 import Separator from '../components/atoms/Separator';
@@ -16,7 +12,7 @@ export default function ReglagesScreen() {
   const {
     colors,
     notifEnabled,
-    vibrationEnabled, // 👈 Récupère l'état
+    vibrationEnabled,
     isAccessible,
     currentThemeLabel,
     isThemeOpen,
@@ -24,7 +20,7 @@ export default function ReglagesScreen() {
     setIsThemeOpen,
     setResetModalVisible,
     handleToggleNotifications,
-    handleToggleVibration, // 👈 Récupère la fonction
+    handleToggleVibration,
     handleThemeSelect,
     handleAccessToggle,
     handleResetConfirm,
@@ -33,7 +29,6 @@ export default function ReglagesScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      {/* 1. HEADER FIXE */}
       <SectionHeader
         logoSource={require('../assets/logo_ferme_du_buisson.png')}
         useImageTitle={true}
@@ -86,7 +81,7 @@ export default function ReglagesScreen() {
         />
         <Separator marginVertical={5} thickness={2} />
 
-        {/* BLOC 4 : MENTIONS LÉGALES */}
+        {/* BLOC 4 : MENTIONS LÉGALES & PARTENAIRES */}
         <MenuItem
           label="Mentions légales"
           type="link"
@@ -94,7 +89,15 @@ export default function ReglagesScreen() {
         />
         <Separator marginVertical={5} thickness={2} />
 
-        {/* BLOC 5 : REINITIALISATION */}
+        {/* BLOC 5 : PARTENAIRES */}
+        <MenuItem
+          label="Nos partenaires"
+          type="link"
+          onPress={() => router.push('/partenaires' as any)}
+        />
+        <Separator marginVertical={5} thickness={2} />
+
+        {/* BLOC 6 : REINITIALISATION */}
         <View style={{ marginTop: 30, marginBottom: 20 }}>
           <TouchableOpacity onPress={() => setResetModalVisible(true)}>
             <Typography
@@ -117,7 +120,6 @@ export default function ReglagesScreen() {
         </View>
       </ScrollView>
 
-      {/* MODALE DE CONFIRMATION */}
       <ConfirmationModal
         visible={isResetModalVisible}
         onConfirm={handleResetConfirm}
