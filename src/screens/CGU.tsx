@@ -60,11 +60,21 @@ export default function CGUScreen() {
             variant="body"
             style={[styles.paragraph, { color: colors.text }]}
           >
-            Nous ne garantissons pas que cette Application soit exempte de
-            défaut, d'erreur ou d’omission et qu'elle corresponde exactement à
-            l'usage auquel l'utilisateur la destine. Nous ne pouvons en aucun
-            cas être tenus responsables des éventuels défauts, erreurs ou
-            omissions existant sur cette Application.
+            Les liens hypertextes mis en place dans le cadre du présent site
+            Internet en direction d’autres ressources présentes sur le réseau
+            Internet ne sauraient engager la responsabilité de la Ferme du
+            Buisson.
+          </Typography>
+
+          <Typography
+            variant="body"
+            style={[styles.paragraph, { color: colors.text }]}
+          >
+            Nous ne garantissons pas que ce site soit exempt de défaut, d'erreur
+            ou d’omission et qu'il corresponde exactement à l'usage auquel
+            l'utilisateur le destine. Nous ne pouvons en aucun cas être tenus
+            responsables des éventuels défauts, erreurs ou omissions existant
+            sur ce site.
           </Typography>
 
           <Typography
@@ -72,20 +82,10 @@ export default function CGUScreen() {
             style={[styles.paragraph, { color: colors.text }]}
           >
             Chaque utilisateur est seul responsable de l'usage qu’il fait des
-            informations fournies par l'Application de la Ferme du Buisson, qui
-            ne pourra en aucun cas être tenue responsable de tous dommages
+            informations fournies par le site Internet de la Ferme du Buisson,
+            qui ne pourra en aucun cas être tenue responsable de tous dommages
             directs ou indirects découlant de l'utilisation de ces informations
             par l'utilisateur.
-          </Typography>
-
-          <Typography
-            variant="body"
-            style={[styles.paragraph, { color: colors.text }]}
-          >
-            Les liens hypertextes mis en place dans le cadre de la présente
-            Application en direction d’autres ressources présentes sur le réseau
-            Internet ne sauraient engager la responsabilité de la Ferme du
-            Buisson.
           </Typography>
         </View>
       </ScrollView>
