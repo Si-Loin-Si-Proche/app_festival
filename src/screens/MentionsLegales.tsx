@@ -28,9 +28,10 @@ export default function MentionsLegalesScreen() {
           variant="h1"
           style={[styles.pageTitle, { color: colors.text }]}
         >
-          Mentions légales
+          Mentions légales & CGU
         </Typography>
 
+        {/* --- 1. RESPONSABILITE EDITORIALE --- */}
         <View style={styles.section}>
           <Typography variant="h2" style={{ color: colors.text }}>
             Responsabilité éditoriale
@@ -64,17 +65,34 @@ export default function MentionsLegalesScreen() {
           </Typography>
         </View>
 
+        {/* --- 2. CONCEPTION ET REALISATION --- */}
         <View style={styles.section}>
           <Typography variant="h2" style={{ color: colors.text }}>
             Conception et réalisation
           </Typography>
 
+          {/* CRÉDITS APP MOBILE */}
+          <Typography
+            variant="body"
+            style={[
+              styles.paragraph,
+              { color: colors.text, marginBottom: SPACING.l },
+            ]}
+          >
+            <Typography style={{ fontWeight: 'bold' }}>
+              Développement de l'application mobile :
+            </Typography>
+            {'\n'}
+            Arthur Cuvillon, Louise Januel et Louiza Zafane-Bunel
+          </Typography>
+
+          {/* CRÉDITS WEB & ARTISHOC */}
           <Typography
             variant="body"
             style={[styles.paragraph, { color: colors.text }]}
           >
             <Typography style={{ fontWeight: 'bold' }}>
-              Conception, réalisation :
+              Conception, réalisation du site web :
             </Typography>{' '}
             artishoc{'\n'}
             <Typography style={{ fontWeight: 'bold' }}>
@@ -137,7 +155,86 @@ export default function MentionsLegalesScreen() {
           </Typography>
         </View>
 
-        {/* LIENS HYPERTEXTES */}
+        {/* --- 3. PROPRIETE INTELLECTUELLE --- */}
+        <View style={styles.section}>
+          <Typography variant="h2" style={{ color: colors.text }}>
+            Propriété intellectuelle
+          </Typography>
+          <Typography
+            variant="body"
+            style={[styles.paragraph, { color: colors.text }]}
+          >
+            Toute reproduction, toute représentation totale ou partielle, toute
+            utilisation, toute adaptation, toute mise à disposition ou
+            modification de ces éléments par quelque procédé que ce soit, par
+            quelque personne que ce soit et par quelque moyen que ce soit
+            (notamment la vente, la commercialisation, la location, etc.) sans
+            l’autorisation expresse de la Ferme du Buisson, des éventuels
+            auteurs ou de leurs ayant droits est strictement interdite et
+            constitue un délit de contrefaçon au sens du code de la propriété
+            intellectuelle.
+          </Typography>
+        </View>
+
+        {/* --- 4. VIE PRIVEE --- */}
+        <View style={styles.section}>
+          <Typography variant="h2" style={{ color: colors.text }}>
+            Protection de la vie privée et confidentialité
+          </Typography>
+          <Typography
+            variant="body"
+            style={[styles.paragraph, { color: colors.text }]}
+          >
+            En application des articles 27 et 34 de la loi dite "Informatique et
+            libertés" n° 78-17 du 6 janvier 1978, vous disposez d’un droit de
+            modification ou de suppression des données qui vous concernent. Si
+            vous souhaitez exercer ce droit, vous pouvez, à tout moment,
+            supprimer votre inscription à notre lettre d’information
+            électronique via le lien de désinscription, ou nous écrire. Les
+            informations collectées et intrégrées à nos bases de données font
+            l’objet d'une utilisation uniquement à des fins d'informations pour
+            la Ferme du Buisson, ou sont exceptionnellement cédées à nos
+            partenaires culturels lorsque vous en avez donné l'autorisation.
+          </Typography>
+        </View>
+
+        {/* --- 5. RESPONSABILITE --- */}
+        <View style={styles.section}>
+          <Typography variant="h2" style={{ color: colors.text }}>
+            Responsabilité
+          </Typography>
+          <Typography
+            variant="body"
+            style={[styles.paragraph, { color: colors.text }]}
+          >
+            Les liens hypertextes mis en place dans le cadre du présent site
+            Internet en direction d’autres ressources présentes sur le réseau
+            Internet ne sauraient engager la responsabilité de la Ferme du
+            Buisson.
+          </Typography>
+          <Typography
+            variant="body"
+            style={[styles.paragraph, { color: colors.text }]}
+          >
+            Nous ne garantissons pas que ce site soit exempt de défaut, d'erreur
+            ou d’omission et qu'il corresponde exactement à l'usage auquel
+            l'utilisateur le destine. Nous ne pouvons en aucun cas être tenus
+            responsables des éventuels défauts, erreurs ou omissions existant
+            sur ce site.
+          </Typography>
+          <Typography
+            variant="body"
+            style={[styles.paragraph, { color: colors.text }]}
+          >
+            Chaque utilisateur est seul responsable de l'usage qu’il fait des
+            informations fournies par le site Internet de la Ferme du Buisson,
+            qui ne pourra en aucun cas être tenue responsable de tous dommages
+            directs ou indirects découlant de l'utilisation de ces informations
+            par l'utilisateur.
+          </Typography>
+        </View>
+
+        {/* --- 6. LIENS HYPERTEXTES --- */}
         <View style={styles.section}>
           <Typography variant="h2" style={{ color: colors.text }}>
             Liens hypertextes
@@ -153,7 +250,7 @@ export default function MentionsLegalesScreen() {
           </Typography>
         </View>
 
-        {/* POLITIQUE RSO */}
+        {/* --- 7. RSO --- */}
         <View style={styles.section}>
           <Typography variant="h2" style={{ color: colors.text }}>
             Notre politique RSO
@@ -185,16 +282,13 @@ export default function MentionsLegalesScreen() {
             </Typography>
             {'\n'}
             La démarche RSO de la Ferme du Buisson traverse tous les défis et
-            questionnements de notre société d’aujourd’hui. Elle l’engage à :
-            {'\n'}
+            questionnements de notre société d’aujourd’hui. Elle l’engage à
             améliorer son fonctionnement en suivant des principes de dialogue et
-            de transparence de son action,{'\n'}
-            garantir la santé et la sécurité de ses salarié·es,
-            collaborateur·ices et publics,{'\n'}
-            renforcer sa pratique de réemploi, d’éco-conception et de mise en
-            œuvre des normes environnementales en vigueur, pour elle-même et ses
-            prestataires,{'\n'}
-            et enfin à défendre, pour toutes et tous, le droit à la dignité des
+            de transparence de son action, garantir la santé et la sécurité de
+            ses salarié·es, collaborateur·ices et publics, renforcer sa pratique
+            de réemploi, d’éco-conception et de mise en œuvre des normes
+            environnementales en vigueur, pour elle-même et ses prestataires, et
+            enfin à défendre, pour toutes et tous, le droit à la dignité des
             personnes.
           </Typography>
 

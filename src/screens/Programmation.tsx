@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { View, StyleSheet, TouchableOpacity, Switch } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
@@ -15,6 +15,7 @@ import SearchBar from '../components/molecules/SearchBar';
 import FilterList from '../components/molecules/FilterList';
 import EmptyState from '../components/molecules/EmptyState';
 import Typography from '../components/atoms/Typography';
+import Switch from '../components/atoms/Switch';
 import { useAppHaptics } from '../hooks/useAppHaptics';
 
 const formatDateForFilter = (isoString: string) => {
@@ -230,12 +231,6 @@ export default function ProgrammationScreen() {
               <Switch
                 value={onlyToutPublic}
                 onValueChange={setOnlyToutPublic}
-                trackColor={{
-                  false: colors.tabBarInactive,
-                  true: colors.primary,
-                }}
-                thumbColor={colors.card}
-                ios_backgroundColor={colors.tabBarInactive}
               />
             </View>
           </View>
