@@ -207,7 +207,6 @@ export default function ProgrammationScreen() {
           onChangeText={setSearchQuery}
           onSearch={setSearchQuery}
           placeholder="Rechercher un spectacle..."
-          value={searchQuery}
         />
 
         <TouchableOpacity
