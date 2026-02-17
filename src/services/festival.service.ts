@@ -135,7 +135,7 @@ export const getFestivalEvents = async (
       }
       return freshData;
     } catch (error: any) {
-      if (__DEV__) console.error('❌ Echec Fetch Background :', error);
+      if (__DEV__) console.error('Echec Fetch Background :', error);
       if (localData.length === 0) throw error;
       return [];
     }
@@ -188,7 +188,7 @@ export const getEventById = async (id: string): Promise<CleanEvent | null> => {
     return mapToCleanEvent(rawEvent, included);
   } catch (error: any) {
     if (__DEV__) {
-      console.error('❌ ERREUR DETAIL :', error);
+      console.error('ERREUR DETAIL :', error);
       if (error.response) console.log(error.response.status);
     }
     return null;
@@ -223,7 +223,7 @@ export const searchEvents = async (query: string): Promise<CleanEvent[]> => {
     return eventsArray.map((event) => mapToCleanEvent(event, included));
   } catch (error: any) {
     if (__DEV__) {
-      console.error('❌ ERREUR RECHERCHE :', error);
+      console.error('ERREUR RECHERCHE :', error);
     }
     return [];
   }
@@ -242,7 +242,7 @@ export const getFestivalFilters = async () => {
     }));
   } catch (error: any) {
     if (__DEV__) {
-      console.error('❌ ERREUR FILTRES', error);
+      console.error('ERREUR FILTRES', error);
     }
     return [];
   }
@@ -275,7 +275,7 @@ export const getEventsByFilter = async (
     return eventsArray.map((event) => mapToCleanEvent(event, included));
   } catch (error: any) {
     if (__DEV__) {
-      console.error('❌ ERREUR FILTER :', error);
+      console.error('ERREUR FILTER :', error);
     }
     return [];
   }

@@ -17,7 +17,7 @@ export default function Icon({ name, size = 24, color, ...props }: IconProps) {
     if (__DEV__) {
       // eslint-disable-next-line no-console
       console.warn(
-        `⚠️ Icône introuvable : "${name}". Vérifie src/constants/icons.ts`
+        `Icône introuvable : "${name}". Vérifie src/constants/icons.ts`
       );
     }
     return null;
