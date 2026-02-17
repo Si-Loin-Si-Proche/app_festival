@@ -141,7 +141,7 @@ export const NotificationService = {
         },
       });
       console.log(
-        `✅ Notif programmée pour ${event.title} à ${triggerDate.toLocaleTimeString()}`
+        `Notif programmée pour ${event.title} à ${triggerDate.toLocaleTimeString()}`
       );
       return id;
     } catch (e) {
