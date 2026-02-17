@@ -208,13 +208,6 @@ export default function ProgrammationScreen() {
             />
 
             <FilterList
-              options={locationOptions}
-              selected={activeLocationFilter}
-              onSelect={setActiveLocationFilter}
-              style={{ marginBottom: SPACING.s }}
-            />
-
-            <FilterList
               options={priceOptions}
               selected={activePriceFilter}
               onSelect={setActivePriceFilter}
