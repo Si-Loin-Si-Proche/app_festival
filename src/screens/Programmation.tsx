@@ -56,6 +56,7 @@ export default function ProgrammationScreen() {
   const params = useLocalSearchParams();
   const { colors } = useTheme();
   const { isLiked, toggleFavorite } = useFavorites();
+  const { medium } = useAppHaptics();
 
   const [allEvents, setAllEvents] = useState<CleanEvent[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<CleanEvent[]>([]);
@@ -65,6 +66,7 @@ export default function ProgrammationScreen() {
   const [activeDateFilter, setActiveDateFilter] = useState('Tous');
   const [activeLocationFilter, setActiveLocationFilter] = useState('Tous');
   const [activePriceFilter, setActivePriceFilter] = useState('Tous');
+  const [activeGenreFilter, setActiveGenreFilter] = useState('Tous');
   const [onlyToutPublic, setOnlyToutPublic] = useState(false);
 
   const [showFilters, setShowFilters] = useState(true);
@@ -107,6 +109,12 @@ export default function ProgrammationScreen() {
     return ['Tous', ...Array.from(new Set(locations)).sort()];
   }, [allEvents]);
 
+  const genreOptions = useMemo(() => {
+    if (allEvents.length === 0) return ['Tous'];
+    const allTags = allEvents.flatMap((e) => e.tags || []);
+    return ['Tous', ...Array.from(new Set(allTags)).sort()];
+  }, [allEvents]);
+
   const priceOptions = ['Tous', 'Payant', 'Gratuit', 'Sur réservation'];
 
   useEffect(() => {
@@ -134,6 +142,12 @@ export default function ProgrammationScreen() {
       );
     }
 
+    if (activeGenreFilter !== 'Tous') {
+      result = result.filter(
+        (e) => e.tags && e.tags.includes(activeGenreFilter)
+      );
+    }
+
     if (activePriceFilter !== 'Tous') {
       result = result.filter(
         (e) => getEventPriceCategory(e) === activePriceFilter
@@ -150,14 +164,23 @@ export default function ProgrammationScreen() {
     activeDateFilter,
     activeLocationFilter,
     activePriceFilter,
+    activeGenreFilter,
     onlyToutPublic,
     allEvents,
   ]);
 
-  const { medium } = useAppHaptics();
   const handleEventPress = (id: string) => {
     medium();
     router.push(`/event/${id}` as any);
+  };
+
+  const resetFilters = () => {
+    setSearchQuery('');
+    setActiveDateFilter('Tous');
+    setActiveLocationFilter('Tous');
+    setActivePriceFilter('Tous');
+    setActiveGenreFilter('Tous');
+    setOnlyToutPublic(false);
   };
 
   return (
@@ -200,19 +223,25 @@ export default function ProgrammationScreen() {
 
         {showFilters && (
           <View>
-            <FilterList
-              options={dateOptions}
-              selected={activeDateFilter}
-              onSelect={setActiveDateFilter}
-              style={{ marginBottom: SPACING.s }}
-            />
+            <View>
+              <FilterList
+                options={dateOptions}
+                selected={activeDateFilter}
+                onSelect={setActiveDateFilter}
+              />
 
-            <FilterList
-              options={priceOptions}
-              selected={activePriceFilter}
-              onSelect={setActivePriceFilter}
-              style={{ marginBottom: SPACING.s }}
-            />
+              <FilterList
+                options={genreOptions}
+                selected={activeGenreFilter}
+                onSelect={setActiveGenreFilter}
+              />
+
+              <FilterList
+                options={priceOptions}
+                selected={activePriceFilter}
+                onSelect={setActivePriceFilter}
+              />
+            </View>
 
             <View style={[styles.switchRow, { borderTopColor: colors.border }]}>
               <Typography
@@ -242,13 +271,7 @@ export default function ProgrammationScreen() {
               iconName="search"
             />
             <TouchableOpacity
-              onPress={() => {
-                setSearchQuery('');
-                setActiveDateFilter('Tous');
-                setActiveLocationFilter('Tous');
-                setActivePriceFilter('Tous');
-                setOnlyToutPublic(false);
-              }}
+              onPress={resetFilters}
               style={{ marginTop: 20, padding: 10 }}
             >
               <Typography
@@ -289,6 +312,7 @@ const styles = StyleSheet.create({
   },
   toggleFiltersBtn: {
     alignItems: 'flex-end',
+    marginBottom: SPACING.s,
   },
   content: {
     flex: 1,
@@ -305,7 +329,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: SPACING.s,
-    marginTop: SPACING.xs,
+    marginTop: SPACING.s,
     borderTopWidth: 1,
   },
 });
