@@ -170,6 +170,18 @@ export default function EventDetailScreen() {
             {event.title}
           </Typography>
 
+          <View style={styles.tagsRow}>
+            {event.tags &&
+              event.tags.map((tag, index) => (
+                <Tag
+                  key={index}
+                  label={tag}
+                  iconName={undefined}
+                  style={styles.tagGenre}
+                />
+              ))}
+          </View>
+
           <Typography
             variant="caption"
             style={[styles.dateText, { color: colors.tabBarInactive }]}
@@ -378,5 +390,14 @@ const styles = StyleSheet.create({
     opacity: 0.5,
     marginBottom: SPACING.m,
     width: '100%',
+  },
+
+  tagsRow: {
+    flexDirection: 'row',
+    gap: SPACING.m,
+    marginBottom: SPACING.s,
+  },
+  tagGenre: {
+    backgroundColor: 'transparent',
   },
 });
