@@ -178,7 +178,6 @@ export default function EventDetailScreen() {
                   label={tag}
                   iconName={undefined}
                   style={styles.tagGenre}
-                  textStyle={styles.tagText}
                 />
               ))}
           </View>
@@ -400,8 +399,5 @@ const styles = StyleSheet.create({
   },
   tagGenre: {
     backgroundColor: 'transparent',
-  },
-  tagText: {
-    fontSize: SIZES.small,
   },
 });

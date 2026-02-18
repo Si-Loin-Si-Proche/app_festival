@@ -26,7 +26,6 @@ export default function Tag({
   isSelected = false,
   backgroundColor,
   style,
-  textStyle,
   onPress,
   ...props
 }: TagProps) {
@@ -65,7 +64,7 @@ export default function Tag({
 
       <Typography
         variant="caption"
-        style={[styles.text, { color: colors.text }, textStyle]}
+        style={[styles.text, { color: colors.text }]}
       >
         {label.toUpperCase()}
       </Typography>
