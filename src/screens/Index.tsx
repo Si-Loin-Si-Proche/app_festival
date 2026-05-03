@@ -50,7 +50,7 @@ export default function IndexScreen() {
       });
 
       setLiveEvents(live);
-      setUpcomingEvents(upcoming);
+      setUpcomingEvents(upcoming.slice(0, 3));
     };
 
     const fetchData = async () => {

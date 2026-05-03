@@ -243,6 +243,7 @@ export default function ProgrammationScreen() {
               />
             </View>
 
+            {/* ----- A réactiver quand on aura récup le tag "tout public" de l'api -----
             <View style={[styles.switchRow, { borderTopColor: colors.border }]}>
               <Typography
                 variant="body"
@@ -255,6 +256,7 @@ export default function ProgrammationScreen() {
                 onValueChange={setOnlyToutPublic}
               />
             </View>
+             */}
           </View>
         )}
       </View>

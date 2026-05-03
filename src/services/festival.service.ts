@@ -76,12 +76,25 @@ const paramsSerializer = {
   },
 };
 
+const filterCurrentYearEvents = (events: CleanEvent[]): CleanEvent[] => {
+  const currentYear = new Date().getFullYear();
+  return events.filter((event) => {
+    if (!event.dates || event.dates.length === 0) return false;
+    return event.dates.some((date) => {
+      const startYear = date.start ? new Date(date.start).getFullYear() : null;
+      const endYear = date.end ? new Date(date.end).getFullYear() : startYear;
+      return startYear === currentYear || endYear === currentYear;
+    });
+  });
+};
+
 // --- FONCTION PRIVÉE : APPEL RÉSEAU PUR ---
 // C'est l'ancienne logique de getFestivalEvents, isolée pour être réutilisée
 const fetchFromApi = async (): Promise<CleanEvent[]> => {
   const config = {
     params: {
       'filter[tag_ids]': FESTIVAL_ID,
+      sort: '-id',
       include: COMMON_INCLUDES,
       per_page: 300,
     },
@@ -102,7 +115,10 @@ const fetchFromApi = async (): Promise<CleanEvent[]> => {
   const included = response.data.included || [];
   const eventsArray = Array.isArray(rawEvents) ? rawEvents : [rawEvents];
 
-  return eventsArray.map((event) => mapToCleanEvent(event, included));
+  const mappedEvents = eventsArray.map((event) =>
+    mapToCleanEvent(event, included)
+  );
+  return filterCurrentYearEvents(mappedEvents);
 };
 
 export const getFestivalEvents = async (
@@ -185,7 +201,9 @@ export const getEventById = async (id: string): Promise<CleanEvent | null> => {
     if (!rawEvent) return null;
 
     const included = response.data.included || [];
-    return mapToCleanEvent(rawEvent, included);
+    const event = mapToCleanEvent(rawEvent, included);
+    const filtered = filterCurrentYearEvents([event]);
+    return filtered.length > 0 ? filtered[0] : null;
   } catch (error: any) {
     if (__DEV__) {
       console.error('ERREUR DETAIL :', error);
@@ -203,6 +221,7 @@ export const searchEvents = async (query: string): Promise<CleanEvent[]> => {
       params: {
         'filter[tag_ids]': FESTIVAL_ID,
         'filter[search]': query,
+        sort: '-id',
         include: COMMON_INCLUDES,
       },
       paramsSerializer,
@@ -220,7 +239,10 @@ export const searchEvents = async (query: string): Promise<CleanEvent[]> => {
     const included = response.data.included || [];
     const eventsArray = Array.isArray(rawEvents) ? rawEvents : [rawEvents];
 
-    return eventsArray.map((event) => mapToCleanEvent(event, included));
+    const mappedEvents = eventsArray.map((event) =>
+      mapToCleanEvent(event, included)
+    );
+    return filterCurrentYearEvents(mappedEvents);
   } catch (error: any) {
     if (__DEV__) {
       console.error('ERREUR RECHERCHE :', error);
@@ -254,7 +276,8 @@ export const getEventsByFilter = async (
   try {
     const config = {
       params: {
-        'filter[tag_ids]': `${FESTIVAL_ID},${filterTagId}`,
+        'filter[parent_appendix_id]': FESTIVAL_ID,
+        'filter[tag_ids]': filterTagId,
         include: COMMON_INCLUDES,
       },
       paramsSerializer,
@@ -272,7 +295,10 @@ export const getEventsByFilter = async (
     const included = response.data.included || [];
     const eventsArray = Array.isArray(rawEvents) ? rawEvents : [rawEvents];
 
-    return eventsArray.map((event) => mapToCleanEvent(event, included));
+    const mappedEvents = eventsArray.map((event) =>
+      mapToCleanEvent(event, included)
+    );
+    return filterCurrentYearEvents(mappedEvents);
   } catch (error: any) {
     if (__DEV__) {
       console.error('ERREUR FILTER :', error);
