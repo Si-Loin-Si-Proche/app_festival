@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const axios = require('axios');
 
 const PROJECT_ID = 'ec53d277-9e98-4ece-b328-281d642dc9cb';

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CleanEvent } from '../types/api.types';
 import { NotificationService } from './notifications.service';
@@ -12,8 +13,8 @@ export const LikeService = {
     try {
       const jsonValue = await AsyncStorage.getItem(STORAGE_KEY);
       return jsonValue != null ? JSON.parse(jsonValue) : [];
-    } catch (e) {
-      console.error('Erreur lecture favoris', e);
+    } catch (_e) {
+      console.error('Erreur lecture favoris', _e);
       return [];
     }
   },
@@ -46,8 +47,8 @@ export const LikeService = {
 
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(currentLikes));
       return currentLikes;
-    } catch (error) {
-      console.error('Erreur toggle like', error);
+    } catch (_error) {
+      console.error('Erreur toggle like', _error);
       return [];
     }
   },
@@ -60,8 +61,8 @@ export const LikeService = {
       }
       await AsyncStorage.removeItem(STORAGE_KEY);
       return [];
-    } catch (e) {
-      console.error('Erreur reset favorites', e);
+    } catch (_e) {
+      console.error('Erreur reset favorites', _e);
       return [];
     }
   },

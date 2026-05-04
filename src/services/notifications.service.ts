@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { CleanEvent } from '../types/api.types';
@@ -12,6 +13,7 @@ let Notifications: typeof NotificationsType | null = null;
 
 if (!isExpoGo) {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     Notifications = require('expo-notifications');
     if (Notifications) {
       Notifications.setNotificationHandler({
@@ -24,8 +26,8 @@ if (!isExpoGo) {
         }),
       });
     }
-  } catch (e) {
-    console.warn('Erreur chargement natif notifications', e);
+  } catch (_e) {
+    console.warn('Erreur chargement natif notifications', _e);
   }
 }
 
@@ -38,7 +40,7 @@ export const NotificationService = {
     try {
       const value = await AsyncStorage.getItem(NOTIF_PREF_KEY);
       return value !== null ? JSON.parse(value) : true;
-    } catch (e) {
+    } catch {
       return true;
     }
   },
@@ -54,8 +56,8 @@ export const NotificationService = {
         await Notifications.cancelAllScheduledNotificationsAsync();
         console.log('Notifications désactivées : Tout a été annulé.');
       }
-    } catch (e) {
-      console.error('Erreur sauvegarde pref notif', e);
+    } catch (_e) {
+      console.error('Erreur sauvegarde pref notif', _e);
     }
   },
 
@@ -83,8 +85,8 @@ export const NotificationService = {
         return false;
       }
       return true;
-    } catch (e) {
-      console.warn('Erreur permissions:', e);
+    } catch (_e) {
+      console.warn('Erreur permissions:', _e);
       return false;
     }
   },
@@ -144,8 +146,8 @@ export const NotificationService = {
         `Notif programmée pour ${event.title} à ${triggerDate.toLocaleTimeString()}`
       );
       return id;
-    } catch (e) {
-      console.error('Erreur programmation notif', e);
+    } catch (_e) {
+      console.error('Erreur programmation notif', _e);
     }
   },
 
@@ -165,8 +167,8 @@ export const NotificationService = {
         );
         console.log(`🗑 Notif annulée pour ${eventId}`);
       }
-    } catch (e) {
-      console.warn('Erreur annulation notif:', e);
+    } catch (_e) {
+      console.warn('Erreur annulation notif:', _e);
     }
   },
 };

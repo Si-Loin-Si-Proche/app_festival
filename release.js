@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const { execSync } = require('child_process');
 const fs = require('fs');
 const readline = require('readline');
@@ -20,7 +21,7 @@ const colors = {
 const run = (command) => {
   try {
     return execSync(command, { stdio: 'pipe' }).toString().trim();
-  } catch (e) {
+  } catch (_e) {
     return null;
   }
 };
@@ -29,7 +30,7 @@ const runDirect = (command) => {
   try {
     execSync(command, { stdio: 'inherit' });
     return true;
-  } catch (e) {
+  } catch (_e) {
     return false;
   }
 };

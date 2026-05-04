@@ -10,7 +10,6 @@ import {
   AtkinsonHyperlegible_700Bold_Italic,
 } from '@expo-google-fonts/atkinson-hyperlegible';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Typography from '../src/components/atoms/Typography';
 
 SplashScreen.preventAutoHideAsync();
 

@@ -10,7 +10,7 @@ import {
   ImageStyle,
 } from 'react-native';
 import { CleanEvent } from '../../types/api.types';
-import { SPACING, FONTS, SIZES } from '../../constants/theme';
+import { SPACING, FONTS } from '../../constants/theme';
 import { useTheme } from '../../context/ThemeContext';
 import RemoteImage from '../atoms/RemoteImage';
 import Typography from '../atoms/Typography';

@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import Typography from '../components/atoms/Typography';
@@ -59,8 +65,10 @@ export default function IndexScreen() {
           processData(newData);
         });
         processData(data);
-      } catch (error) {
-        console.error('Erreur home', error);
+      } catch (_error) {
+        Alert.alert('Erreur', 'Impossible de charger les événements');
+        /* eslint-disable-next-line no-console */
+        console.error(_error);
       } finally {
         setLoading(false);
       }

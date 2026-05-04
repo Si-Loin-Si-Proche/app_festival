@@ -11,7 +11,7 @@ interface MapMarkerProps {
 }
 
 export default function MapMarker({ point, onPress }: MapMarkerProps) {
-  const { colors, sizes } = useTheme();
+  const { sizes } = useTheme();
 
   return (
     <TouchableOpacity
