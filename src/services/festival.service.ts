@@ -4,7 +4,8 @@ import api from './api';
 import { ApiResponse, FestivalEvent, CleanEvent } from '../types/api.types';
 
 const FESTIVAL_ID = process.env.EXPO_PUBLIC_FESTIVAL_ID;
-const STORAGE_KEY = 'festival_events_cache_v1';
+const TAG_ID = process.env.EXPO_PUBLIC_FESTIVAL_TAG_ID;
+const STORAGE_KEY = 'festival_events_cache_v8';
 
 const COMMON_INCLUDES =
   'main_image,spacetimes,spacetimes.place,content_field,section_tags,tags';
@@ -18,18 +19,66 @@ const mapToCleanEvent = (
     (inc) => inc.id === imageId && inc.type === 'media'
   );
 
+  const KNOWN_PLACES = [
+    'Cinéma',
+    "Centre d'art",
+    'Abreuvoir',
+    'Halle',
+    'Théâtre',
+    'Studio',
+    'Caravansérail',
+    'Ateliers',
+  ];
+
+  let fallbackPlace = 'Lieu à définir';
+
+  const sectionTagIds =
+    apiData.relationships.section_tags?.data.map((t: any) => t.id) || [];
+  for (const id of sectionTagIds) {
+    const stObj = included.find(
+      (inc) => inc.id === id && inc.type === 'section_tag'
+    );
+    let name = stObj?.attributes?.name;
+    if (name) {
+      name = name.replace(' ok', '');
+      if (KNOWN_PLACES.includes(name)) {
+        fallbackPlace = name;
+        break;
+      }
+    }
+  }
+
+  if (fallbackPlace === 'Lieu à définir') {
+    const tIds = apiData.relationships.tags?.data.map((t: any) => t.id) || [];
+    for (const id of tIds) {
+      const tObj = included.find((inc) => inc.id === id && inc.type === 'tag');
+      const title = tObj?.attributes?.title;
+      if (title && KNOWN_PLACES.includes(title)) {
+        fallbackPlace = title;
+        break;
+      }
+    }
+  }
+
   const spacetimeIds =
-    apiData.relationships.spacetimes?.data.map((d) => d.id) || [];
-  const dates = spacetimeIds.map((id) => {
+    apiData.relationships.spacetimes?.data.map((d: any) => d.id) || [];
+  const dates = spacetimeIds.map((id: string) => {
     const stObj = included.find(
       (inc) => inc.id === id && inc.type === 'spacetime'
     );
     const placeId = stObj?.relationships?.place?.data?.id;
-    const placeObj = included.find(
-      (inc) => inc.id === placeId && inc.type === 'place'
-    );
+    let placeName = 'Lieu à définir';
 
-    const placeName = placeObj?.attributes?.title || 'Lieu à définir';
+    if (placeId) {
+      const placeObj = included.find(
+        (inc) => inc.id === placeId && inc.type === 'place'
+      );
+      placeName = placeObj?.attributes?.title || 'Lieu à définir';
+    }
+
+    if (placeName === 'Lieu à définir' && fallbackPlace !== 'Lieu à définir') {
+      placeName = fallbackPlace;
+    }
 
     return {
       start: stObj?.attributes?.begin_at,
@@ -43,20 +92,51 @@ const mapToCleanEvent = (
     (inc) => inc.id === contentFieldId && inc.type === 'content_field'
   );
 
+  const EXCLUDED_TAGS = [
+    'Programme',
+    'Programme accessibilité',
+    'filmsallocine',
+    'Contenus home',
+    'Contenus home 2',
+    'Vous êtes',
+    'Chez vous',
+    'Pour vous',
+    'Avec vous',
+    "Centre d'art ok",
+    "Focus centre d'art",
+    "Archives centre d'art",
+    'Cinéma 2526',
+    'cinéma',
+    ...KNOWN_PLACES,
+  ];
+
+  const allTags = new Set<string>();
+
   const tagIds =
     apiData.relationships.tags?.data.map((t: { id: string }) => t.id) || [];
+  tagIds.forEach((id: string) => {
+    if (id === FESTIVAL_ID) return;
+    const tObj = included.find((inc) => inc.id === id && inc.type === 'tag');
+    const title = tObj?.attributes?.title;
+    if (title && !EXCLUDED_TAGS.includes(title)) {
+      allTags.add(title);
+    }
+  });
 
-  const tags = tagIds
-    .map((id: string) => {
-      if (id === FESTIVAL_ID) return null;
-      const tObj = included.find((inc) => inc.id === id && inc.type === 'tag');
-      const title = tObj?.attributes?.title;
-      if (title && title.toLowerCase().includes('si loin si proche')) {
-        return null;
-      }
-      return title;
-    })
-    .filter((t: string): t is string => !!t);
+  const sTagIds =
+    apiData.relationships.section_tags?.data.map((t: { id: string }) => t.id) ||
+    [];
+  sTagIds.forEach((id: string) => {
+    const tObj = included.find(
+      (inc) => inc.id === id && inc.type === 'section_tag'
+    );
+    const name = tObj?.attributes?.name;
+    if (name && !EXCLUDED_TAGS.includes(name)) {
+      allTags.add(name);
+    }
+  });
+
+  const tags = Array.from(allTags);
 
   return {
     id: apiData.id,
@@ -78,14 +158,48 @@ const paramsSerializer = {
 
 const filterCurrentYearEvents = (events: CleanEvent[]): CleanEvent[] => {
   const currentYear = new Date().getFullYear();
-  return events.filter((event) => {
-    if (!event.dates || event.dates.length === 0) return false;
-    return event.dates.some((date) => {
-      const startYear = date.start ? new Date(date.start).getFullYear() : null;
-      const endYear = date.end ? new Date(date.end).getFullYear() : startYear;
-      return startYear === currentYear || endYear === currentYear;
-    });
-  });
+  const envStart = process.env.EXPO_PUBLIC_FESTIVAL_START_DATE;
+  const envEnd = process.env.EXPO_PUBLIC_FESTIVAL_END_DATE;
+
+  const festivalStart = envStart ? new Date(envStart) : null;
+  const festivalEnd = envEnd ? new Date(envEnd) : null;
+
+  const hasValidBoundaries =
+    festivalStart &&
+    !isNaN(festivalStart.getTime()) &&
+    festivalEnd &&
+    !isNaN(festivalEnd.getTime());
+
+  const boundaryEnd = festivalEnd ? new Date(festivalEnd) : null;
+  if (boundaryEnd) {
+    boundaryEnd.setHours(23, 59, 59, 999);
+  }
+
+  return events
+    .map((event) => {
+      const filteredDates = event.dates.filter((date) => {
+        const eventStart = date.start ? new Date(date.start) : null;
+        let eventEnd = date.end ? new Date(date.end) : eventStart;
+
+        if (!eventStart || isNaN(eventStart.getTime())) return false;
+        if (!eventEnd || isNaN(eventEnd.getTime())) eventEnd = eventStart;
+
+        if (hasValidBoundaries && festivalStart && boundaryEnd) {
+          return eventStart <= boundaryEnd && eventEnd >= festivalStart;
+        }
+
+        return (
+          eventStart.getFullYear() === currentYear ||
+          eventEnd.getFullYear() === currentYear
+        );
+      });
+
+      return {
+        ...event,
+        dates: filteredDates,
+      };
+    })
+    .filter((event) => event.dates.length > 0);
 };
 
 // --- FONCTION PRIVÉE : APPEL RÉSEAU PUR ---
@@ -93,7 +207,8 @@ const filterCurrentYearEvents = (events: CleanEvent[]): CleanEvent[] => {
 const fetchFromApi = async (): Promise<CleanEvent[]> => {
   const config = {
     params: {
-      'filter[tag_ids]': FESTIVAL_ID,
+      'filter[parent_appendix_id]': FESTIVAL_ID,
+      'filter[tag_ids]': TAG_ID,
       sort: '-id',
       include: COMMON_INCLUDES,
       per_page: 300,
@@ -219,7 +334,7 @@ export const searchEvents = async (query: string): Promise<CleanEvent[]> => {
   try {
     const config = {
       params: {
-        'filter[tag_ids]': FESTIVAL_ID,
+        'filter[parent_appendix_id]': FESTIVAL_ID,
         'filter[search]': query,
         sort: '-id',
         include: COMMON_INCLUDES,

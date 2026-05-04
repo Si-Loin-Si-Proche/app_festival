@@ -42,3 +42,10 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
+
+# ---------------------------------------
+# Fichiers de test temporaires
+# ---------------------------------------
+test_api.js
+full_event.json
+

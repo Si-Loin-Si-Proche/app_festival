@@ -223,30 +223,62 @@ export default function ProgrammationScreen() {
 
         {showFilters && (
           <View>
-            <View>
-              <FilterList
-                options={dateOptions}
-                selected={activeDateFilter}
-                onSelect={setActiveDateFilter}
-              />
+            <View style={{ gap: SPACING.m }}>
+              <View>
+                <Typography
+                  variant="caption"
+                  style={{ color: colors.text, opacity: 0.7 }}
+                >
+                  Dates
+                </Typography>
+                <FilterList
+                  options={dateOptions}
+                  selected={activeDateFilter}
+                  onSelect={setActiveDateFilter}
+                />
+              </View>
 
-              <FilterList
-                options={locationOptions}
-                selected={activeLocationFilter}
-                onSelect={setActiveLocationFilter}
-              />
+              <View>
+                <Typography
+                  variant="caption"
+                  style={{ color: colors.text, opacity: 0.7 }}
+                >
+                  Lieux
+                </Typography>
+                <FilterList
+                  options={locationOptions}
+                  selected={activeLocationFilter}
+                  onSelect={setActiveLocationFilter}
+                />
+              </View>
 
-              <FilterList
-                options={genreOptions}
-                selected={activeGenreFilter}
-                onSelect={setActiveGenreFilter}
-              />
+              <View>
+                <Typography
+                  variant="caption"
+                  style={{ color: colors.text, opacity: 0.7 }}
+                >
+                  Genres
+                </Typography>
+                <FilterList
+                  options={genreOptions}
+                  selected={activeGenreFilter}
+                  onSelect={setActiveGenreFilter}
+                />
+              </View>
 
-              <FilterList
-                options={priceOptions}
-                selected={activePriceFilter}
-                onSelect={setActivePriceFilter}
-              />
+              <View>
+                <Typography
+                  variant="caption"
+                  style={{ color: colors.text, opacity: 0.7 }}
+                >
+                  Tarifs
+                </Typography>
+                <FilterList
+                  options={priceOptions}
+                  selected={activePriceFilter}
+                  onSelect={setActivePriceFilter}
+                />
+              </View>
             </View>
 
             {/* ----- A réactiver quand on aura récup le tag "tout public" de l'api -----
