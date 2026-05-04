@@ -58,6 +58,8 @@ export interface CleanEvent {
   }[];
   placeName?: string;
   price?: string; // HTML
+  priceCategory: 'Gratuit' | 'Payant' | 'Sur réservation';
+  isJeunePublic: boolean;
   tags: string[];
 }
 
