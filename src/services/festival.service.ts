@@ -55,24 +55,6 @@ const KNOWN_PLACES = [
   'Médiathèque',
 ];
 
-const EXCLUDED_TAGS = [
-  'Programme',
-  'Programme accessibilité',
-  'filmsallocine',
-  'Contenus home',
-  'Contenus home 2',
-  'Vous êtes',
-  'Chez vous',
-  'Pour vous',
-  'Avec vous',
-  "Centre d'art ok",
-  "Focus centre d'art",
-  "Archives centre d'art",
-  'Cinéma 2526',
-  'cinéma',
-  ...KNOWN_PLACES,
-];
-
 const parsePriceCategory = (
   priceHtml: string | undefined
 ): 'Gratuit' | 'Payant' | 'Sur réservation' => {
@@ -315,8 +297,8 @@ export const getFestivalEvents = async (
       localData = JSON.parse(jsonValue);
       if (__DEV__) console.log('📦 Données chargées depuis le CACHE');
     }
-  } catch (e) {
-    console.warn('Erreur lecture cache local', e);
+  } catch {
+    console.warn('Erreur lecture cache local');
   }
 
   // Mise à jour réseau
@@ -358,7 +340,7 @@ export const getEventById = async (id: string): Promise<CleanEvent | null> => {
         return found;
       }
     }
-  } catch (e) {
+  } catch {
     // Ignore error, fallback to API
   }
   try {

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, {
   createContext,
   useContext,
@@ -34,8 +35,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
         const savedAccess = await AsyncStorage.getItem('user_access');
         if (savedTheme === 'dark') setIsDark(true);
         if (savedAccess === 'true') setIsAccessible(true);
-      } catch (e) {
-        console.error('Erreur chargement theme', e);
+      } catch (_e) {
+        console.error('Erreur chargement theme', _e);
       }
     };
     loadSettings();
@@ -65,8 +66,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       // On nettoie le stockage
       await AsyncStorage.removeItem('user_theme');
       await AsyncStorage.removeItem('user_access');
-    } catch (e) {
-      console.error('Erreur reset preferences', e);
+    } catch (_e) {
+      console.error('Erreur reset preferences', _e);
     }
   };
 

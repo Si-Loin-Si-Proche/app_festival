@@ -87,8 +87,9 @@ export const useSettings = () => {
       setGlobalHapticsEnabled(isVibEnabled);
 
       router.replace('/' as any);
-    } catch (error) {
-      console.error('Erreur reset', error);
+    } catch (_error) {
+      /* eslint-disable-next-line no-console */
+      console.error('Erreur reset', _error);
       Alert.alert(
         'Erreur',
         'Une erreur est survenue lors de la réinitialisation.'

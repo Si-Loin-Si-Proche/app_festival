@@ -24,9 +24,10 @@ export default function SectionFooter() {
   const openExternalLink = async (url: string) => {
     try {
       await Linking.openURL(url);
-    } catch (error) {
+    } catch (_error) {
       Alert.alert('Erreur', "Impossible d'ouvrir ce lien");
-      console.error(error);
+      /* eslint-disable-next-line no-console */
+      console.error(_error);
     }
   };
 

@@ -23,10 +23,11 @@ export default function InfosScreen() {
   const { colors } = useTheme();
 
   const handlePress = (url: string) =>
-    Linking.openURL(url).catch((err) =>
-      console.error('An error occurred', err)
-    );
-  const { light, medium } = useAppHaptics();
+    Linking.openURL(url).catch((_err) => {
+      /* eslint-disable-next-line no-console */
+      console.error('An error occurred', _err);
+    });
+  const { light } = useAppHaptics();
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}

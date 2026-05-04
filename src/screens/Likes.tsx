@@ -1,22 +1,14 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  Share,
-  TouchableOpacity,
-  Alert,
-  Platform,
-} from 'react-native';
+import { View, StyleSheet, Share, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { SPACING, FONTS } from '../constants/theme';
+import { SPACING } from '../constants/theme';
 import { useTheme } from '../context/ThemeContext';
 import { useFavorites } from '../hooks/useFavorites';
 import EventList from '../components/organism/EventList';
 import EmptyState from '../components/molecules/EmptyState';
 import SectionHeader from '../components/molecules/SectionHeader';
 import Icon from '../components/atoms/Icon';
-import Typography from '../components/atoms/Typography';
 
 export default function LikesScreen() {
   const router = useRouter();
