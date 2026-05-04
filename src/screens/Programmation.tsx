@@ -231,6 +231,12 @@ export default function ProgrammationScreen() {
               />
 
               <FilterList
+                options={locationOptions}
+                selected={activeLocationFilter}
+                onSelect={setActiveLocationFilter}
+              />
+
+              <FilterList
                 options={genreOptions}
                 selected={activeGenreFilter}
                 onSelect={setActiveGenreFilter}
