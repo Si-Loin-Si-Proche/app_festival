@@ -2,6 +2,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from './api';
 import { ApiResponse, FestivalEvent, CleanEvent } from '../types/api.types';
+import { parsePlaceFromPracticalInfo } from '../utils/placeParser';
 
 const FESTIVAL_ID = process.env.EXPO_PUBLIC_FESTIVAL_ID;
 const TAG_ID = process.env.EXPO_PUBLIC_FESTIVAL_TAG_ID;
@@ -18,36 +19,27 @@ const stripHtml = (html: string): string =>
     .trim()
     .toLowerCase();
 
-const GENRE_TAGS = [
-  'Films',
-  'film',
-  'Cinéma',
-  'Jeune public',
-  'Spectacles',
-  'Musique',
-  'Danse',
-  'Cirque',
-  'Opéra au cinéma',
-  'Séance VOSTFR',
-  'Atelier',
-  'Spectacle visuel',
-  'Spectacle sonore',
-  'Exposition',
-  'Résidence',
-  'Actions culturelles',
-  'Événement',
-  'En famille',
-  "Tout'Ouïe",
-  'Spectacle LSF',
-  'Festival',
-  'Festivals',
-];
-
-const GENRE_RENAME: Record<string, string> = {
-  Films: 'Film',
+const GENRE_MAPPING: Record<string, string> = {
+  films: 'Film',
   film: 'Film',
-  Cinéma: 'Film',
-  Festivals: 'Festival',
+  cinéma: 'Film',
+  'séance vostfr': 'Film',
+  spectacles: 'Spectacle',
+  spectacle: 'Spectacle',
+  'spectacle sonore': 'Spectacle',
+  'spectacle visuel': 'Spectacle',
+  'spectacle lsf': 'Spectacle',
+  danse: 'Spectacle',
+  musique: 'Spectacle',
+  cirque: 'Spectacle',
+  'opéra au cinéma': 'Spectacle',
+  ateliers: 'Atelier',
+  atelier: 'Atelier',
+  rencontre: 'Rencontre',
+  conférence: 'Rencontre',
+  'table ronde': 'Rencontre',
+  exposition: 'Exposition',
+  expositions: 'Exposition',
 };
 
 const KNOWN_PLACES = [
@@ -59,6 +51,8 @@ const KNOWN_PLACES = [
   'Studio',
   'Caravansérail',
   'Ateliers',
+  'Salon des Bonus',
+  'Médiathèque',
 ];
 
 const EXCLUDED_TAGS = [
@@ -110,7 +104,18 @@ const mapToCleanEvent = (
     (inc) => inc.id === imageId && inc.type === 'media'
   );
 
-  let fallbackPlace = 'Lieu à définir';
+  const contentFieldId = apiData.relationships.content_field?.data?.id;
+  const contentFieldObj = included.find(
+    (inc) => inc.id === contentFieldId && inc.type === 'content_field'
+  );
+
+  const priceHtml = contentFieldObj?.attributes?.secondary_fields?.price;
+  const practicalHtml =
+    contentFieldObj?.attributes?.secondary_fields?.practical_information;
+
+  // On parse d'abord le lieu depuis le HTML
+  const parsedPlace = parsePlaceFromPracticalInfo(practicalHtml);
+  let fallbackPlace = parsedPlace || 'Lieu à définir';
 
   const sectionTagIds =
     apiData.relationships.section_tags?.data.map((t: any) => t.id) || [];
@@ -171,15 +176,6 @@ const mapToCleanEvent = (
     };
   });
 
-  const contentFieldId = apiData.relationships.content_field?.data?.id;
-  const contentFieldObj = included.find(
-    (inc) => inc.id === contentFieldId && inc.type === 'content_field'
-  );
-
-  const priceHtml = contentFieldObj?.attributes?.secondary_fields?.price;
-  const practicalHtml =
-    contentFieldObj?.attributes?.secondary_fields?.practical_information;
-
   const priceCategory = parsePriceCategory(priceHtml);
   const isJeunePublic = parseIsJeunePublic(practicalHtml, sectionTagNames);
 
@@ -191,18 +187,18 @@ const mapToCleanEvent = (
     if (id === FESTIVAL_ID) return;
     const tObj = included.find((inc) => inc.id === id && inc.type === 'tag');
     const title = tObj?.attributes?.title;
-    if (
-      title &&
-      !title.toLowerCase().includes('si loin si proche') &&
-      GENRE_TAGS.includes(title)
-    ) {
-      allGenres.add(GENRE_RENAME[title] || title);
+    if (title && !title.toLowerCase().includes('si loin si proche')) {
+      const lowerTitle = title.toLowerCase();
+      if (GENRE_MAPPING[lowerTitle]) {
+        allGenres.add(GENRE_MAPPING[lowerTitle]);
+      }
     }
   });
 
   sectionTagNames.forEach((name) => {
-    if (GENRE_TAGS.includes(name)) {
-      allGenres.add(GENRE_RENAME[name] || name);
+    const lowerName = name.toLowerCase();
+    if (GENRE_MAPPING[lowerName]) {
+      allGenres.add(GENRE_MAPPING[lowerName]);
     }
   });
 
