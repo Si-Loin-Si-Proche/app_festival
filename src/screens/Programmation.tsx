@@ -31,24 +31,8 @@ const getEventLocation = (event: CleanEvent): string => {
   return event.dates?.[0]?.placeName || event.placeName || 'Lieu à définir';
 };
 
-const getEventPriceCategory = (
-  event: CleanEvent
-): 'Gratuit' | 'Payant' | 'Sur réservation' => {
-  const keywords = (event.tags || [])
-    .concat(event.description || '')
-    .join(' ')
-    .toLowerCase();
-  if (keywords.includes('gratuit')) return 'Gratuit';
-  if (keywords.includes('réservation') || keywords.includes('reservation'))
-    return 'Sur réservation';
-  return 'Payant';
-};
-
-const isEventToutPublic = (event: CleanEvent): boolean => {
-  const keywords = (event.tags || []).join(' ').toLowerCase();
-  if (keywords.includes('adulte') || keywords.includes('interdit'))
-    return false;
-  return true;
+const getEventPriceCategory = (event: CleanEvent): string => {
+  return event.priceCategory;
 };
 
 export default function ProgrammationScreen() {
@@ -155,7 +139,7 @@ export default function ProgrammationScreen() {
     }
 
     if (onlyToutPublic) {
-      result = result.filter((e) => isEventToutPublic(e));
+      result = result.filter((e) => e.isJeunePublic);
     }
 
     setFilteredEvents(result);
@@ -223,14 +207,8 @@ export default function ProgrammationScreen() {
 
         {showFilters && (
           <View>
-            <View style={{ gap: SPACING.m }}>
+            <View style={{ gap: SPACING.s }}>
               <View>
-                <Typography
-                  variant="caption"
-                  style={{ color: colors.text, opacity: 0.7 }}
-                >
-                  Dates
-                </Typography>
                 <FilterList
                   options={dateOptions}
                   selected={activeDateFilter}
@@ -239,12 +217,6 @@ export default function ProgrammationScreen() {
               </View>
 
               <View>
-                <Typography
-                  variant="caption"
-                  style={{ color: colors.text, opacity: 0.7 }}
-                >
-                  Lieux
-                </Typography>
                 <FilterList
                   options={locationOptions}
                   selected={activeLocationFilter}
@@ -253,12 +225,6 @@ export default function ProgrammationScreen() {
               </View>
 
               <View>
-                <Typography
-                  variant="caption"
-                  style={{ color: colors.text, opacity: 0.7 }}
-                >
-                  Genres
-                </Typography>
                 <FilterList
                   options={genreOptions}
                   selected={activeGenreFilter}
@@ -267,12 +233,6 @@ export default function ProgrammationScreen() {
               </View>
 
               <View>
-                <Typography
-                  variant="caption"
-                  style={{ color: colors.text, opacity: 0.7 }}
-                >
-                  Tarifs
-                </Typography>
                 <FilterList
                   options={priceOptions}
                   selected={activePriceFilter}
@@ -281,20 +241,18 @@ export default function ProgrammationScreen() {
               </View>
             </View>
 
-            {/* ----- A réactiver quand on aura récup le tag "tout public" de l'api -----
             <View style={[styles.switchRow, { borderTopColor: colors.border }]}>
               <Typography
                 variant="body"
                 style={{ flex: 1, color: colors.text }}
               >
-                Spectacles tout public uniquement
+                Jeune public uniquement
               </Typography>
               <Switch
                 value={onlyToutPublic}
                 onValueChange={setOnlyToutPublic}
               />
             </View>
-             */}
           </View>
         )}
       </View>

@@ -5,10 +5,101 @@ import { ApiResponse, FestivalEvent, CleanEvent } from '../types/api.types';
 
 const FESTIVAL_ID = process.env.EXPO_PUBLIC_FESTIVAL_ID;
 const TAG_ID = process.env.EXPO_PUBLIC_FESTIVAL_TAG_ID;
-const STORAGE_KEY = 'festival_events_cache_v8';
+const STORAGE_KEY = 'festival_events_cache_v9';
 
 const COMMON_INCLUDES =
   'main_image,spacetimes,spacetimes.place,content_field,section_tags,tags';
+
+const stripHtml = (html: string): string =>
+  html
+    .replace(/<[^>]*>/g, '')
+    .replace(/&[^;]+;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+
+const GENRE_TAGS = [
+  'Films',
+  'film',
+  'Cinéma',
+  'Jeune public',
+  'Spectacles',
+  'Musique',
+  'Danse',
+  'Cirque',
+  'Opéra au cinéma',
+  'Séance VOSTFR',
+  'Atelier',
+  'Spectacle visuel',
+  'Spectacle sonore',
+  'Exposition',
+  'Résidence',
+  'Actions culturelles',
+  'Événement',
+  'En famille',
+  "Tout'Ouïe",
+  'Spectacle LSF',
+  'Festival',
+  'Festivals',
+];
+
+const GENRE_RENAME: Record<string, string> = {
+  Films: 'Film',
+  film: 'Film',
+  Cinéma: 'Film',
+  Festivals: 'Festival',
+};
+
+const KNOWN_PLACES = [
+  'Cinéma',
+  "Centre d'art",
+  'Abreuvoir',
+  'Halle',
+  'Théâtre',
+  'Studio',
+  'Caravansérail',
+  'Ateliers',
+];
+
+const EXCLUDED_TAGS = [
+  'Programme',
+  'Programme accessibilité',
+  'filmsallocine',
+  'Contenus home',
+  'Contenus home 2',
+  'Vous êtes',
+  'Chez vous',
+  'Pour vous',
+  'Avec vous',
+  "Centre d'art ok",
+  "Focus centre d'art",
+  "Archives centre d'art",
+  'Cinéma 2526',
+  'cinéma',
+  ...KNOWN_PLACES,
+];
+
+const parsePriceCategory = (
+  priceHtml: string | undefined
+): 'Gratuit' | 'Payant' | 'Sur réservation' => {
+  if (!priceHtml) return 'Payant';
+  const text = stripHtml(priceHtml);
+  if (text.includes('gratuit')) return 'Gratuit';
+  if (text.includes('servation')) return 'Sur réservation';
+  return 'Payant';
+};
+
+const parseIsJeunePublic = (
+  practicalHtml: string | undefined,
+  sectionTagNames: string[]
+): boolean => {
+  if (sectionTagNames.some((t) => t === 'Jeune public')) return true;
+  if (!practicalHtml) return false;
+  const text = stripHtml(practicalHtml);
+  const ageMatch = text.match(/d\s*s\s+(\d+)\s*ans/);
+  if (ageMatch && parseInt(ageMatch[1]) <= 10) return true;
+  return false;
+};
 
 const mapToCleanEvent = (
   apiData: FestivalEvent,
@@ -19,31 +110,24 @@ const mapToCleanEvent = (
     (inc) => inc.id === imageId && inc.type === 'media'
   );
 
-  const KNOWN_PLACES = [
-    'Cinéma',
-    "Centre d'art",
-    'Abreuvoir',
-    'Halle',
-    'Théâtre',
-    'Studio',
-    'Caravansérail',
-    'Ateliers',
-  ];
-
   let fallbackPlace = 'Lieu à définir';
 
   const sectionTagIds =
     apiData.relationships.section_tags?.data.map((t: any) => t.id) || [];
+  const sectionTagNames: string[] = [];
   for (const id of sectionTagIds) {
     const stObj = included.find(
       (inc) => inc.id === id && inc.type === 'section_tag'
     );
-    let name = stObj?.attributes?.name;
+    const name = stObj?.attributes?.name;
     if (name) {
-      name = name.replace(' ok', '');
-      if (KNOWN_PLACES.includes(name)) {
-        fallbackPlace = name;
-        break;
+      sectionTagNames.push(name);
+      const cleanName = name.replace(' ok', '');
+      if (
+        fallbackPlace === 'Lieu à définir' &&
+        KNOWN_PLACES.includes(cleanName)
+      ) {
+        fallbackPlace = cleanName;
       }
     }
   }
@@ -92,25 +176,14 @@ const mapToCleanEvent = (
     (inc) => inc.id === contentFieldId && inc.type === 'content_field'
   );
 
-  const EXCLUDED_TAGS = [
-    'Programme',
-    'Programme accessibilité',
-    'filmsallocine',
-    'Contenus home',
-    'Contenus home 2',
-    'Vous êtes',
-    'Chez vous',
-    'Pour vous',
-    'Avec vous',
-    "Centre d'art ok",
-    "Focus centre d'art",
-    "Archives centre d'art",
-    'Cinéma 2526',
-    'cinéma',
-    ...KNOWN_PLACES,
-  ];
+  const priceHtml = contentFieldObj?.attributes?.secondary_fields?.price;
+  const practicalHtml =
+    contentFieldObj?.attributes?.secondary_fields?.practical_information;
 
-  const allTags = new Set<string>();
+  const priceCategory = parsePriceCategory(priceHtml);
+  const isJeunePublic = parseIsJeunePublic(practicalHtml, sectionTagNames);
+
+  const allGenres = new Set<string>();
 
   const tagIds =
     apiData.relationships.tags?.data.map((t: { id: string }) => t.id) || [];
@@ -118,25 +191,22 @@ const mapToCleanEvent = (
     if (id === FESTIVAL_ID) return;
     const tObj = included.find((inc) => inc.id === id && inc.type === 'tag');
     const title = tObj?.attributes?.title;
-    if (title && !EXCLUDED_TAGS.includes(title)) {
-      allTags.add(title);
+    if (
+      title &&
+      !title.toLowerCase().includes('si loin si proche') &&
+      GENRE_TAGS.includes(title)
+    ) {
+      allGenres.add(GENRE_RENAME[title] || title);
     }
   });
 
-  const sTagIds =
-    apiData.relationships.section_tags?.data.map((t: { id: string }) => t.id) ||
-    [];
-  sTagIds.forEach((id: string) => {
-    const tObj = included.find(
-      (inc) => inc.id === id && inc.type === 'section_tag'
-    );
-    const name = tObj?.attributes?.name;
-    if (name && !EXCLUDED_TAGS.includes(name)) {
-      allTags.add(name);
+  sectionTagNames.forEach((name) => {
+    if (GENRE_TAGS.includes(name)) {
+      allGenres.add(GENRE_RENAME[name] || name);
     }
   });
 
-  const tags = Array.from(allTags);
+  const tags = Array.from(allGenres);
 
   return {
     id: apiData.id,
@@ -145,8 +215,10 @@ const mapToCleanEvent = (
     description: apiData.attributes.body,
     imageUrl: imageObj?.attributes?.file_url,
     dates,
-    price: contentFieldObj?.attributes?.secondary_fields?.price,
-    tags: tags,
+    price: priceHtml,
+    priceCategory,
+    isJeunePublic,
+    tags,
   };
 };
 
