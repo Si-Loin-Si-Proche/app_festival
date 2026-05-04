@@ -115,7 +115,7 @@ export default function ReglagesScreen() {
             variant="caption"
             style={{ textAlign: 'center', opacity: 0.5 }}
           >
-            v0.0 - 2026 Ferme du Buisson©
+            v1.1.0 - 2026 Ferme du Buisson©
           </Typography>
         </View>
       </ScrollView>

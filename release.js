@@ -100,6 +100,22 @@ rl.question(
         );
         fs.writeFileSync('./app.json', JSON.stringify(appJson, null, 2) + '\n');
 
+        console.log(`📝 Mise à jour des versions dans les templates UI...`);
+        const uiTemplates = [
+          './src/screens/Reglages.tsx',
+          './src/components/molecules/SectionFooter.tsx',
+        ];
+        uiTemplates.forEach((path) => {
+          if (fs.existsSync(path)) {
+            let content = fs.readFileSync(path, 'utf8');
+            content = content.replace(
+              /v[0-9.]+\s*-\s*2026\s*Ferme\s*du\s*Buisson/g,
+              `v${newVersion} - 2026 Ferme du Buisson`
+            );
+            fs.writeFileSync(path, content);
+          }
+        });
+
         console.log(`📦 Git commit & tag...`);
         runDirect(`git commit -am "chore(release): v${newVersion}"`);
         runDirect(`git tag -a v${newVersion} -m "Release v${newVersion}"`);
