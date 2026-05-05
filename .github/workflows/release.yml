@@ -1,0 +1,46 @@
+name: Release App
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-submit:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🏗 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🏗 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: 🏗 Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🚀 Build on EAS (Android & iOS)
+        run: eas build --platform all --profile production --non-interactive
+
+      - name: 🚀 Submit to Stores (Android & iOS)
+        if: ${{ vars.ENABLE_STORE_SUBMIT == 'true' }}
+        run: eas submit --platform all --profile production --non-interactive
+
+      - name: 📦 Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          draft: true
+          # Note: Pour attacher automatiquement les binaires, il faut télécharger les artefacts d'EAS
+          # Ce qui nécessite un script pour parser l'URL de l'artefact depuis l'API Expo.
+          # Le mode `draft: true` vous permet d'avoir la release prête et d'ajouter les binaires à la main.

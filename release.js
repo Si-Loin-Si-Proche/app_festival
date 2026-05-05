@@ -125,11 +125,12 @@ rl.question(
         runDirect('git push origin main');
         runDirect('git push origin --tags');
 
-        console.log(`\n🏗️  Lancement du build EAS (Android Preview)...`);
-        runDirect('eas build --platform android --profile preview');
+        console.log(
+          `\n🏗️  C'est bon, GitHub Actions s'occupe du build (sur le tag v${newVersion}) !`
+        );
 
         console.log(
-          `\n${colors.green}${colors.bright}✅ Release v${newVersion} terminée avec succès !${colors.reset}`
+          `\n${colors.green}${colors.bright}✅ C'est ok pour la v${newVersion} !${colors.reset}`
         );
         rl.close();
       }
