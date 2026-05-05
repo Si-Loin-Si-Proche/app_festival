@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
   ActivityIndicator,
   Alert,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -24,7 +24,6 @@ const logoImg = require('../assets/logo_ferme_du_buisson.png');
 export default function IndexScreen() {
   const router = useRouter();
   const { colors } = useTheme();
-  const [topSectionHeight, setTopSectionHeight] = useState(350);
 
   const { isLiked, toggleFavorite } = useFavorites();
   const [loading, setLoading] = useState(true);
@@ -82,6 +81,20 @@ export default function IndexScreen() {
     router.push(`/event/${id}` as any);
   };
 
+  const scrollY = React.useRef(new Animated.Value(0)).current;
+
+  const liveTranslateY = scrollY.interpolate({
+    inputRange: [0, 400],
+    outputRange: [0, 200],
+    extrapolate: 'clamp',
+  });
+
+  const liveOpacity = scrollY.interpolate({
+    inputRange: [0, 300],
+    outputRange: [1, 0.5],
+    extrapolate: 'clamp',
+  });
+
   if (loading) {
     return (
       <View style={[styles.center, { backgroundColor: colors.secondary }]}>
@@ -103,98 +116,100 @@ export default function IndexScreen() {
         subtitle="Bienvenue au festival des cinémas du Cambodge, Laos et Vietnam"
       />
 
-      <View style={{ flex: 1, position: 'relative' }}>
-        <View
+      <Animated.ScrollView
+        showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true }
+        )}
+        scrollEventThrottle={16}
+        contentContainerStyle={{
+          flexGrow: 1,
+          backgroundColor: colors.secondary,
+        }}
+        bounces={true}
+      >
+        {/* SECTION : EN CE MOMENT (Parallax) */}
+        <Animated.View
           style={[
-            styles.fixedBackgroundLayer,
-            { backgroundColor: colors.secondary },
+            styles.liveSection,
+            {
+              transform: [{ translateY: liveTranslateY }],
+              opacity: liveOpacity,
+              zIndex: 0,
+            },
           ]}
         >
-          <View
-            style={styles.contentMeasurer}
-            onLayout={(event) =>
-              setTopSectionHeight(event.nativeEvent.layout.height)
-            }
-          >
-            <Typography variant="h2" style={{ marginBottom: 15 }}>
-              En ce moment...
-            </Typography>
+          <Typography variant="h2" style={{ marginBottom: 15 }}>
+            En ce moment...
+          </Typography>
 
-            {liveEvents.length > 0 ? (
-              liveEvents.map((event) => (
-                <EventCard
-                  key={event.id}
-                  event={event}
-                  variant="compact"
-                  onPress={() => handlePress(event.id)}
-                  isFavorite={isLiked(event.id)}
-                  onToggle={() => toggleFavorite(event)}
-                />
-              ))
-            ) : (
-              <View style={styles.emptyStateBox}>
-                <Typography variant="body" style={{ fontStyle: 'italic' }}>
-                  Pas d'événement en cours actuellement.
-                </Typography>
-              </View>
-            )}
+          {liveEvents.length > 0 ? (
+            liveEvents.map((event) => (
+              <EventCard
+                key={event.id}
+                event={event}
+                variant="compact"
+                onPress={() => handlePress(event.id)}
+                isFavorite={isLiked(event.id)}
+                onToggle={() => toggleFavorite(event)}
+              />
+            ))
+          ) : (
+            <View style={styles.emptyStateBox}>
+              <Typography variant="body" style={{ fontStyle: 'italic' }}>
+                Pas d'événement en cours actuellement.
+              </Typography>
+            </View>
+          )}
+        </Animated.View>
+
+        {/* SECTION : À VENIR (Recouvre la première) */}
+        <View
+          style={[
+            styles.bottomSheet,
+            {
+              backgroundColor: colors.background,
+              borderColor: colors.text,
+              zIndex: 1, // Assure qu'elle passe au-dessus
+              marginTop: -20, // Petit overlap pour le style
+            },
+          ]}
+        >
+          <Typography variant="h2" style={{ marginTop: 0, marginBottom: 20 }}>
+            Événements à venir
+          </Typography>
+
+          {upcomingEvents.length > 0 ? (
+            upcomingEvents.map((event, index) => (
+              <EventCard
+                key={event.id}
+                variant="vertical"
+                event={event}
+                backgroundColor={
+                  index % 2 === 0 ? colors.secondary : colors.card
+                }
+                onPress={() => handlePress(event.id)}
+                isFavorite={isLiked(event.id)}
+                onToggle={() => toggleFavorite(event)}
+              />
+            ))
+          ) : (
+            <View style={styles.emptyStateBox}>
+              <Typography
+                variant="body"
+                style={{ textAlign: 'center', marginTop: 20 }}
+              >
+                Les événements sont tous passés, à l'année prochaine ;)
+              </Typography>
+            </View>
+          )}
+
+          <View style={styles.footerContainer}>
+            <SectionFooter />
           </View>
         </View>
-
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ flexGrow: 1 }}
-          bounces={false}
-          scrollEventThrottle={16}
-        >
-          <View
-            style={{ height: topSectionHeight, backgroundColor: 'transparent' }}
-          />
-
-          <View
-            style={[
-              styles.bottomSheet,
-              {
-                backgroundColor: colors.background,
-                borderColor: colors.text,
-              },
-            ]}
-          >
-            <Typography variant="h2" style={{ marginTop: 0, marginBottom: 20 }}>
-              Événements à venir
-            </Typography>
-
-            {upcomingEvents.length > 0 ? (
-              upcomingEvents.map((event, index) => (
-                <EventCard
-                  key={event.id}
-                  variant="vertical"
-                  event={event}
-                  backgroundColor={
-                    index % 2 === 0 ? colors.secondary : colors.card
-                  }
-                  onPress={() => handlePress(event.id)}
-                  isFavorite={isLiked(event.id)}
-                  onToggle={() => toggleFavorite(event)}
-                />
-              ))
-            ) : (
-              <View style={styles.emptyStateBox}>
-                <Typography
-                  variant="body"
-                  style={{ textAlign: 'center', marginTop: 20 }}
-                >
-                  Les événements sont tous passés, à l'année prochaine ;)
-                </Typography>
-              </View>
-            )}
-
-            <View style={styles.footerContainer}>
-              <SectionFooter />
-            </View>
-          </View>
-        </ScrollView>
-      </View>
+      </Animated.ScrollView>
     </SafeAreaView>
   );
 }
@@ -205,15 +220,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  fixedBackgroundLayer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 0,
-  },
-  contentMeasurer: {
+  liveSection: {
     paddingHorizontal: 20,
     paddingTop: 20,
     paddingBottom: 40,
