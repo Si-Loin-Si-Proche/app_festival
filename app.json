@@ -3,7 +3,7 @@
     "name": "Si Loin Si Proche",
     "slug": "SiLoinSiProche",
     "scheme": "SiLoinSiProche",
-    "version": "1.3.3",
+    "version": "1.3.4",
     "orientation": "portrait",
     "icon": "./assets/splash_fdb.png",
     "userInterfaceStyle": "light",

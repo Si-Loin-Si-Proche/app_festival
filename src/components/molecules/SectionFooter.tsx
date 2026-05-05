@@ -86,7 +86,7 @@ export default function SectionFooter() {
           variant="caption"
           style={[styles.versionText, { color: colors.text }]}
         >
-          v1.3.3 - 2026 Ferme du Buisson©
+          v1.3.4 - 2026 Ferme du Buisson©
         </Typography>
       </View>
     </View>
