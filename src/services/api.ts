@@ -1,8 +1,9 @@
 import axios from 'axios';
+import Constants from 'expo-constants';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 const PROJECT_ID = process.env.EXPO_PUBLIC_PROJECT_ID;
-const TOKEN = process.env.EXPO_PUBLIC_PROJECT_TOKEN;
+const TOKEN = Constants.expoConfig?.extra?.PROJECT_TOKEN;
 if (__DEV__) {
   if (!BASE_URL || !PROJECT_ID || !TOKEN) {
     // eslint-disable-next-line no-console
