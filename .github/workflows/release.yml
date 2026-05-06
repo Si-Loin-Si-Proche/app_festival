@@ -29,8 +29,11 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci
 
-      - name: 🚀 Build Android (Always)
-        run: eas build --platform android --profile production --non-interactive --wait
+      - name: 🚀 Build Android
+        run: |
+          BUILD_OUTPUT=$(eas build --platform android --profile production --non-interactive --wait --json)
+          ARTIFACT_URL=$(echo $BUILD_OUTPUT | jq -r '.[0].artifacts.buildUrl')
+          curl -L $ARTIFACT_URL -o SiLoinSiProche.apk
 
       - name: 🚀 Submit Android to Play Store
         if: ${{ vars.ENABLE_STORE_SUBMIT == 'true' }}
@@ -43,8 +46,7 @@ jobs:
       - name: 📦 Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          files: SiLoinSiProche.apk
           generate_release_notes: true
-          draft: true
-          # Note: Pour attacher automatiquement les binaires, il faut télécharger les artefacts d'EAS
-          # Ce qui nécessite un script pour parser l'URL de l'artefact depuis l'API Expo.
-          # Le mode `draft: true` vous permet d'avoir la release prête et d'ajouter les binaires à la main.
+          draft: false
+          prerelease: false
