@@ -32,6 +32,14 @@ import {
   Utensils,
   EarOff,
   Phone,
+  Clapperboard,
+  BookOpen,
+  Coffee,
+  Palette,
+  Mic2,
+  Store,
+  Beer,
+  Users,
 } from 'lucide-react-native';
 
 export const ICONS = {
@@ -81,6 +89,14 @@ export const ICONS = {
   wc: Toilet,
   food: Utensils,
   scene: Landmark,
+  cinema: Clapperboard,
+  library: BookOpen,
+  coffee: Coffee,
+  workshop: Palette,
+  concert: Mic2,
+  store: Store,
+  bar: Beer,
+  meeting: Users,
 } as const;
 
 export type IconName = keyof typeof ICONS;
