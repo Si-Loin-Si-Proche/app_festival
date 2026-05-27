@@ -43,22 +43,22 @@ export default function ReglagesScreen() {
           paddingBottom: 100,
         }}
       >
-        {/* BLOC 1 : NOTIFICATIONS & VIBRATIONS */}
-        <MenuItem
+        {/* BLOC 1 : NOTIFICATIONS & VIBRATIONS — [WEB-APP] désactivés */}
+        {/* <MenuItem
           label="Notifications"
           type="switch"
           value={notifEnabled}
           onValueChange={handleToggleNotifications}
         />
-        <Separator marginVertical={5} thickness={2} />
+        <Separator marginVertical={5} thickness={2} /> */}
 
-        <MenuItem
+        {/* <MenuItem
           label="Vibrations"
           type="switch"
           value={vibrationEnabled}
           onValueChange={handleToggleVibration}
         />
-        <Separator marginVertical={5} thickness={2} />
+        <Separator marginVertical={5} thickness={2} /> */}
 
         {/* BLOC 2 : APPARENCE */}
         <MenuItem
