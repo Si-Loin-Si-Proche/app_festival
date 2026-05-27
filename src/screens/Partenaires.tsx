@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Image, View } from 'react-native';
+import { ScrollView, StyleSheet, Image, View, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SectionHeader from '../components/molecules/SectionHeader';
 import Typography from '../components/atoms/Typography';
@@ -15,6 +15,16 @@ const partnerImg5 = require('../assets/partenaire5.png');
 const partnerImg6 = require('../assets/partenaire6.png');
 
 const FullWidthImage = ({ source }: { source: any }) => {
+  if (Platform.OS === 'web') {
+    return (
+      <Image
+        source={source}
+        style={{ width: '100%', height: undefined, aspectRatio: 2 }}
+        resizeMode="contain"
+      />
+    );
+  }
+
   const { width, height } = Image.resolveAssetSource(source);
   const ratio = width / height;
 

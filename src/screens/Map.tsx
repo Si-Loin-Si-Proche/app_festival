@@ -6,9 +6,9 @@ import {
   Dimensions,
   TouchableOpacity,
   ScrollView,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ReactNativeZoomableView } from '@dudigital/react-native-zoomable-view';
 import { useRouter } from 'expo-router';
 
 import { SPACING } from '../constants/theme';
@@ -20,6 +20,12 @@ import Icon from '../components/atoms/Icon';
 import SectionHeader from '../components/molecules/SectionHeader';
 import { useTheme } from '../context/ThemeContext';
 import { useAppHaptics } from '../hooks/useAppHaptics';
+
+let ReactNativeZoomableView: React.ComponentType<any> | null = null;
+if (Platform.OS !== 'web') {
+  ReactNativeZoomableView =
+    require('@dudigital/react-native-zoomable-view').ReactNativeZoomableView;
+}
 
 const screen = Dimensions.get('window');
 const IMAGE_RATIO = 6500 / 6200;
@@ -50,6 +56,32 @@ export default function MapScreen() {
     }
   };
 
+  const mapContent = (
+    <View
+      style={{
+        width: screen.width,
+        height: mapHeight,
+      }}
+    >
+      <Image
+        source={MAP_IMAGE_SOURCE}
+        style={{
+          width: '100%',
+          height: '100%',
+          resizeMode: 'contain',
+        }}
+      />
+
+      {displayedPoints.map((point) => (
+        <MapMarker
+          key={point.id}
+          point={point}
+          onPress={(p) => setSelectedPoint(p)}
+        />
+      ))}
+    </View>
+  );
+
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
@@ -62,41 +94,31 @@ export default function MapScreen() {
       />
       <View style={styles.contentContainer}>
         <View style={[styles.mapContainer, { backgroundColor: colors.border }]}>
-          <ReactNativeZoomableView
-            maxZoom={3}
-            minZoom={1}
-            zoomStep={0.5}
-            initialZoom={1}
-            bindToBorders={false}
-            panEnabled={true}
-            style={styles.zoomView}
-            visualTouchFeedbackEnabled={false}
-            onSingleTapAfter={handleMapTap}
-          >
-            <View
-              style={{
-                width: screen.width,
-                height: mapHeight,
-              }}
+          {Platform.OS === 'web' ? (
+            <ScrollView
+              style={styles.zoomView}
+              contentContainerStyle={{ alignItems: 'center' }}
+              onTouchEnd={handleMapTap}
             >
-              <Image
-                source={MAP_IMAGE_SOURCE}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  resizeMode: 'contain',
-                }}
-              />
-
-              {displayedPoints.map((point) => (
-                <MapMarker
-                  key={point.id}
-                  point={point}
-                  onPress={(p) => setSelectedPoint(p)}
-                />
-              ))}
-            </View>
-          </ReactNativeZoomableView>
+              {mapContent}
+            </ScrollView>
+          ) : (
+            ReactNativeZoomableView && (
+              <ReactNativeZoomableView
+                maxZoom={3}
+                minZoom={1}
+                zoomStep={0.5}
+                initialZoom={1}
+                bindToBorders={false}
+                panEnabled={true}
+                style={styles.zoomView}
+                visualTouchFeedbackEnabled={false}
+                onSingleTapAfter={handleMapTap}
+              >
+                {mapContent}
+              </ReactNativeZoomableView>
+            )
+          )}
         </View>
 
         <View style={styles.filterContainer}>

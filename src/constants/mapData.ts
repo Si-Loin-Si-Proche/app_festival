@@ -1,15 +1,17 @@
 import { IconName } from './icons';
 import { COLORS } from './theme';
-import { Image } from 'react-native';
+import { Image, Platform } from 'react-native';
 
 export const MAP_IMAGE_SOURCE = require('../assets/plan.png');
 
-const { width, height } = Image.resolveAssetSource(MAP_IMAGE_SOURCE);
-
-export const MAP_DIMENSIONS = {
-  width,
-  height,
+const getMapDimensions = (): { width: number; height: number } => {
+  if (Platform.OS === 'web') {
+    return { width: 440, height: 370 };
+  }
+  return Image.resolveAssetSource(MAP_IMAGE_SOURCE);
 };
+
+export const MAP_DIMENSIONS = getMapDimensions();
 
 export interface MapPoint {
   id: string;
