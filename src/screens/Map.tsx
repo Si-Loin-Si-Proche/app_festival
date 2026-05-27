@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Platform,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -43,7 +44,9 @@ export default function MapScreen() {
   const [selectedPoint, setSelectedPoint] = useState<MapPoint | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const { selection } = useAppHaptics();
-  const mapHeight = screen.width / IMAGE_RATIO;
+  // useWindowDimensions est réactif (resize sur web), contrairement à Dimensions.get statique
+  const { width } = useWindowDimensions();
+  const mapHeight = width / IMAGE_RATIO;
 
   const displayedPoints = useMemo(() => {
     if (activeFilter === 'all') return MAP_POINTS;
@@ -56,22 +59,33 @@ export default function MapScreen() {
     }
   };
 
-  const mapContent = (
+  // [WEB] Rendu simplifié avec dimensions relatives — pas de pixel fix
+  const mapContentWeb = (
     <View
-      style={{
-        width: screen.width,
-        height: mapHeight,
-      }}
+      style={{ width: '100%', aspectRatio: IMAGE_RATIO, position: 'relative' }}
     >
       <Image
         source={MAP_IMAGE_SOURCE}
-        style={{
-          width: '100%',
-          height: '100%',
-          resizeMode: 'contain',
-        }}
+        style={{ width: '100%', height: '100%' }}
+        resizeMode="contain"
       />
+      {displayedPoints.map((point) => (
+        <MapMarker
+          key={point.id}
+          point={point}
+          onPress={(p) => setSelectedPoint(p)}
+        />
+      ))}
+    </View>
+  );
 
+  // [NATIVE] Rendu avec dimensions pixel exactes pour le zoom
+  const mapContentNative = (
+    <View style={{ width: width, height: mapHeight }}>
+      <Image
+        source={MAP_IMAGE_SOURCE}
+        style={{ width: '100%', height: '100%', resizeMode: 'contain' }}
+      />
       {displayedPoints.map((point) => (
         <MapMarker
           key={point.id}
@@ -100,7 +114,7 @@ export default function MapScreen() {
               contentContainerStyle={{ alignItems: 'center' }}
               onTouchEnd={handleMapTap}
             >
-              {mapContent}
+              {mapContentWeb}
             </ScrollView>
           ) : (
             ReactNativeZoomableView && (
@@ -115,7 +129,7 @@ export default function MapScreen() {
                 visualTouchFeedbackEnabled={false}
                 onSingleTapAfter={handleMapTap}
               >
-                {mapContent}
+                {mapContentNative}
               </ReactNativeZoomableView>
             )
           )}
