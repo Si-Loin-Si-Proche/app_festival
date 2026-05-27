@@ -3,7 +3,9 @@ export default ({ config }) => {
     ...config,
     web: {
       ...config.web,
-      // Forcé explicitement pour GitHub Pages (si-loin-si-proche.github.io/app_festival)
+    },
+    experiments: {
+      ...config.experiments,
       baseUrl: '/app_festival',
     },
     extra: {
