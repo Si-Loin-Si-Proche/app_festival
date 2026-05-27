@@ -41,6 +41,11 @@ jobs:
         env:
           EXPO_PUBLIC_API_URL: ${{ vars.EXPO_PUBLIC_API_URL }}
           EXPO_PUBLIC_PROJECT_ID: ${{ vars.EXPO_PUBLIC_PROJECT_ID }}
+          EXPO_PUBLIC_FESTIVAL_TAG_ID: ${{ vars.EXPO_PUBLIC_FESTIVAL_TAG_ID }}
+          EXPO_PUBLIC_FESTIVAL_ID: ${{ vars.EXPO_PUBLIC_FESTIVAL_ID }}
+          EXPO_PUBLIC_FESTIVAL_START_DATE: ${{ vars.EXPO_PUBLIC_FESTIVAL_START_DATE }}
+          EXPO_PUBLIC_FESTIVAL_END_DATE: ${{ vars.EXPO_PUBLIC_FESTIVAL_END_DATE }}
+          PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
 
       - name: 🔍 Debug — vérification du baseUrl dans index.html
         run: |
