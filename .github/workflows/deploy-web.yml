@@ -37,11 +37,18 @@ jobs:
         run: npm ci
 
       - name: 🌐 Build for web (Expo)
-        run: npx expo export --platform web
+        run: npx expo export -p web
         env:
-          # Passe ici tes variables d'environnement publiques si nécessaire
           EXPO_PUBLIC_API_URL: ${{ vars.EXPO_PUBLIC_API_URL }}
           EXPO_PUBLIC_PROJECT_ID: ${{ vars.EXPO_PUBLIC_PROJECT_ID }}
+
+      - name: 🔍 Debug — vérification du baseUrl dans index.html
+        run: |
+          echo "=== Structure dist/ ==="
+          ls -la dist/
+          echo ""
+          echo "=== Script src dans index.html ==="
+          grep -o 'src="[^"]*"' dist/index.html | head -5 || echo "Pas de balise script src trouvée"
 
       - name: 🔧 Setup GitHub Pages
         uses: actions/configure-pages@v4
@@ -49,7 +56,6 @@ jobs:
       - name: 📤 Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Expo exporte dans le dossier 'dist' par défaut
           path: './dist'
 
       - name: 🚀 Deploy to GitHub Pages
