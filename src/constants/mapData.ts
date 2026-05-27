@@ -2,7 +2,10 @@ import { IconName } from './icons';
 import { COLORS } from './theme';
 import { Image, Platform } from 'react-native';
 
-export const MAP_IMAGE_SOURCE = require('../assets/plan.png');
+export const MAP_IMAGE_SOURCE =
+  Platform.OS === 'web'
+    ? require('../assets/plan_web.png')
+    : require('../assets/plan.png');
 
 const getMapDimensions = (): { width: number; height: number } => {
   if (Platform.OS === 'web') {

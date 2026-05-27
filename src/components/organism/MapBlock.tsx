@@ -30,7 +30,7 @@ export default function MapBlock() {
         <View style={styles.imageWrapper}>
           <Image
             source={MAP_IMAGE_SOURCE}
-            style={styles.mapImage}
+            style={StyleSheet.absoluteFillObject}
             resizeMode="cover"
           />
 
